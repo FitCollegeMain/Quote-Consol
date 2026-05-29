@@ -1,0 +1,6 @@
+{
+  "name": "FIT College Quote Generator",
+  "description": "An elegant, brand-compliant browser-based tool for the FIT College Sales Team to generate and print beautiful, professional study pathway quotes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
