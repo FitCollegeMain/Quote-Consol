@@ -1,0 +1,155 @@
+<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="FIT College Logo">
+      <g>
+        <!-- Laurel Left Stem -->
+        <path
+          d="M 120 370 Q 20 250 120 50 Q 180 20 230 20"
+          fill="none"
+          stroke="#0F0F10"
+          stroke-width="4"
+          stroke-linecap="round"
+        />
+
+        <!-- Laurel Right Stem -->
+        <path
+          d="M 380 370 Q 480 250 380 50 Q 320 20 270 20"
+          fill="none"
+          stroke="#0F0F10"
+          stroke-width="4"
+          stroke-linecap="round"
+        />
+
+        <!-- Laurel Left Leaves -->
+          <path d="M 0 0 C -15 -10 -25 -5 -30 15 C -25 25 -10 20 0 0" fill="#0F0F10" transform="translate(100, 350) rotate(-50) scale(1)" />
+          <path d="M 0 0 C -15 -10 -25 -5 -30 15 C -25 25 -10 20 0 0" fill="#0F0F10" transform="translate(75, 320) rotate(-35) scale(1)" />
+          <path d="M 0 0 C -15 -10 -25 -5 -30 15 C -25 25 -10 20 0 0" fill="#0F0F10" transform="translate(55, 285) rotate(-15) scale(1)" />
+          <path d="M 0 0 C -15 -10 -25 -5 -30 15 C -25 25 -10 20 0 0" fill="#0F0F10" transform="translate(45, 245) rotate(0) scale(1)" />
+          <path d="M 0 0 C -15 -10 -25 -5 -30 15 C -25 25 -10 20 0 0" fill="#0F0F10" transform="translate(45, 200) rotate(15) scale(1)" />
+          <path d="M 0 0 C -15 -10 -25 -5 -30 15 C -25 25 -10 20 0 0" fill="#0F0F10" transform="translate(55, 155) rotate(35) scale(1)" />
+          <path d="M 0 0 C -15 -10 -25 -5 -30 15 C -25 25 -10 20 0 0" fill="#0F0F10" transform="translate(75, 110) rotate(50) scale(1)" />
+          <path d="M 0 0 C -15 -10 -25 -5 -30 15 C -25 25 -10 20 0 0" fill="#0F0F10" transform="translate(105, 70) rotate(65) scale(1)" />
+          <path d="M 0 0 C -15 -10 -25 -5 -30 15 C -25 25 -10 20 0 0" fill="#0F0F10" transform="translate(145, 40) rotate(80) scale(1)" />
+          <path d="M 0 0 C -15 -10 -25 -5 -30 15 C -25 25 -10 20 0 0" fill="#0F0F10" transform="translate(190, 25) rotate(95) scale(1)" />
+          <path d="M 0 0 C -15 -10 -25 -5 -30 15 C -25 25 -10 20 0 0" fill="#0F0F10" transform="translate(235, 22) rotate(110) scale(1)" />
+
+        <!-- Laurel Right Leaves -->
+          <path d="M 0 0 C 15 -10 25 -5 30 15 C 25 25 10 20 0 0" fill="#0F0F10" transform="translate(400, 350) rotate(50) scale(1)" />
+          <path d="M 0 0 C 15 -10 25 -5 30 15 C 25 25 10 20 0 0" fill="#0F0F10" transform="translate(425, 320) rotate(35) scale(1)" />
+          <path d="M 0 0 C 15 -10 25 -5 30 15 C 25 25 10 20 0 0" fill="#0F0F10" transform="translate(445, 285) rotate(15) scale(1)" />
+          <path d="M 0 0 C 15 -10 25 -5 30 15 C 25 25 10 20 0 0" fill="#0F0F10" transform="translate(455, 245) rotate(0) scale(1)" />
+          <path d="M 0 0 C 15 -10 25 -5 30 15 C 25 25 10 20 0 0" fill="#0F0F10" transform="translate(455, 200) rotate(-15) scale(1)" />
+          <path d="M 0 0 C 15 -10 25 -5 30 15 C 25 25 10 20 0 0" fill="#0F0F10" transform="translate(445, 155) rotate(-35) scale(1)" />
+          <path d="M 0 0 C 15 -10 25 -5 30 15 C 25 25 10 20 0 0" fill="#0F0F10" transform="translate(425, 110) rotate(-50) scale(1)" />
+          <path d="M 0 0 C 15 -10 25 -5 30 15 C 25 25 10 20 0 0" fill="#0F0F10" transform="translate(395, 70) rotate(-65) scale(1)" />
+          <path d="M 0 0 C 15 -10 25 -5 30 15 C 25 25 10 20 0 0" fill="#0F0F10" transform="translate(355, 40) rotate(-80) scale(1)" />
+          <path d="M 0 0 C 15 -10 25 -5 30 15 C 25 25 10 20 0 0" fill="#0F0F10" transform="translate(310, 25) rotate(-95) scale(1)" />
+          <path d="M 0 0 C 15 -10 25 -5 30 15 C 25 25 10 20 0 0" fill="#0F0F10" transform="translate(265, 22) rotate(-110) scale(1)" />
+
+        <!-- Bottom Wreath intersection -->
+        <path
+          d="M 120 370 C 160 415 340 415 380 370"
+          fill="none"
+          stroke="#0F0F10"
+          stroke-width="4"
+          stroke-linecap="round"
+        />
+
+        <!-- Inner Box Square Frame -->
+        <rect
+          x="125"
+          y="75"
+          width="250"
+          height="250"
+          fill="#FFFFFF"
+          stroke="#0F0F10"
+          stroke-width="8"
+        />
+
+        <!-- Inner thin border line inside the Square Box -->
+        <rect
+          x="133"
+          y="83"
+          width="234"
+          height="234"
+          fill="none"
+          stroke="#0F0F10"
+          stroke-width="2"
+        />
+
+        <!-- Double corners notches inside the Box -->
+        <path d="M 143 83 L 143 100 L 125 100" fill="none" stroke="#0F0F10" stroke-width="2" />
+        <path d="M 357 83 L 357 100 L 375 100" fill="none" stroke="#0F0F10" stroke-width="2" />
+        <path d="M 143 317 L 143 300 L 125 300" fill="none" stroke="#0F0F10" stroke-width="2" />
+        <path d="M 357 317 L 357 300 L 375 300" fill="none" stroke="#0F0F10" stroke-width="2" />
+
+        <!-- "FIT" Text -->
+        <text
+          x="250"
+          y="180"
+          text-anchor="middle"
+          fill="none"
+          stroke="#0F0F10"
+          stroke-width="12"
+          stroke-linejoin="miter"
+          font-family="system-ui, -apple-system, sans-serif"
+          font-weight="900"
+          font-size="100"
+          letter-spacing="4"
+        >FIT</text>
+        <text
+          x="250"
+          y="180"
+          text-anchor="middle"
+          fill="#FFFFFF"
+          stroke="#0F0F10"
+          stroke-width="3"
+          stroke-linejoin="miter"
+          font-family="system-ui, -apple-system, sans-serif"
+          font-weight="900"
+          font-size="100"
+          letter-spacing="4"
+        >FIT</text>
+
+        <!-- COLLEGE Horizontal bar container -->
+        <rect
+          x="145"
+          y="205"
+          width="210"
+          height="65"
+          fill="#0F0F10"
+        />
+        <!-- Double border inside the COLLEGE bar -->
+        <rect
+          x="151"
+          y="211"
+          width="198"
+          height="53"
+          fill="none"
+          stroke="#FFFFFF"
+          stroke-width="2"
+        />
+
+        <!-- COLLEGE Text -->
+        <text
+          x="250"
+          y="248"
+          text-anchor="middle"
+          fill="#FFFFFF"
+          font-family="system-ui, -apple-system, sans-serif"
+          font-weight="800"
+          font-size="34"
+          letter-spacing="2"
+        >COLLEGE</text>
+
+        <!-- RTO - 31903 Text below everything -->
+        <text
+          x="250"
+          y="445"
+          text-anchor="middle"
+          fill="#0F0F10"
+          font-family="system-ui, -apple-system, sans-serif"
+          font-weight="700"
+          font-size="18"
+          letter-spacing="2"
+        >RTO - 31903</text>
+      </g>
+    </svg>

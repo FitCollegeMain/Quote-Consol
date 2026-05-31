@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import Logo from "./components/Logo";
 import PathwayCard from "./components/PathwayCard";
+import DashboardTab from "./components/DashboardTab";
 import {
   Pathway,
   SelectedCourse,
@@ -38,6 +39,108 @@ const getDateString = (daysOffset = 0) => {
   return `${yyyy}-${mm}-${dd}`;
 };
 
+const getSeedQuotes = (): SavedQuote[] => {
+  const getDynamicDate = (dayOffsetFromCurrentEnd: number): string => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const totalDays = new Date(year, month + 1, 0).getDate();
+    const day = Math.max(1, Math.min(totalDays, totalDays - dayOffsetFromCurrentEnd));
+    
+    const yyyy = year;
+    const mm = String(month + 1).padStart(2, "0");
+    const dd = String(day).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  return [
+    {
+      id: "quote_seed_1",
+      advisorName: "Dean Eggins",
+      studentName: "Ashley Cole",
+      studentPhone: "0412 345 678",
+      studentEmail: "ashley.cole@gmail.com",
+      dateIssued: getDynamicDate(2), // 2 days before end of month (inside closeout)
+      validUntil: getDynamicDate(-28),
+      courseSummary: "Pathway 1: F2F Complete PT Program - Dual Qualification (SIS30321 & SIS40221)",
+      totalCost: 9000,
+      status: "accepted",
+      updatedAt: new Date().toISOString(),
+      isAccepted: true
+    },
+    {
+      id: "quote_seed_2",
+      advisorName: "Ryan Crilly",
+      studentName: "Zack Snyder",
+      studentPhone: "0498 765 432",
+      studentEmail: "z.snyder@warner.com",
+      dateIssued: getDynamicDate(3), // 3 days before end of month (inside closeout)
+      validUntil: getDynamicDate(-27),
+      courseSummary: "Pathway 1: F2F FIT Elite PT Program (SIS30321 & SIS40221 & Specialty)",
+      totalCost: 11400,
+      status: "amber pending",
+      updatedAt: new Date().toISOString(),
+      isAccepted: false
+    },
+    {
+      id: "quote_seed_3",
+      advisorName: "Nicky Wood",
+      studentName: "Mary Jane",
+      studentPhone: "0455 112 233",
+      studentEmail: "mj.watson@dailybugle.com",
+      dateIssued: getDynamicDate(1), // 1 day before end of month (inside closeout)
+      validUntil: getDynamicDate(-29),
+      courseSummary: "Pathway 1: ONLINE Diploma of Sport - Coaching (SIS50321)",
+      totalCost: 20000,
+      status: "amber pending",
+      updatedAt: new Date().toISOString(),
+      isAccepted: false
+    },
+    {
+      id: "quote_seed_4",
+      advisorName: "Sam Russel",
+      studentName: "Peter Parker",
+      studentPhone: "0433 998 877",
+      studentEmail: "spidey@midtownhigh.edu",
+      dateIssued: getDynamicDate(4), // 4 days before end of month (inside closeout)
+      validUntil: getDynamicDate(-26),
+      courseSummary: "Pathway 1: ONLINE Certificate III in Fitness (SIS30321)",
+      totalCost: 3000,
+      status: "accepted",
+      updatedAt: new Date().toISOString(),
+      isAccepted: true
+    },
+    {
+      id: "quote_seed_5",
+      advisorName: "Tess Szabath",
+      studentName: "Bruce Wayne",
+      studentPhone: "0400 700 800",
+      studentEmail: "bruce@waynecorp.com",
+      dateIssued: getDynamicDate(15), // Middle of the month (outside closeout, inside month)
+      validUntil: getDynamicDate(-15),
+      courseSummary: "Pathway 1: Fit Elite Ultra F2F (SIS30321 & SIS40221 & SIS50321 / TAE40122)",
+      totalCost: 12900,
+      status: "accepted",
+      updatedAt: new Date().toISOString(),
+      isAccepted: true
+    },
+    {
+      id: "quote_seed_6",
+      advisorName: "Marcus Krause",
+      studentName: "Diana Prince",
+      studentPhone: "0466 223 344",
+      studentEmail: "diana@themyscira.org",
+      dateIssued: getDynamicDate(20), // 20 days ago (outside closeout, old)
+      validUntil: getDynamicDate(-10),
+      courseSummary: "Pathway 1: ONLINE Complete PT Program - Dual Qualification (SIS30321 & SIS40221)",
+      totalCost: 6000,
+      status: "amber pending",
+      updatedAt: new Date().toISOString(),
+      isAccepted: false
+    }
+  ];
+};
+
 export default function App() {
   // Session login system matching "Each career advisor must log in every 7 days"
   const [currentUser, setCurrentUser] = useState<string | null>(() => {
@@ -60,11 +163,12 @@ export default function App() {
   });
 
   // QTrak Log Tab state variables
-  const [activeTab, setActiveTab] = useState<"builder" | "qtrak">("builder");
+  const [activeTab, setActiveTab] = useState<"builder" | "qtrak" | "dashboard">("builder");
   const [isQuoteAccepted, setIsQuoteAccepted] = useState(false);
   const [googleToken, setGoogleToken] = useState<string | null>(null);
   const [gUser, setGUser] = useState<any>(null);
   const [quotes, setQuotes] = useState<SavedQuote[]>([]);
+  const [allQuotes, setAllQuotes] = useState<SavedQuote[]>([]);
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncError, setSyncError] = useState<string | null>(null);
 
@@ -123,8 +227,14 @@ export default function App() {
     setIsSyncing(true);
     setSyncError(null);
     try {
-      const localStr = localStorage.getItem("fit_local_quotes");
-      const localQuotes: SavedQuote[] = localStr ? JSON.parse(localStr) : [];
+      let localStr = localStorage.getItem("fit_local_quotes");
+      let localQuotes: SavedQuote[] = localStr ? JSON.parse(localStr) : [];
+      
+      // Seed if empty
+      if (localQuotes.length === 0) {
+        localQuotes = getSeedQuotes();
+        localStorage.setItem("fit_local_quotes", JSON.stringify(localQuotes));
+      }
       
       if (token) {
         const synced = await fetchSyncedQuotes(token, currentUser);
@@ -142,23 +252,31 @@ export default function App() {
         );
         
         const otherAdvisorsQuotes = localQuotes.filter(q => q.advisorName.toLowerCase() !== currentUser.toLowerCase());
-        localStorage.setItem("fit_local_quotes", JSON.stringify([...otherAdvisorsQuotes, ...finalQuotes]));
+        const mergedAll = [...otherAdvisorsQuotes, ...finalQuotes];
+        localStorage.setItem("fit_local_quotes", JSON.stringify(mergedAll));
         setQuotes(finalQuotes);
+        setAllQuotes(mergedAll);
       } else {
         const filtered = localQuotes
           .filter(q => q.advisorName.toLowerCase() === currentUser.toLowerCase())
           .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
         setQuotes(filtered);
+        setAllQuotes(localQuotes);
       }
     } catch (err: any) {
       console.error("Load quotes failed:", err);
       setSyncError("Google Sync Pending: Could not fetch from Google Sheet. Loaded offline fallback logs.");
       const localStr = localStorage.getItem("fit_local_quotes");
-      const localQuotes: SavedQuote[] = localStr ? JSON.parse(localStr) : [];
+      let localQuotes: SavedQuote[] = localStr ? JSON.parse(localStr) : [];
+      if (localQuotes.length === 0) {
+        localQuotes = getSeedQuotes();
+        localStorage.setItem("fit_local_quotes", JSON.stringify(localQuotes));
+      }
       const filtered = localQuotes
         .filter(q => q.advisorName.toLowerCase() === currentUser.toLowerCase())
         .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
       setQuotes(filtered);
+      setAllQuotes(localQuotes);
     } finally {
       setIsSyncing(false);
     }
@@ -170,9 +288,13 @@ export default function App() {
     }
   }, [currentUser, googleToken, activeTab]);
 
-  const handleSaveQuote = async () => {
+  const handleSaveQuote = async (isAutoSave = false) => {
     if (!details.studentName.trim()) {
-      alert("Please enter the student's full name to save or sync this study quote.");
+      if (isAutoSave) {
+        console.warn("Could not auto-sync quote to QTrak: Student name is empty.");
+      } else {
+        alert("Please enter the student's full name to save or sync this study quote.");
+      }
       return;
     }
     
@@ -236,10 +358,16 @@ export default function App() {
       }
       
       await loadQuotes();
-      alert(`Quote issued and saved successfully as "${finalStatus.toUpperCase()}"! Synchronized with QTrak.`);
+      if (isAutoSave) {
+        console.log(`Quote auto-saved and synced to QTrak as "${finalStatus.toUpperCase()}".`);
+      } else {
+        alert(`Quote issued and saved successfully as "${finalStatus.toUpperCase()}"! Synchronized with QTrak.`);
+      }
     } catch (err: any) {
       console.error("Save quote failed:", err);
-      alert("Quote saved to local temporary records. Connect to Google Sheets to keep standard logs synced.");
+      if (!isAutoSave) {
+        alert("Quote saved to local temporary records. Connect to Google Sheets to keep standard logs synced.");
+      }
     } finally {
       setIsSyncing(false);
     }
@@ -472,6 +600,10 @@ export default function App() {
       // Temporarily mark unlocked so they don't have to keep putting it,
       // and print!
       setIsUnlocked(true);
+      
+      // Automatically issue & sync to QTrak log upon printable export
+      handleSaveQuote(true);
+
       setTimeout(() => {
         window.print();
       }, 300);
@@ -481,6 +613,8 @@ export default function App() {
   };
 
   const handlePrintClick = () => {
+    // Automatically issue & sync to QTrak log upon printable export
+    handleSaveQuote(true);
     if (isUnlocked) {
       window.print();
     } else {
@@ -636,6 +770,17 @@ export default function App() {
           >
             <span className={`w-2 h-2 rounded-full ${googleToken ? "bg-[#10B981]" : "bg-amber-400"} animate-pulse`}></span>
             <span>QTrak Log</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("dashboard")}
+            className={`pb-1 font-bold transition-all duration-200 cursor-pointer ${
+              activeTab === "dashboard"
+                ? "text-white border-b-2 border-fit-red"
+                : "text-zinc-400 hover:text-white"
+            }`}
+          >
+            Dashboard
           </button>
         </nav>
 
@@ -845,20 +990,11 @@ export default function App() {
               </div>
             </div>
 
-            {/* Quick action triggers */}
+             {/* Quick action triggers */}
             <div className="space-y-3 pt-6 border-t border-gray-100 pb-12">
               <label className="text-[11px] font-bold text-[#8B909A] uppercase tracking-wider block">
                 Actions
               </label>
-
-              <button
-                type="button"
-                onClick={handleSaveQuote}
-                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider rounded transition-colors cursor-pointer shadow-md"
-              >
-                <Database size={14} />
-                Issue & Sync to QTrak
-              </button>
 
               <button
                 type="button"
@@ -869,14 +1005,19 @@ export default function App() {
                 Add Secondary Pathway
               </button>
 
-              <button
-                type="button"
-                onClick={handlePrintClick}
-                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-fit-red hover:bg-[#a80d13] text-white text-xs font-bold uppercase tracking-wider rounded transition-colors cursor-pointer shadow-md"
-              >
-                <Printer size={14} />
-                Export PDF / Print
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handlePrintClick}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-[#10B981] hover:bg-[#059669] text-white text-xs font-bold uppercase tracking-wider rounded transition-colors cursor-pointer shadow-md"
+                >
+                  <Printer size={14} />
+                  Export & Sync to QTrak
+                </button>
+                <span className="shrink-0 px-2.5 py-1.5 bg-amber-500 text-black text-[10px] font-black rounded uppercase tracking-wider animate-pulse shadow-sm border border-amber-600" title="Automatic QTrak background synchronization is active on document export in this Sandbox/Beta environment.">
+                  BETA
+                </span>
+              </div>
             </div>
           </div>
         </aside>
@@ -995,16 +1136,35 @@ export default function App() {
           </div>
         </section>
       </div>
-      ) : (
+      ) : activeTab === "qtrak" ? (
         /* --- QTRAK HISTORICAL RECRUITMENT LOGS BOARD --- */
         <div className="flex-1 overflow-y-auto no-print bg-[#F8FAFC] p-6 md:p-8 font-sans text-left">
           
+          {/* BETA WARNING BANNER */}
+          <div className="max-w-6xl mx-auto mb-6 bg-amber-500/10 border border-amber-500/30 p-4 rounded-xl flex items-start gap-3 text-left">
+            <div className="p-2 bg-amber-500 text-black rounded-lg shrink-0">
+              <AlertCircle size={18} />
+            </div>
+            <div>
+              <h4 className="font-bold text-amber-800 text-sm flex items-center gap-1.5">
+                <span>QTrak Logs Dashboard is in Beta</span>
+                <span className="px-1.5 py-0.5 bg-amber-500 text-black text-[9px] font-black rounded uppercase">BETA ACTIVE</span>
+              </h4>
+              <p className="text-xs text-amber-700/90 leading-relaxed font-semibold mt-1">
+                Persistent log actions, status updates, Google Sheets real-time cloud synchronisation, and record modifications are <strong>currently locked</strong> in this sandboxed Beta environment while IT completes domain authorization. All actions are disabled.
+              </p>
+            </div>
+          </div>
+
           {/* Header Action Row */}
           <div className="max-w-6xl mx-auto mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2 mb-1.5">
                 <Database className="text-fit-red w-5 h-5" />
                 <h1 className="text-2xl font-bold text-slate-900 tracking-tight">QTrak Workspace Logs</h1>
+                <span className="px-2 py-0.5 bg-amber-500 text-black text-[10px] font-black rounded uppercase tracking-wider">
+                  BETA
+                </span>
               </div>
               <p className="text-xs text-slate-500 font-medium">
                 Admissions, pipeline conversion, and historical study quote tracking.
@@ -1012,17 +1172,17 @@ export default function App() {
             </div>
 
             {/* Google Sheets Status Controller */}
-            <div className="p-3 rounded-xl border flex flex-col sm:flex-row items-start sm:items-center gap-3 shadow-sm bg-white border-zinc-200/80">
+            <div className="p-3 rounded-xl border flex flex-col sm:flex-row items-start sm:items-center gap-3 shadow-sm bg-zinc-50 border-zinc-200/80 cursor-not-allowed opacity-80" title="Locked in Beta">
               <div className="flex items-center gap-2.5">
-                <div className={`p-2 rounded-lg ${googleToken ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"}`}>
+                <div className="p-2 rounded-lg bg-zinc-100 text-zinc-400">
                   <FileSpreadsheet size={16} />
                 </div>
                 <div className="text-left text-xs">
-                  <div className="font-bold text-slate-800">
-                    {googleToken ? "Google Sheets Status: Cloud Sync Active" : "Google Sheets Status: Offline Records"}
+                  <div className="font-bold text-zinc-500 flex items-center gap-1">
+                    <span>Google Sheets Status: Locked in Beta</span>
                   </div>
-                  <div className="text-[10px] text-slate-400 font-semibold leading-none mt-1">
-                    {googleToken ? `Authorized account: ${gUser || "Careers Representative"}` : "Stored locally. Login and connect to push real-time updates."}
+                  <div className="text-[10px] text-zinc-400 font-semibold leading-none mt-1">
+                    Admissions live sheet sync is restricted in sandbox beta mode.
                   </div>
                 </div>
               </div>
@@ -1030,24 +1190,19 @@ export default function App() {
               <div className="flex items-center gap-2 self-stretch sm:self-auto border-t sm:border-t-0 sm:border-l border-zinc-200/60 pt-2 sm:pt-0 sm:pl-3">
                 <button
                   type="button"
-                  onClick={handleGoogleConnectToggle}
-                  className={`px-3 py-1.5 rounded text-[10px] sm:text-xs font-bold uppercase tracking-wider cursor-pointer transition-colors ${
-                    googleToken
-                      ? "bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200"
-                      : "bg-[#10B981] hover:bg-[#059669] text-white border border-[#10B981]"
-                  }`}
+                  disabled
+                  className="px-3 py-1.5 bg-zinc-100 border border-zinc-200 text-zinc-400 rounded text-[10px] sm:text-xs font-bold uppercase tracking-wider cursor-not-allowed flex items-center gap-1"
                 >
-                  {googleToken ? "Disconnect" : "Connect Sheets"}
+                  <span>🔒 Sheets Locked</span>
                 </button>
                 
                 <button
                   type="button"
-                  onClick={() => loadQuotes()}
-                  disabled={isSyncing}
-                  className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded transition-colors cursor-pointer"
-                  title="Force Sync / Reload"
+                  disabled
+                  className="p-1.5 text-zinc-300 cursor-not-allowed"
+                  title="Force Sync Locked in Beta"
                 >
-                  <RefreshCw size={14} className={isSyncing ? "animate-spin text-fit-red" : ""} />
+                  <RefreshCw size={14} />
                 </button>
               </div>
             </div>
@@ -1238,38 +1393,37 @@ export default function App() {
                           </span>
                         </div>
 
-                        {/* Action controllers (2 cols) */}
+                        {/* Action controllers (2 cols) - LOCKED IN BETA */}
                         <div className="md:col-span-2 flex flex-col gap-2 w-full justify-center md:items-end border-t md:border-t-0 border-zinc-100 pt-4 md:pt-0">
                           
                           {/* Load back configuration button */}
                           <button
                             type="button"
-                            onClick={() => handleLoadQuoteBack(quote)}
-                            className="w-full md:w-auto px-3.5 py-1.5 text-center bg-zinc-950 hover:bg-black text-[10px] text-white font-bold uppercase tracking-wider rounded-md cursor-pointer transition-colors shadow-sm"
+                            disabled
+                            className="w-full md:w-auto px-3.5 py-1.5 text-center bg-zinc-100 border border-zinc-200 text-[10px] text-zinc-400 font-bold uppercase tracking-wider rounded-md cursor-not-allowed opacity-75 inline-flex items-center justify-center gap-1"
+                            title="Locked in Beta"
                           >
-                            Restore Builder
+                            <span>🔒 Restore Locked</span>
                           </button>
 
                           {/* Quick client status acceptance toggler */}
                           <button
                             type="button"
-                            onClick={() => handleToggleQuoteAccept(quote)}
-                            className={`w-full md:w-auto px-3.5 py-1.5 text-center border text-[10px] font-bold uppercase tracking-wider rounded-md cursor-pointer transition-all duration-200 ${
-                              quote.isAccepted
-                                ? "bg-amber-50 hover:bg-amber-100 text-amber-700 border-amber-200"
-                                : "bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200"
-                            }`}
+                            disabled
+                            className="w-full md:w-auto px-3.5 py-1.5 text-center bg-zinc-100 border border-zinc-200 text-[10px] text-zinc-400 font-bold uppercase tracking-wider rounded-md cursor-not-allowed opacity-75 inline-flex items-center justify-center gap-1"
+                            title="Locked in Beta"
                           >
-                            {quote.isAccepted ? "Revoke Accept" : "Accept Quote"}
+                            <span>🔒 Toggle Locked</span>
                           </button>
 
                           {/* Remove log reference */}
                           <button
                             type="button"
-                            onClick={() => handleDeleteQuoteLog(quote.id)}
-                            className="w-full md:w-auto px-3.5 py-1 text-center text-red-400 hover:text-red-700 text-[9px] font-bold uppercase tracking-widest transition-colors cursor-pointer"
+                            disabled
+                            className="w-full md:w-auto px-3.5 py-1 text-center text-zinc-300 text-[9px] font-bold uppercase tracking-widest cursor-not-allowed opacity-75 inline-flex items-center justify-center gap-1"
+                            title="Locked in Beta"
                           >
-                            Remove Row
+                            <span>🔒 Remove Locked</span>
                           </button>
 
                         </div>
@@ -1282,6 +1436,13 @@ export default function App() {
             )}
           </div>
         </div>
+      ) : (
+        /* --- DASHBOARD TAB VIEW --- */
+        <DashboardTab 
+          quotes={allQuotes} 
+          onToggleQuoteAccept={handleToggleQuoteAccept} 
+          currentUser={currentUser}
+        />
       )}
 
       {/* 3. HARDCOPY PRINT PAGE CLONES (Beautiful independent pages rendering on print) */}
