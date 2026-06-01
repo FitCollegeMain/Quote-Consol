@@ -15,6 +15,7 @@ import {
   ADVISER_CONTACTS,
   TIMETABLES,
   SavedQuote,
+  CAMPUS_LINKS,
 } from "./types";
 import {
   initGoogleAuth,
@@ -98,7 +99,7 @@ const getSeedQuotes = (): SavedQuote[] => {
     },
     {
       id: "quote_seed_4",
-      advisorName: "Sam Russel",
+      advisorName: "Sam Russell",
       studentName: "Peter Parker",
       studentPhone: "0433 998 877",
       studentEmail: "spidey@midtownhigh.edu",
@@ -112,7 +113,7 @@ const getSeedQuotes = (): SavedQuote[] => {
     },
     {
       id: "quote_seed_5",
-      advisorName: "Tess Szabath",
+      advisorName: "Tess Di Stefano",
       studentName: "Bruce Wayne",
       studentPhone: "0400 700 800",
       studentEmail: "bruce@waynecorp.com",
@@ -1105,8 +1106,7 @@ export default function App() {
                       onUpdatePathway={(updated) => handleUpdatePathway(index, updated)}
                       onRemovePathway={() => handleRemovePathway(index)}
                       isFirst={index === 0}
-                      isAccepted={isQuoteAccepted}
-                      onAcceptToggle={() => setIsQuoteAccepted(!isQuoteAccepted)}
+                      advisorName={details.adviserName}
                     />
                   ))}
                 </div>
@@ -1115,7 +1115,7 @@ export default function App() {
               {/* Dynamic Mockup Sheet Footer */}
               <div className="border-t border-[#D5D8DE] pt-8 mt-12 text-center text-xs text-slate-500">
                 <p className="font-bold text-fit-black tracking-wide uppercase mb-3">
-                  To accept this enrollment quote, reply directly to your FIT College advisor.
+                  To progress this enrollment quote, book a 1-on-1 session with your careers advisor above.
                 </p>
                 <div className="bg-[#F8FAFC] border border-[#D5D8DE] p-4 rounded-lg inline-block w-full max-w-[550px]">
                   <strong className="text-fit-black block mb-1 tracking-widest uppercase text-[11px]">
@@ -1227,10 +1227,10 @@ export default function App() {
             </div>
 
             <div className="bg-white p-4 rounded-xl border border-zinc-200/60 shadow-sm text-left flex flex-col justify-between">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-500 block mb-1">Accepted Pipeline</span>
+              <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-500 block mb-1">Consultations Booked</span>
               <div className="flex items-baseline gap-2">
                 <span className="text-2xl font-extrabold text-emerald-600">{quotes.filter(q => q.isAccepted).length}</span>
-                <span className="text-[10px] text-slate-400 font-semibold">green confirmed</span>
+                <span className="text-[10px] text-slate-400 font-semibold">scheduled bookings</span>
               </div>
             </div>
 
@@ -1296,7 +1296,7 @@ export default function App() {
                   if (quote.isAccepted) {
                     cardBorderClass = "border-emerald-200 shadow-emerald-50/[0.03]";
                     badgeBgClass = "bg-emerald-50 text-emerald-700 border-emerald-200";
-                    statusLabel = "Accepted - CALL!";
+                    statusLabel = "Consultation Scheduled";
                     stripeClass = "bg-[#10B981]";
                   } else if (isExpired) {
                     cardBorderClass = "border-zinc-300 bg-zinc-50/50 opacity-80";
@@ -1573,7 +1573,28 @@ export default function App() {
                       {pathway.campusLocation && (
                         <div>
                           <strong className="text-gray-500 uppercase block tracking-wider text-[9px] mb-0.5">Campus:</strong>
-                          <span className="font-semibold text-fit-darkgray">{pathway.campusLocation}</span>
+                          <span className="font-semibold text-fit-darkgray block">{pathway.campusLocation}</span>
+                          {CAMPUS_LINKS[pathway.campusLocation] && (
+                            <div className="mt-1 flex items-center gap-1.5 text-[9px] font-bold">
+                              <a
+                                href={CAMPUS_LINKS[pathway.campusLocation].mapsUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-fit-red hover:underline"
+                              >
+                                Google Maps Link
+                              </a>
+                              <span className="text-gray-300">•</span>
+                              <a
+                                href={CAMPUS_LINKS[pathway.campusLocation].webUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-slate-500 hover:underline"
+                              >
+                                Location Website Page
+                              </a>
+                            </div>
+                          )}
                         </div>
                       )}
                       {pathway.startDate && (
@@ -1711,22 +1732,21 @@ export default function App() {
                 </div>
 
                 {/* Print official acceptance status block */}
-                <div className="mt-6 pt-5 border-t border-gray-100 flex items-center justify-between">
-                  <div className="text-left font-sans">
-                    <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest block">Pathway Proposal Consent</span>
-                    <p className="text-[10px] text-gray-500 font-medium">Authorized careers representative digital confirmation block.</p>
+                <div className="mt-6 pt-5 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-left">
+                  <div className="font-sans flex-1">
+                    <span className="text-[9px] font-bold text-gray-405 text-gray-400 uppercase tracking-widest block mb-0.5">Pathway Consultation & Booking</span>
+                    <p className="text-[10px] text-gray-500 leading-normal max-w-md">
+                      Scan or open your advisor's custom booking link to request class start points, lock in intakes, and authorize study plans:
+                      <br />
+                      <span className="font-semibold text-fit-red text-[9px] break-all">
+                        {(details.adviserName && ADVISER_CONTACTS[details.adviserName]?.meetingUrl) || "https://meetings-ap1.hubspot.com/dean-eggins"}
+                      </span>
+                    </p>
                   </div>
-                  <div>
-                    {isQuoteAccepted ? (
-                      <div className="flex items-center gap-1.5 px-4 py-2 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-700 text-xs font-bold uppercase tracking-widest font-sans">
-                        <CheckCircle size={14} className="text-[#10B981] shrink-0" />
-                        <span>DIGITAL RECORD: ACCEPTED</span>
-                      </div>
-                    ) : (
-                      <div className="px-4 py-2 border border-slate-200 border-dashed rounded text-slate-400 text-xs font-semibold tracking-wider font-sans">
-                        STUDENT SIGNATURE: _______________________
-                      </div>
-                    )}
+                  <div className="shrink-0 mt-2 sm:mt-0">
+                    <div className="px-4 py-2 border border-slate-200 border-dashed rounded text-slate-400 text-xs font-semibold tracking-wider font-sans">
+                      STUDENT SIGNATURE: _______________________
+                    </div>
                   </div>
                 </div>
               </div>

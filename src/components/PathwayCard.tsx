@@ -1,5 +1,5 @@
 import React from "react";
-import { Plus, Trash2, MapPin, Calendar, Clock, Gift, Info, CheckCircle } from "lucide-react";
+import { Plus, Trash2, MapPin, Calendar, Clock, Gift, Info, CheckCircle, ExternalLink, Globe, CalendarDays, PhoneCall, User } from "lucide-react";
 import {
   Pathway,
   SelectedCourse,
@@ -7,6 +7,8 @@ import {
   CAMPUSES_BY_STATE,
   TIMETABLES,
   AUTOMATIC_INCLUSIONS,
+  CAMPUS_LINKS,
+  ADVISER_CONTACTS,
 } from "../types";
 
 interface PathwayCardProps {
@@ -16,8 +18,9 @@ interface PathwayCardProps {
   onUpdatePathway: (updated: Pathway) => void;
   onRemovePathway: () => void;
   isFirst: boolean;
-  isAccepted: boolean;
-  onAcceptToggle: () => void;
+  isAccepted?: boolean;
+  onAcceptToggle?: () => void;
+  advisorName?: string;
 }
 
 export default function PathwayCard({
@@ -26,10 +29,12 @@ export default function PathwayCard({
   onUpdatePathway,
   onRemovePathway,
   isFirst,
-  isAccepted,
+  isAccepted = false,
   onAcceptToggle,
+  advisorName,
 }: PathwayCardProps) {
   // Determine pathway mode from the first course
+  const [showOtherAdvisers, setShowOtherAdvisers] = React.useState(false);
   const firstCourseName = pathway.courses[0]?.name || "";
   let derivedMode: "online" | "campus" | "default" = "default";
   if (firstCourseName.includes("ONLINE")) {
@@ -261,6 +266,39 @@ export default function PathwayCard({
                     ))}
                   </select>
                 </div>
+
+                {pathway.campusLocation && CAMPUS_LINKS[pathway.campusLocation] && (
+                  <div className="mt-2.5 rounded bg-white p-2.5 border border-slate-200/60 shadow-xs no-print text-[11px] text-slate-600">
+                    {CAMPUS_LINKS[pathway.campusLocation].address && (
+                      <p className="mb-2 font-medium leading-relaxed">
+                        <strong className="text-slate-800">Address:</strong> {CAMPUS_LINKS[pathway.campusLocation].address}
+                      </p>
+                    )}
+                    <div className="flex flex-wrap gap-x-3 gap-y-1.5 font-semibold">
+                      <a
+                        href={CAMPUS_LINKS[pathway.campusLocation].mapsUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-fit-red hover:text-red-700 transition-colors"
+                      >
+                        <MapPin size={12} className="shrink-0" />
+                        <span>View Google Map</span>
+                        <ExternalLink size={10} className="shrink-0 opacity-70" />
+                      </a>
+                      <span className="text-slate-300">|</span>
+                      <a
+                        href={CAMPUS_LINKS[pathway.campusLocation].webUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-slate-600 hover:text-slate-800 transition-colors"
+                      >
+                        <Globe size={12} className="shrink-0 text-slate-400" />
+                        <span>Visit Campus Page</span>
+                        <ExternalLink size={10} className="shrink-0 opacity-70" />
+                      </a>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div>
@@ -609,43 +647,85 @@ export default function PathwayCard({
         )}
       </div>
 
-      {/* Pathway Official Accept Section */}
-      <div className="mt-6 md:mt-8 pt-5 border-t border-[#D5D8DE]/60 flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-xl transition-all duration-300 bg-slate-50 border border-[#D5D8DE]/40">
-        <div className="text-left flex-1">
-          <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#8B909A] block mb-0.5">
-            Pathway Proposal Consent
-          </span>
-          <p className="text-xs text-gray-500 font-medium">
-            Authorized careers representative digital confirmation block.
-          </p>
-        </div>
-        
-        <button
-          type="button"
-          onClick={onAcceptToggle}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer shadow-sm ${
-            isAccepted
-              ? "bg-[#10B981] hover:bg-[#059669] text-white border border-[#10B981] scale-102 hover:scale-[1.04]"
-              : "bg-white hover:bg-slate-100 text-[#475569] border border-[#CBD5E1] hover:border-[#94A3B8]"
-          } no-print`}
-        >
-          <CheckCircle size={14} className={isAccepted ? "animate-pulse" : "text-slate-400"} />
-          <span>{isAccepted ? "Pathway Accepted" : "Accept Quote"}</span>
-        </button>
+      {/* Careers Advisor Meeting Booking Prompt Section */}
+      <div className="mt-8 pt-6 border-t border-[#D5D8DE]/60 flex flex-col gap-4">
+        <div className="flex flex-col md:flex-row items-stretch justify-between gap-4 p-4 md:p-5 rounded-xl transition-all duration-300 bg-slate-50 border border-[#D5D8DE]/40">
+          <div className="text-left flex-1 flex items-start gap-3.5">
+            <div className="p-2.5 bg-fit-red/10 text-fit-red rounded-lg mt-0.5 shrink-0">
+              <CalendarDays size={20} className="animate-pulse" />
+            </div>
+            <div>
+              <span className="text-[10px] font-black uppercase tracking-wider text-fit-red block mb-1">
+                Next Steps • Consult Careers Specialist
+              </span>
+              <h4 className="font-bold text-sm text-slate-800 leading-tight">
+                Secure this pathway & finalize custom intake
+              </h4>
+              <p className="text-xs text-slate-500 font-medium leading-relaxed mt-1">
+                Schedule a quick 1-on-1 course discussion with <strong className="text-slate-800">{advisorName || "your Careers Advisor"}</strong> to lock in timetables, verify tuition inclusions, or discuss payment choices.
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex flex-col justify-center items-stretch sm:items-end gap-2 shrink-0 md:min-w-[200px] no-print">
+            <a
+              href={(advisorName && ADVISER_CONTACTS[advisorName]?.meetingUrl) || "https://meetings-ap1.hubspot.com/dean-eggins"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 px-5 py-3 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-300 hover:scale-102 active:scale-98 shadow-sm bg-fit-red hover:bg-[#a80d13] text-white"
+            >
+              <CalendarDays size={14} />
+              <span>Book Meeting with {(advisorName || "Advisor").split(" ")[0]} ↗</span>
+            </a>
+            
+            <button
+              type="button"
+              onClick={() => setShowOtherAdvisers(!showOtherAdvisers)}
+              className="text-[10px] font-bold text-slate-500 hover:text-slate-800 uppercase tracking-wide underline transition-colors cursor-pointer text-center bg-transparent border-none outline-none"
+            >
+              {showOtherAdvisers ? "Hide Other Schedules ↑" : "Choose Another Advisor ↓"}
+            </button>
+          </div>
 
-        {/* Print-Only Acceptance Status Stamp */}
-        <div className="hidden print:flex items-center">
-          {isAccepted ? (
-            <div className="flex items-center gap-1.5 px-4 py-2 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-700 text-xs font-bold uppercase tracking-widest">
-              <CheckCircle size={14} className="text-[#10B981] shrink-0" />
-              <span>DIGITAL RECORD: ACCEPTED</span>
-            </div>
-          ) : (
-            <div className="px-4 py-2 border border-slate-200 border-dashed rounded text-slate-400 text-xs font-semibold tracking-wider">
-              STUDENT SIGNATURE: _______________________
-            </div>
-          )}
+          {/* Print-Only Booking Instruction */}
+          <div className="hidden print:block text-right self-center text-[10px] text-slate-500 font-mono max-w-[250px]">
+            <strong>Book Consultation Link:</strong>
+            <p className="text-fit-black font-semibold break-all text-[9px] mt-0.5">
+              {(advisorName && ADVISER_CONTACTS[advisorName]?.meetingUrl) || "https://meetings-ap1.hubspot.com/dean-eggins"}
+            </p>
+          </div>
         </div>
+
+        {/* Other Advisors Quick Link Table */}
+        {showOtherAdvisers && (
+          <div className="p-4 rounded-xl border border-slate-200/80 bg-white shadow-xs no-print text-left animate-fade-in">
+            <h5 className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1">
+              <User size={12} />
+              <span>Admissions Specialist Availability (HubSpot Bookings)</span>
+            </h5>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+              {Object.keys(ADVISER_CONTACTS)
+                .filter(name => name !== advisorName)
+                .map((name) => {
+                  const info = ADVISER_CONTACTS[name];
+                  return (
+                    <a
+                      key={name}
+                      href={info.meetingUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-between p-2 rounded-lg border border-slate-100 hover:border-slate-300 bg-slate-50/60 hover:bg-slate-50 transition-all text-xs font-semibold text-slate-700"
+                    >
+                      <span className="truncate">{name}</span>
+                      <span className="text-[10px] text-fit-red shrink-0 flex items-center gap-0.5 hover:underline font-bold">
+                        Schedule ↗
+                      </span>
+                    </a>
+                  );
+                })}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
