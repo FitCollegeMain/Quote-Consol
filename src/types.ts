@@ -254,4 +254,19 @@ export function cleanCourseName(name: string): string {
   return clean;
 }
 
+export function getDropdownLabel(priceKey: string): string {
+  if (!priceKey) return "";
+  const cleanName = cleanCourseName(priceKey);
+  const upperKey = priceKey.toUpperCase();
+  
+  let modeSuffix = "";
+  if (upperKey.includes("ONLINE") || upperKey.includes("ONL")) {
+    modeSuffix = " [Online]";
+  } else if (upperKey.includes("F2F") || upperKey.includes("PART TIME") || upperKey.includes("FULL TIME")) {
+    modeSuffix = " [On Campus]";
+  }
+  
+  return cleanName + modeSuffix;
+}
+
 

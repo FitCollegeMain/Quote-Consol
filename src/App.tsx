@@ -1627,10 +1627,10 @@ export default function App() {
                   <thead>
                     <tr className="bg-fit-black text-white font-bebas text-sm">
                       <th className="py-2.5 px-3 uppercase text-left">Course Qualification</th>
-                      <th className="py-2.5 px-3 uppercase text-center w-[120px]">Mode</th>
-                      <th className="py-2.5 px-3 uppercase text-right w-[110px]">RRP</th>
-                      <th className="py-2.5 px-3 uppercase text-right w-[110px]">Savings</th>
-                      <th className="py-2.5 px-3 uppercase text-right w-[120px] rounded-r-md">Final Total</th>
+                      <th className="py-2.5 px-3 uppercase text-center w-[80px]">Mode</th>
+                      <th className="py-2.5 px-3 uppercase text-right w-[85px]">RRP</th>
+                      <th className="py-2.5 px-3 uppercase text-right w-[85px]">Savings</th>
+                      <th className="py-2.5 px-3 uppercase text-right w-[95px] rounded-r-md">Final Total</th>
                     </tr>
                   </thead>
                   <tbody>

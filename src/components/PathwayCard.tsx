@@ -10,6 +10,7 @@ import {
   CAMPUS_LINKS,
   ADVISER_CONTACTS,
   cleanCourseName,
+  getDropdownLabel,
 } from "../types";
 
 interface PathwayCardProps {
@@ -447,7 +448,7 @@ export default function PathwayCard({
                         <option value="">-- Select Course Product --</option>
                         {Object.keys(COURSE_PRICES).map((priceKey) => (
                           <option key={priceKey} value={priceKey}>
-                            {cleanCourseName(priceKey)}
+                            {getDropdownLabel(priceKey)}
                           </option>
                         ))}
                       </select>
