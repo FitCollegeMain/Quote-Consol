@@ -645,13 +645,13 @@ export default function PathwayCard({
             </div>
             <div>
               <span className="text-[10px] font-black uppercase tracking-wider text-fit-red block mb-1">
-                Next Steps • Consult Careers Specialist
+                Next Steps • Book Consultation
               </span>
               <h4 className="font-bold text-sm text-slate-800 leading-tight">
-                Secure this pathway & finalize custom intake
+                Secure your study pathway & active intake
               </h4>
               <p className="text-xs text-slate-500 font-medium leading-relaxed mt-1">
-                Schedule a quick 1-on-1 course discussion with <strong className="text-slate-800">{advisorName || "your Careers Advisor"}</strong> to lock in timetables, verify tuition inclusions, or discuss payment choices.
+                Schedule a quick 1-on-1 with <strong className="text-slate-800">{advisorName || "your Careers Advisor"}</strong> to confirm schedules and lock in tuition options.
               </p>
             </div>
           </div>

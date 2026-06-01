@@ -1506,65 +1506,65 @@ export default function App() {
                 </div>
 
                 {/* Print Metadata fields */}
-                <div className="grid grid-cols-2 gap-6 mb-4 text-xs border-b border-fit-lightgray pb-3">
-                  <div className="space-y-1.5 text-left">
+                <div className="grid grid-cols-2 gap-6 mb-4 text-[11px] border-b border-fit-lightgray pb-3">
+                  <div className="space-y-1 text-left">
                     <div className="flex">
-                      <span className="w-28 font-bold text-gray-500 uppercase tracking-wider">Prepared For:</span>
-                      <span className="font-bold text-fit-black text-sm">{details.studentName || "Prospect Student"}</span>
+                      <span className="w-24 font-bold text-gray-500 uppercase tracking-wider shrink-0">Prepared For:</span>
+                      <span className="font-bold text-fit-black text-xs">{details.studentName || "Prospect Student"}</span>
                     </div>
                     {details.phoneNumber && (
                       <div className="flex">
-                        <span className="w-28 font-bold text-gray-500 uppercase tracking-wider">Phone:</span>
+                        <span className="w-24 font-bold text-gray-500 uppercase tracking-wider shrink-0">Phone:</span>
                         <span className="text-gray-800">{details.phoneNumber}</span>
                       </div>
                     )}
                     {details.emailAddress && (
                       <div className="flex">
-                        <span className="w-28 font-bold text-gray-500 uppercase tracking-wider">Email:</span>
-                        <span className="text-gray-800">{details.emailAddress}</span>
+                        <span className="w-24 font-bold text-gray-500 uppercase tracking-wider shrink-0">Email:</span>
+                        <span className="text-gray-800 break-all">{details.emailAddress}</span>
                       </div>
                     )}
-                  </div>
-
-                  <div className="space-y-1.5 text-left">
                     <div className="flex">
-                      <span className="w-28 font-bold text-gray-500 uppercase tracking-wider">Quote Date:</span>
+                      <span className="w-24 font-bold text-gray-500 uppercase tracking-wider shrink-0">Quote Date:</span>
                       <span className="text-gray-800 font-medium">{cleanDate(details.date)}</span>
                     </div>
                     <div className="flex">
-                      <span className="w-28 font-bold text-gray-500 uppercase tracking-wider">Valid Until:</span>
+                      <span className="w-24 font-bold text-gray-500 uppercase tracking-wider shrink-0">Valid Until:</span>
                       <span className="text-gray-800 font-medium">{cleanDate(details.validUntil)}</span>
                     </div>
-                     {details.adviserName && (
-                      <div className="space-y-1">
+                  </div>
+ 
+                  <div className="space-y-1 text-left">
+                    {details.adviserName && (
+                      <>
                         <div className="flex">
-                          <span className="w-28 font-bold text-gray-500 uppercase tracking-wider">Advisor:</span>
+                          <span className="w-24 font-bold text-gray-500 uppercase tracking-wider shrink-0">Advisor:</span>
                           <span className="text-fit-black font-semibold">{details.adviserName}</span>
                         </div>
-                        {details.adviserEmail && (
+                        {details.adviserPhone && (
                           <div className="flex">
-                            <span className="w-28 font-bold text-gray-500 uppercase tracking-wider">Adv. Email:</span>
-                            <span className="text-gray-800 font-medium">{details.adviserEmail}</span>
+                            <span className="w-24 font-bold text-gray-500 uppercase tracking-wider shrink-0">Adv. Phone:</span>
+                            <span className="text-gray-800 font-medium">{details.adviserPhone}</span>
                           </div>
                         )}
-                        <div className="flex text-fit-red font-semibold">
-                          <span className="w-28 font-bold text-gray-500 uppercase tracking-wider">Booking Link:</span>
+                        {details.adviserEmail && (
+                          <div className="flex">
+                            <span className="w-24 font-bold text-gray-500 uppercase tracking-wider shrink-0">Adv. Email:</span>
+                            <span className="text-gray-800 break-all">{details.adviserEmail}</span>
+                          </div>
+                        )}
+                        <div className="flex items-start text-fit-red font-semibold">
+                          <span className="w-24 font-bold text-gray-500 uppercase tracking-wider shrink-0">Booking Link:</span>
                           <a
                             href={(details.adviserName && ADVISER_CONTACTS[details.adviserName]?.meetingUrl) || "https://meetings-ap1.hubspot.com/dean-eggins"}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="hover:underline text-fit-red font-black break-all text-[11px]"
+                            className="hover:underline text-fit-red font-black break-all text-[10px] leading-tight"
                           >
-                            {(details.adviserName && ADVISER_CONTACTS[details.adviserName]?.meetingUrl) || "https://meetings-ap1.hubspot.com/dean-eggins"}
+                            {((details.adviserName && ADVISER_CONTACTS[details.adviserName]?.meetingUrl) || "https://meetings-ap1.hubspot.com/dean-eggins").replace("https://", "")}
                           </a>
                         </div>
-                        {details.adviserPhone && (
-                          <div className="flex">
-                            <span className="w-28 font-bold text-gray-500 uppercase tracking-wider">Adv. Phone:</span>
-                            <span className="text-gray-800 font-medium">{details.adviserPhone}</span>
-                          </div>
-                        )}
-                      </div>
+                      </>
                     )}
                   </div>
                 </div>
