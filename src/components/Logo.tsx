@@ -32,3 +32,4 @@ export default function Logo({ variant = "light", className = "h-24 w-auto" }: L
     />
   );
 }
+
