@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import logoLightPng from "../assets/fc_logo_light.png";
-import logoDarkPng from "../assets/fc_logo_dark.png";
+import logoLightPng from "../assets/fc_logo_light.png?url";
+import logoDarkPng from "../assets/fc_logo_dark.png?url";
 import logoLightSvg from "../assets/logo_light.svg";
 import logoDarkSvg from "../assets/logo_dark.svg";
 
@@ -32,4 +32,3 @@ export default function Logo({ variant = "light", className = "h-24 w-auto" }: L
     />
   );
 }
-
