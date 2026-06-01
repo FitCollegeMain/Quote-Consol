@@ -233,3 +233,25 @@ export const CAMPUS_LINKS: Record<string, CampusLinkInfo> = {
   }
 };
 
+export function cleanCourseName(name: string): string {
+  if (!name) return "";
+  let clean = name;
+  
+  // Replace modes and schedules with case-insensitive regex
+  clean = clean.replace(/\bpart\s*-\s*time\s*or\s*full\s*-\s*time\b/gi, "");
+  clean = clean.replace(/\bpart\s+time\s+or\s+full\s+time\b/gi, "");
+  clean = clean.replace(/\bpart\s*-\s*time\b/gi, "");
+  clean = clean.replace(/\bfull\s*-\s*time\b/gi, "");
+  clean = clean.replace(/\bpart\s+time\b/gi, "");
+  clean = clean.replace(/\bfull\s+time\b/gi, "");
+  clean = clean.replace(/\bonline\b/gi, "");
+  clean = clean.replace(/\bf2f\b/gi, "");
+  
+  // Collapse whitespace
+  clean = clean.replace(/\s+/g, " ");
+  clean = clean.trim();
+  
+  return clean;
+}
+
+

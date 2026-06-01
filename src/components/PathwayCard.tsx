@@ -9,6 +9,7 @@ import {
   AUTOMATIC_INCLUSIONS,
   CAMPUS_LINKS,
   ADVISER_CONTACTS,
+  cleanCourseName,
 } from "../types";
 
 interface PathwayCardProps {
@@ -406,7 +407,7 @@ export default function PathwayCard({
                     >
                       <td className="py-2.5 px-3 text-xs flex items-center gap-1.5 font-semibold text-gray-600">
                         <Gift size={13} className="text-fit-gray shrink-0" />
-                        <span>{course.name} <span className="text-[10px] text-fit-red tracking-wider">(INCLUDED)</span></span>
+                        <span>{cleanCourseName(course.name)} <span className="text-[10px] text-fit-red tracking-wider">(INCLUDED)</span></span>
                       </td>
                       <td className="py-2.5 px-3 text-xs text-center">
                         {course.mode}
@@ -446,7 +447,7 @@ export default function PathwayCard({
                         <option value="">-- Select Course Product --</option>
                         {Object.keys(COURSE_PRICES).map((priceKey) => (
                           <option key={priceKey} value={priceKey}>
-                            {priceKey}
+                            {cleanCourseName(priceKey)}
                           </option>
                         ))}
                       </select>

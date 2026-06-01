@@ -16,6 +16,7 @@ import {
   TIMETABLES,
   SavedQuote,
   CAMPUS_LINKS,
+  cleanCourseName,
 } from "./types";
 import {
   initGoogleAuth,
@@ -304,7 +305,7 @@ export default function App() {
       const courseSummaries = pathways.map((p, pIdx) => {
         const selectedNames = p.courses
           .filter(c => c.name && !c.isIncluded)
-          .map(c => c.name.split(" (")[0]);
+          .map(c => cleanCourseName(c.name).split(" (")[0]);
         return `Pathway ${pIdx + 1}: ${selectedNames.join(", ") || "No course selected"}`;
       }).join("; ");
       
@@ -1654,7 +1655,7 @@ export default function App() {
                           return (
                             <tr key={course.id} className="border-b border-gray-200 bg-gray-50 text-gray-500 font-medium">
                               <td className="py-2 px-3 font-semibold text-gray-600 flex items-center gap-1">
-                                <span>{course.name}</span>
+                                <span>{cleanCourseName(course.name)}</span>
                                 <span className="text-[9px] text-fit-red font-bold tracking-wider uppercase">(Included)</span>
                               </td>
                               <td className="py-2 px-3 text-center text-xs">{course.mode || "Online"}</td>
@@ -1667,7 +1668,7 @@ export default function App() {
 
                         return (
                           <tr key={course.id} className="border-b border-gray-100 font-medium">
-                            <td className="py-2.5 px-3 text-fit-darkgray">{course.name || "Custom Study Qualification"}</td>
+                            <td className="py-2.5 px-3 text-fit-darkgray">{cleanCourseName(course.name) || "Custom Study Qualification"}</td>
                             <td className="py-2.5 px-3 text-center">{course.mode || "-"}</td>
                             <td className="py-2.5 px-3 text-right">{formatVal(course.rrp)}</td>
                             <td className="py-2.5 px-3 text-right text-fit-red">-{formatVal(savings)}</td>
