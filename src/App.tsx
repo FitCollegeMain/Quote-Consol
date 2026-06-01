@@ -1487,7 +1487,7 @@ export default function App() {
           return (
             <div
               key={`print-page-${pathway.id}`}
-              className="bg-white min-h-[297mm] w-full p-[10mm] flex flex-col justify-between print-page-break-after last:break-after-auto font-sans"
+              className="bg-white min-h-[297mm] w-full p-[10mm] flex flex-col justify-between print-page-break-after font-sans"
               style={{ boxSizing: "border-box" }}
             >
               {/* Top Section wrap */}
@@ -1700,39 +1700,6 @@ export default function App() {
                   </tbody>
                 </table>
 
-                {/* Print specific bullet box */}
-                <div className="border-l-4 border-fit-darkgray bg-gray-50 p-3 rounded-r-md text-left mt-4 animate-fade-in">
-                  <h4 className="font-bebas text-lg text-fit-black tracking-wide mb-2 font-bold">
-                    WHY STUDY WITH FIT COLLEGE?
-                  </h4>
-
-                  {derivedMode === "online" && (
-                    <ul className="space-y-1 text-[10px] text-gray-700 font-medium pb-1">
-                      <li>• <strong>Responsive 3-Day Marking Turnaround:</strong> Accelerate your qualification with rapid unit corrections.</li>
-                      <li>• <strong>Extensive Advisor Assistance:</strong> Professional dedicated assessors ready 5 days a week.</li>
-                      <li>• <strong>Full Portable Content:</strong> Review learning material, guides, and manuals 100% offline.</li>
-                      <li>• <strong>Registered RTO Excellence:</strong> Highest marks of national compliance under provider 31903.</li>
-                    </ul>
-                  )}
-
-                  {derivedMode === "campus" && (
-                    <ul className="space-y-1 text-[10px] text-gray-700 font-medium pb-1">
-                      <li>• <strong>Accredited On-Gym Facilities:</strong> Study in fully integrated running physical gyms.</li>
-                      <li>• <strong>Highly Qualified Instructors:</strong> Train directly under professionals operating active fitness agencies.</li>
-                      <li>• <strong>Full Learning Portability:</strong> Read, edit, and access curriculum offline and on standard mobile devices.</li>
-                      <li>• <strong>Local Gym Introductions:</strong> Exclusive entry network and employer partner connections.</li>
-                    </ul>
-                  )}
-
-                  {derivedMode === "default" && (
-                    <ul className="space-y-1 text-[10px] text-gray-700 font-medium pb-1">
-                      <li>• <strong>Outstanding Training Venues:</strong> Real gym locations provide hands-on experience on day one.</li>
-                      <li>• <strong>Top-Tier Graduate Outcomes:</strong> Custom fitness mentorship designed to secure active industry roles.</li>
-                      <li>• <strong>Full Portal Mobility:</strong> 100% downloadable workbook files for flexible reading.</li>
-                      <li>• <strong>Support Daily:</strong> Academic mentors are available via call or email from 9:00 AM to 5:00 PM.</li>
-                    </ul>
-                  )}
-                </div>
               </div>
 
               {/* Bottom Section Wrap */}
@@ -1750,6 +1717,102 @@ export default function App() {
             </div>
           );
         })}
+
+        {/* 3.1. DEDICATED WHY STUDY WITH FIT COLLEGE PAGE AT THE END OF THE PRINT DOCUMENT */}
+        <div
+          className="bg-white min-h-[297mm] w-full p-[10mm] flex flex-col justify-between font-sans text-left"
+          style={{ boxSizing: "border-box" }}
+        >
+          <div>
+            {/* Header section */}
+            <div className="bg-fit-black text-white px-6 py-4 border-b-6 border-fit-red flex items-center justify-between mb-8">
+              <div className="text-left">
+                <h2 className="font-bebas text-4xl tracking-widest leading-none text-white font-black">
+                  FIT COLLEGE
+                </h2>
+                <p className="font-bebas text-xs tracking-widest text-fit-red mt-1 font-bold">
+                  STUDENT VALUE PROPOSITION
+                </p>
+              </div>
+              <Logo variant="dark" className="h-14 w-auto" />
+            </div>
+
+            {/* Section main title */}
+            <div className="mb-6">
+              <h3 className="font-bebas text-2xl tracking-wider text-fit-red text-left font-black">
+                WHY STUDY WITH FIT COLLEGE?
+              </h3>
+              <div className="h-0.5 bg-fit-red w-32 mt-1" />
+            </div>
+
+            {/* Listing each pathway's custom value proposition based on its modes & selected courses */}
+            <div className="space-y-6">
+              {pathways.map((pathway, index) => {
+                const derivedMode = pathway.courses[0]?.name.includes("ONLINE")
+                  ? "online"
+                  : pathway.courses[0]?.name.includes("F2F") ||
+                    pathway.courses[0]?.name.includes("PART TIME") ||
+                    pathway.courses[0]?.name.includes("FULL TIME")
+                  ? "campus"
+                  : "default";
+
+                // Generate clean display titles matching the quoted pathways
+                const selectedNames = pathway.courses
+                  .filter(c => c.name && !c.isIncluded)
+                  .map(c => cleanCourseName(c.name));
+                const pathwayTitle = selectedNames.join(" & ") || "Your Recommended Study Plan";
+
+                return (
+                  <div key={`print-why-study-${pathway.id}`} className="border-l-4 border-fit-red bg-gray-50/50 p-4 rounded-r-md">
+                    <h4 className="font-bebas text-lg text-fit-black tracking-wide mb-2 font-bold uppercase">
+                      Pathway {index + 1}: {pathwayTitle}
+                    </h4>
+
+                    {derivedMode === "online" && (
+                      <ul className="space-y-1.5 text-[11px] text-gray-700 font-medium">
+                        <li>• <strong>Responsive 3-Day Marking Turnaround:</strong> Accelerate your qualification with rapid unit corrections.</li>
+                        <li>• <strong>Extensive Advisor Assistance:</strong> Professional dedicated assessors ready 5 days a week.</li>
+                        <li>• <strong>Full Portable Content:</strong> Review learning material, guides, and manuals 100% offline.</li>
+                        <li>• <strong>Registered RTO Excellence:</strong> Highest marks of national compliance under provider 31903.</li>
+                      </ul>
+                    )}
+
+                    {derivedMode === "campus" && (
+                      <ul className="space-y-1.5 text-[11px] text-gray-700 font-medium">
+                        <li>• <strong>Accredited On-Gym Facilities:</strong> Study in fully integrated running physical gyms.</li>
+                        <li>• <strong>Highly Qualified Instructors:</strong> Train directly under professionals operating active fitness agencies.</li>
+                        <li>• <strong>Full Learning Portability:</strong> Read, edit, and access curriculum offline and on standard mobile devices.</li>
+                        <li>• <strong>Local Gym Introductions:</strong> Exclusive entry network and employer partner connections.</li>
+                      </ul>
+                    )}
+
+                    {derivedMode === "default" && (
+                      <ul className="space-y-1.5 text-[11px] text-gray-700 font-medium">
+                        <li>• <strong>Outstanding Training Venues:</strong> Real gym locations provide hands-on experience on day one.</li>
+                        <li>• <strong>Top-Tier Graduate Outcomes:</strong> Custom fitness mentorship designed to secure active industry roles.</li>
+                        <li>• <strong>Full Portal Mobility:</strong> 100% downloadable workbook files for flexible reading.</li>
+                        <li>• <strong>Support Daily:</strong> Academic mentors are available via call or email from 9:00 AM to 5:00 PM.</li>
+                      </ul>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Footer of the Dedicated page */}
+          <div className="text-center text-[10px] text-gray-400 border-t border-gray-100 pt-3 mt-8">
+            <p className="font-semibold text-gray-600 uppercase tracking-widest text-[11px] mb-1">
+              FIT COLLEGE HEAD OFFICE
+            </p>
+            <p className="text-gray-500">
+              Suite 8, Level 1, 102 Wises Road, Maroochydore, QLD, 4558 | Phone: 1300 887 017 | Email: info@fitcollege.edu.au
+            </p>
+            <p className="text-[8px] mt-1 font-mono">
+              RTO Provider Code: 31903 | CRICOS: 03926G | ABN: 51 143 802 966
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* 4. PIN modal dialogue box */}
