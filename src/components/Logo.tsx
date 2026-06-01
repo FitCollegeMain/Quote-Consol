@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import logoLightPng from "../assets/logo_light.png";
-import logoDarkPng from "../assets/logo_dark.png";
+import logoLightPng from "../assets/FC Logo black (2).png";
+import logoDarkPng from "../assets/FC Logo white (1).png";
 import logoLightSvg from "../assets/logo_light.svg";
 import logoDarkSvg from "../assets/logo_dark.svg";
 
