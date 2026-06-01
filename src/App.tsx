@@ -1487,7 +1487,7 @@ export default function App() {
           return (
             <div
               key={`print-page-${pathway.id}`}
-              className="bg-white min-h-[297mm] w-full p-[10mm] flex flex-col justify-between print-page-break-after font-sans"
+              className="bg-white w-full p-[10mm] flex flex-col print-page-break-after font-sans"
               style={{ boxSizing: "border-box" }}
             >
               {/* Top Section wrap */}
@@ -1701,26 +1701,13 @@ export default function App() {
                 </table>
 
               </div>
-
-              {/* Bottom Section Wrap */}
-              <div className="text-center text-[10px] text-gray-400 border-t border-gray-100 pt-3 mt-4">
-                <p className="font-semibold text-gray-600 uppercase tracking-widest text-[11px] mb-1">
-                  FIT COLLEGE HEAD OFFICE
-                </p>
-                <p className="text-gray-500">
-                  Suite 8, Level 1, 102 Wises Road, Maroochydore, QLD, 4558 | Phone: 1300 887 017 | Email: info@fitcollege.edu.au
-                </p>
-                <p className="text-[8px] mt-1 font-mono">
-                  RTO Provider Code: 31903 | CRICOS: 03926G | ABN: 51 143 802 966
-                </p>
-              </div>
             </div>
           );
         })}
 
         {/* 3.1. DEDICATED WHY STUDY WITH FIT COLLEGE PAGE AT THE END OF THE PRINT DOCUMENT */}
         <div
-          className="bg-white min-h-[297mm] w-full p-[10mm] flex flex-col justify-between font-sans text-left"
+          className="bg-white min-h-[282mm] w-full p-[10mm] flex flex-col justify-between font-sans text-left"
           style={{ boxSizing: "border-box" }}
         >
           <div>
