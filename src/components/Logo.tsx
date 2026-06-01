@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import logoLightPng from "../assets/fc_logo_light.png?url";
-import logoDarkPng from "../assets/fc_logo_dark.png?url";
+import { logoLightBase64, logoDarkBase64 } from "./LogoData";
 import logoLightSvg from "../assets/logo_light.svg";
 import logoDarkSvg from "../assets/logo_dark.svg";
 
@@ -13,7 +12,7 @@ export default function Logo({ variant = "light", className = "h-24 w-auto" }: L
   const [useSvgFallback, setUseSvgFallback] = useState(false);
 
   // Prioritize the PNG images, fallback to the original SVGs if PNG fails
-  const pngSrc = variant === "light" ? logoLightPng : logoDarkPng;
+  const pngSrc = variant === "light" ? logoLightBase64 : logoDarkBase64;
   const svgSrc = variant === "light" ? logoLightSvg : logoDarkSvg;
 
   const logoSrc = useSvgFallback ? svgSrc : pngSrc;
