@@ -1,9 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Bebas+Neue&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://cdn.jsdelivr.net/npm/@fontsource/aileron/400.css');
+@import url('https://cdn.jsdelivr.net/npm/@fontsource/aileron/600.css');
+@import url('https://cdn.jsdelivr.net/npm/@fontsource/aileron/700.css');
+@import url('https://cdn.jsdelivr.net/npm/@fontsource/aileron/800.css');
 @import "tailwindcss";
 
 @theme {
-  --font-bebas: "Bebas Neue", sans-serif;
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-bebas: "Aileron", "Bebas Neue", sans-serif;
+  --font-halyard: "Aileron", "Bebas Neue", sans-serif;
+  --font-sans: "Poppins", "Inter", ui-sans-serif, system-ui, sans-serif;
   
   --color-fit-black: #0F0F10;
   --color-fit-red: #D62828;
@@ -17,6 +22,10 @@
     page-break-after: always;
     break-after: page;
   }
+  .print-page-break-before {
+    page-break-before: always;
+    break-before: page;
+  }
 }
 
 @media print {
@@ -27,6 +36,12 @@
   .no-print {
     display: none !important;
   }
+  /* Reset page break on the last pathway block to prevent blank page generation */
+  .pathway-print-block:last-child {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+  
   select, input {
     border: none !important;
     background: transparent !important;

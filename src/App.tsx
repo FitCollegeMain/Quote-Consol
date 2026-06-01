@@ -1487,7 +1487,7 @@ export default function App() {
           return (
             <div
               key={`print-page-${pathway.id}`}
-              className="bg-white w-full p-[10mm] flex flex-col print-page-break-after font-sans"
+              className="bg-white w-full p-[10mm] flex flex-col pathway-print-block print-page-break-after font-sans"
               style={{ boxSizing: "border-box" }}
             >
               {/* Top Section wrap */}
@@ -1707,7 +1707,7 @@ export default function App() {
 
         {/* 3.1. DEDICATED WHY STUDY WITH FIT COLLEGE PAGE AT THE END OF THE PRINT DOCUMENT */}
         <div
-          className="bg-white min-h-[282mm] w-full p-[10mm] flex flex-col justify-between font-sans text-left"
+          className="bg-white min-h-[282mm] w-full p-[10mm] flex flex-col justify-between print-page-break-before font-sans text-left"
           style={{ boxSizing: "border-box" }}
         >
           <div>
