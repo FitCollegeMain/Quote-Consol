@@ -147,109 +147,88 @@ export interface SavedQuote {
 
 export interface CampusLinkInfo {
   mapsUrl: string;
-  webUrl: string;
   address?: string;
 }
 
 export const CAMPUS_LINKS: Record<string, CampusLinkInfo> = {
   "Brisbane – Fortitude Valley": {
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=FIT+College+Fortitude+Valley+PCYC+Brisbane",
-    webUrl: "https://www.fitcollege.edu.au/personal-training-course-brisbane.html",
     address: "PCYC, 60 Church Street, Fortitude Valley QLD 4006"
   },
   "Brisbane North – Carseldine": {
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=FIT+College+Carseldine+Goodlife+Brisbane",
-    webUrl: "https://www.fitcollege.edu.au/personal-training-course-brisbane.html",
     address: "Goodlife Health Clubs, Carseldine Central, 735 Beams Road, Carseldine QLD 4034"
   },
   "Cairns - City Centre": {
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=FIT+College+Cairns+Grafton+St",
-    webUrl: "https://www.fitcollege.edu.au/cairns.html",
     address: "Goodlife Health Clubs, 107 Grafton Street, Cairns QLD 4870"
   },
   "Gold Coast – Nerang": {
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=FIT+College+Gold+Coast+Nerang",
-    webUrl: "https://www.fitcollege.edu.au/gold-coast.html",
     address: "Goodlife Health Clubs, Nerang Mall, 50 Nealdon Dr, Nerang QLD 4211"
   },
   "Ipswich": {
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=FIT+College+Ipswich+QLD",
-    webUrl: "https://www.fitcollege.edu.au/ipswich.html",
     address: "Ipswich, QLD 4305"
   },
   "Sunshine Coast – Maroochydore": {
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=FIT+College+Maroochydore+Goodlife",
-    webUrl: "https://www.fitcollege.edu.au/sunshine-coast.html",
     address: "Goodlife Health Clubs, 32 Wises Rd, Maroochydore QLD 4558"
   },
   "Toowoomba": {
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=FIT+College+Toowoomba+QLD",
-    webUrl: "https://www.fitcollege.edu.au/toowoomba.html",
     address: "Toowoomba, QLD"
   },
   "Newcastle": {
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=FIT+College+Newcastle+The+Forum",
-    webUrl: "https://www.fitcollege.edu.au/newcastle.html",
     address: "The Forum, University of Newcastle, Callaghan NSW 2308"
   },
   "Sydney - Caringbah": {
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=FIT+College+Caringbah+Vision+PT",
-    webUrl: "https://www.fitcollege.edu.au/sydney.html",
     address: "Vision Personal Training, 7 Stokes Ave, Caringbah NSW 2229"
   },
   "Sydney - City Centre": {
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=FIT+College+Sydney+Gym",
-    webUrl: "https://www.fitcollege.edu.au/sydney.html",
     address: "Fitness First, 259 George St, Sydney NSW 2000"
   },
   "Sydney - Penrith": {
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=FIT+College+Penrith+NSW",
-    webUrl: "https://www.fitcollege.edu.au/sydney.html",
     address: "Penrith, NSW 2750"
   },
   "Sydney West - Parramatta": {
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=FIT+College+Parramatta+Genesis+Fitness",
-    webUrl: "https://www.fitcollege.edu.au/parramatta.html",
     address: "Genesis Fitness, 3 Horwood Pl, Parramatta NSW 2150"
   },
   "Geelong - North Geelong": {
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=FIT+College+Geelong+VIC",
-    webUrl: "https://www.fitcollege.edu.au/geelong.html",
     address: "North Geelong, VIC 3215"
   },
   "Melbourne - South Melbourne": {
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=FIT+College+South+Melbourne+VIC",
-    webUrl: "https://www.fitcollege.edu.au/melbourne.html",
     address: "South Melbourne, VIC 3205"
   },
   "Melbourne - Wantirna": {
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=FIT+College+Wantirna+VIC",
-    webUrl: "https://www.fitcollege.edu.au/melbourne.html",
     address: "Goodlife Health Clubs, 1 Wantirna Rd, Wantirna VIC 3152"
   },
   "Adelaide - Glenelg": {
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=FIT+College+Adelaide+Glenelg",
-    webUrl: "https://www.fitcollege.edu.au/adelaide.html",
     address: "Glenelg, SA 5045"
   },
   "Perth North - Joondalup": {
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=FIT+College+Joondalup+WA",
-    webUrl: "https://www.fitcollege.edu.au/perth.html",
     address: "Joondalup, WA 6027"
   },
   "Perth South - Bibra Lake": {
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=FIT+College+Bibra+Lake+WA",
-    webUrl: "https://www.fitcollege.edu.au/perth.html",
     address: "Bibra Lake, WA 6163"
   },
   "Canberra – Deakin": {
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=FIT+College+Canberra+Deakin",
-    webUrl: "https://www.fitcollege.edu.au/canberra.html",
     address: "Deakin, ACT 2600"
   },
   "Hobart - Aquatic Center": {
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=FIT+College+Hobart+TAS",
-    webUrl: "https://www.fitcollege.edu.au/hobart.html",
     address: "Doone Kennedy Hobart Aquatic Centre, Davies Ave, Hobart TAS 7000"
   }
 };

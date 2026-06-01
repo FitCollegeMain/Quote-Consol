@@ -285,17 +285,6 @@ export default function PathwayCard({
                         <span>View Google Map</span>
                         <ExternalLink size={10} className="shrink-0 opacity-70" />
                       </a>
-                      <span className="text-slate-300">|</span>
-                      <a
-                        href={CAMPUS_LINKS[pathway.campusLocation].webUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-slate-600 hover:text-slate-800 transition-colors"
-                      >
-                        <Globe size={12} className="shrink-0 text-slate-400" />
-                        <span>Visit Campus Page</span>
-                        <ExternalLink size={10} className="shrink-0 opacity-70" />
-                      </a>
                     </div>
                   </div>
                 )}
@@ -675,7 +664,7 @@ export default function PathwayCard({
               className="flex items-center justify-center gap-2 px-5 py-3 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-300 hover:scale-102 active:scale-98 shadow-sm bg-fit-red hover:bg-[#a80d13] text-white"
             >
               <CalendarDays size={14} />
-              <span>Book Meeting with {(advisorName || "Advisor").split(" ")[0]} ↗</span>
+              <span>Book Consultation ↗</span>
             </a>
             
             <button

@@ -1486,13 +1486,13 @@ export default function App() {
           return (
             <div
               key={`print-page-${pathway.id}`}
-              className="bg-white min-h-[297mm] w-full p-[15mm] flex flex-col justify-between print-page-break-after last:break-after-auto font-sans"
+              className="bg-white min-h-[297mm] w-full p-[10mm] flex flex-col justify-between print-page-break-after last:break-after-auto font-sans"
               style={{ boxSizing: "border-box" }}
             >
               {/* Top Section wrap */}
               <div>
                 {/* Print page Header */}
-                <div className="bg-fit-black text-white px-6 py-5 border-b-6 border-fit-red flex items-center justify-between mb-8">
+                <div className="bg-fit-black text-white px-6 py-4 border-b-6 border-fit-red flex items-center justify-between mb-5">
                   <div className="text-left">
                     <h2 className="font-bebas text-4xl tracking-widest leading-none text-white font-black">
                       FIT COLLEGE
@@ -1506,7 +1506,7 @@ export default function App() {
                 </div>
 
                 {/* Print Metadata fields */}
-                <div className="grid grid-cols-2 gap-8 mb-6 text-xs border-b border-fit-lightgray pb-4">
+                <div className="grid grid-cols-2 gap-6 mb-4 text-xs border-b border-fit-lightgray pb-3">
                   <div className="space-y-1.5 text-left">
                     <div className="flex">
                       <span className="w-28 font-bold text-gray-500 uppercase tracking-wider">Prepared For:</span>
@@ -1547,6 +1547,17 @@ export default function App() {
                             <span className="text-gray-800 font-medium">{details.adviserEmail}</span>
                           </div>
                         )}
+                        <div className="flex text-fit-red font-semibold">
+                          <span className="w-28 font-bold text-gray-500 uppercase tracking-wider">Booking Link:</span>
+                          <a
+                            href={(details.adviserName && ADVISER_CONTACTS[details.adviserName]?.meetingUrl) || "https://meetings-ap1.hubspot.com/dean-eggins"}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:underline text-fit-red font-black break-all text-[11px]"
+                          >
+                            {(details.adviserName && ADVISER_CONTACTS[details.adviserName]?.meetingUrl) || "https://meetings-ap1.hubspot.com/dean-eggins"}
+                          </a>
+                        </div>
                         {details.adviserPhone && (
                           <div className="flex">
                             <span className="w-28 font-bold text-gray-500 uppercase tracking-wider">Adv. Phone:</span>
@@ -1559,7 +1570,7 @@ export default function App() {
                 </div>
 
                 {/* Pathway Header Title */}
-                <div className="mb-4">
+                <div className="mb-3">
                   <h3 className="font-bebas text-2xl tracking-wider text-fit-red text-left font-black">
                     {derivedTitle}
                   </h3>
@@ -1567,7 +1578,7 @@ export default function App() {
                 </div>
 
                 {/* Mode description section */}
-                <div className="mb-6 text-left">
+                <div className="mb-4 text-left">
                   {derivedMode === "campus" && (
                     <div className="border border-fit-lightgray rounded-md p-3.5 bg-gray-50 text-[11px] grid grid-cols-2 gap-4">
                       {pathway.campusLocation && (
@@ -1583,15 +1594,6 @@ export default function App() {
                                 className="text-fit-red hover:underline"
                               >
                                 Google Maps Link
-                              </a>
-                              <span className="text-gray-300">•</span>
-                              <a
-                                href={CAMPUS_LINKS[pathway.campusLocation].webUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-slate-500 hover:underline"
-                              >
-                                Location Website Page
                               </a>
                             </div>
                           )}
@@ -1698,13 +1700,13 @@ export default function App() {
                 </table>
 
                 {/* Print specific bullet box */}
-                <div className="border-l-4 border-fit-darkgray bg-gray-50 p-4 rounded-r-md text-left mt-8">
+                <div className="border-l-4 border-fit-darkgray bg-gray-50 p-3 rounded-r-md text-left mt-4 animate-fade-in">
                   <h4 className="font-bebas text-lg text-fit-black tracking-wide mb-2 font-bold">
                     WHY STUDY WITH FIT COLLEGE?
                   </h4>
 
                   {derivedMode === "online" && (
-                    <ul className="space-y-1 text-[10px] text-gray-700 font-medium">
+                    <ul className="space-y-1 text-[10px] text-gray-700 font-medium pb-1">
                       <li>• <strong>Responsive 3-Day Marking Turnaround:</strong> Accelerate your qualification with rapid unit corrections.</li>
                       <li>• <strong>Extensive Advisor Assistance:</strong> Professional dedicated assessors ready 5 days a week.</li>
                       <li>• <strong>Full Portable Content:</strong> Review learning material, guides, and manuals 100% offline.</li>
@@ -1713,7 +1715,7 @@ export default function App() {
                   )}
 
                   {derivedMode === "campus" && (
-                    <ul className="space-y-1 text-[10px] text-gray-700 font-medium">
+                    <ul className="space-y-1 text-[10px] text-gray-700 font-medium pb-1">
                       <li>• <strong>Accredited On-Gym Facilities:</strong> Study in fully integrated running physical gyms.</li>
                       <li>• <strong>Highly Qualified Instructors:</strong> Train directly under professionals operating active fitness agencies.</li>
                       <li>• <strong>Full Learning Portability:</strong> Read, edit, and access curriculum offline and on standard mobile devices.</li>
@@ -1722,7 +1724,7 @@ export default function App() {
                   )}
 
                   {derivedMode === "default" && (
-                    <ul className="space-y-1 text-[10px] text-gray-700 font-medium">
+                    <ul className="space-y-1 text-[10px] text-gray-700 font-medium pb-1">
                       <li>• <strong>Outstanding Training Venues:</strong> Real gym locations provide hands-on experience on day one.</li>
                       <li>• <strong>Top-Tier Graduate Outcomes:</strong> Custom fitness mentorship designed to secure active industry roles.</li>
                       <li>• <strong>Full Portal Mobility:</strong> 100% downloadable workbook files for flexible reading.</li>
@@ -1730,29 +1732,10 @@ export default function App() {
                     </ul>
                   )}
                 </div>
-
-                {/* Print official acceptance status block */}
-                <div className="mt-6 pt-5 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-left">
-                  <div className="font-sans flex-1">
-                    <span className="text-[9px] font-bold text-gray-405 text-gray-400 uppercase tracking-widest block mb-0.5">Pathway Consultation & Booking</span>
-                    <p className="text-[10px] text-gray-500 leading-normal max-w-md">
-                      Scan or open your advisor's custom booking link to request class start points, lock in intakes, and authorize study plans:
-                      <br />
-                      <span className="font-semibold text-fit-red text-[9px] break-all">
-                        {(details.adviserName && ADVISER_CONTACTS[details.adviserName]?.meetingUrl) || "https://meetings-ap1.hubspot.com/dean-eggins"}
-                      </span>
-                    </p>
-                  </div>
-                  <div className="shrink-0 mt-2 sm:mt-0">
-                    <div className="px-4 py-2 border border-slate-200 border-dashed rounded text-slate-400 text-xs font-semibold tracking-wider font-sans">
-                      STUDENT SIGNATURE: _______________________
-                    </div>
-                  </div>
-                </div>
               </div>
 
               {/* Bottom Section Wrap */}
-              <div className="text-center text-[10px] text-gray-400 border-t border-gray-100 pt-5 mt-10">
+              <div className="text-center text-[10px] text-gray-400 border-t border-gray-100 pt-3 mt-4">
                 <p className="font-semibold text-gray-600 uppercase tracking-widest text-[11px] mb-1">
                   FIT COLLEGE HEAD OFFICE
                 </p>
