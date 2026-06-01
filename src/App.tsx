@@ -1495,15 +1495,15 @@ export default function App() {
                 {/* Print page Header */}
                 <div className="bg-white border-b-2 border-fit-red flex items-center justify-between pb-4 mb-5">
                   <div className="text-left">
-                    <h2 className="font-bebas text-4xl tracking-widest leading-none text-fit-black font-black">
-                      FIT COLLEGE
-                    </h2>
-                    <p className="font-bebas text-xs tracking-widest text-[#D62828] mt-1 font-bold">
+                    <h2 className="font-bebas text-[30px] tracking-widest leading-none text-[#D62828] font-black uppercase">
                       OFFICIAL QUOTE SHEET
+                    </h2>
+                    <p className="font-bebas text-[11px] tracking-widest text-gray-500 mt-1 font-semibold uppercase">
+                      {derivedTitle}
                     </p>
                   </div>
                   
-                  <Logo variant="light" className="h-14 w-auto" />
+                  <Logo variant="light" className="h-16 w-auto" />
                 </div>
 
                 {/* Print Metadata fields */}
@@ -1714,14 +1714,14 @@ export default function App() {
             {/* Header section */}
             <div className="bg-white border-b-2 border-fit-red flex items-center justify-between pb-4 mb-8">
               <div className="text-left">
-                <h2 className="font-bebas text-4xl tracking-widest leading-none text-fit-black font-black">
-                  FIT COLLEGE
-                </h2>
-                <p className="font-bebas text-xs tracking-widest text-[#D62828] mt-1 font-bold">
+                <h2 className="font-bebas text-[30px] tracking-widest leading-none text-[#D62828] font-black uppercase">
                   STUDENT VALUE PROPOSITION
+                </h2>
+                <p className="font-bebas text-[11px] tracking-widest text-gray-500 mt-1 font-semibold uppercase">
+                  Why Study with FIT College
                 </p>
               </div>
-              <Logo variant="light" className="h-14 w-auto" />
+              <Logo variant="light" className="h-16 w-auto" />
             </div>
 
             {/* Section main title */}
