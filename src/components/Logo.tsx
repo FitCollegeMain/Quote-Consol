@@ -1,6 +1,8 @@
-import React from "react";
-import logoLight from "../assets/logo_light.svg";
-import logoDark from "../assets/logo_dark.svg";
+import React, { useState } from "react";
+import logoLightPng from "../assets/logo_light.png";
+import logoDarkPng from "../assets/logo_dark.png";
+import logoLightSvg from "../assets/logo_light.svg";
+import logoDarkSvg from "../assets/logo_dark.svg";
 
 interface LogoProps {
   variant?: "light" | "dark";
@@ -8,13 +10,24 @@ interface LogoProps {
 }
 
 export default function Logo({ variant = "light", className = "h-24 w-auto" }: LogoProps) {
-  const logoSrc = variant === "light" ? logoLight : logoDark;
+  const [useSvgFallback, setUseSvgFallback] = useState(false);
+
+  // Prioritize the PNG images, fallback to the original SVGs if PNG fails
+  const pngSrc = variant === "light" ? logoLightPng : logoDarkPng;
+  const svgSrc = variant === "light" ? logoLightSvg : logoDarkSvg;
+
+  const logoSrc = useSvgFallback ? svgSrc : pngSrc;
 
   return (
     <img
       src={logoSrc}
       className={className}
       alt="FIT College Logo"
+      onError={() => {
+        if (!useSvgFallback) {
+          setUseSvgFallback(true);
+        }
+      }}
       referrerPolicy="no-referrer"
     />
   );
