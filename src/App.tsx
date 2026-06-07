@@ -41,6 +41,17 @@ const getDateString = (daysOffset = 0) => {
   return `${yyyy}-${mm}-${dd}`;
 };
 
+// Helper to get formatted date string for the end of the current month
+const getEndOfCurrentMonthString = () => {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const lastDay = new Date(year, month + 1, 0).getDate();
+  const mm = String(month + 1).padStart(2, "0");
+  const dd = String(lastDay).padStart(2, "0");
+  return `${year}-${mm}-${dd}`;
+};
+
 const getSeedQuotes = (): SavedQuote[] => {
   const getDynamicDate = (dayOffsetFromCurrentEnd: number): string => {
     const now = new Date();
@@ -187,7 +198,7 @@ export default function App() {
       phoneNumber: "",
       emailAddress: "",
       date: getDateString(),
-      validUntil: getDateString(30), // Defaults to 30 days validation
+      validUntil: getEndOfCurrentMonthString(), // Defaults to end of current month
       adviserName: adviser,
       adviserEmail: contact?.email || "",
       adviserPhone: contact?.phone || "",
@@ -904,9 +915,26 @@ export default function App() {
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[10px] font-bold text-[#8B909A] uppercase mb-1">
-                      Issue Date
-                    </label>
+                    <div className="flex justify-between items-center mb-1">
+                      <label className="block text-[10px] font-bold text-[#8B909A] uppercase">
+                        Issue Date
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const today = getDateString();
+                          setDetails(prev => ({
+                            ...prev,
+                            date: today,
+                            validUntil: getEndOfCurrentMonthString()
+                          }));
+                        }}
+                        className="text-[9px] font-extrabold text-fit-red hover:text-[#9e0c11] uppercase tracking-wider cursor-pointer"
+                        title="Auto fill create date as today's date"
+                      >
+                        Set to Today
+                      </button>
+                    </div>
                     <input
                       type="date"
                       className="w-full bg-[#F8FAFC] border border-[#D5D8DE] rounded px-3 py-2 text-xs text-fit-black focus:outline-none focus:ring-1 focus:ring-fit-red text-center"
@@ -1757,28 +1785,28 @@ export default function App() {
 
                     {derivedMode === "online" && (
                       <ul className="space-y-1.5 text-[11px] text-gray-700 font-medium">
-                        <li>• <strong>Responsive 3-Day Marking Turnaround:</strong> Accelerate your qualification with rapid unit corrections.</li>
-                        <li>• <strong>Extensive Advisor Assistance:</strong> Professional dedicated assessors ready 5 days a week.</li>
-                        <li>• <strong>Full Portable Content:</strong> Review learning material, guides, and manuals 100% offline.</li>
-                        <li>• <strong>Registered RTO Excellence:</strong> Highest marks of national compliance under provider 31903.</li>
+                        <li>✦ <strong>Proven Success:</strong> Proven Success - 20k+ Online Graduates</li>
+                        <li>✦ <strong>Unmatched Campus & Virtual Support:</strong> Full education support available from 9am to 5pm daily.</li>
+                        <li>✦ <strong>Flexible Upgrade Options:</strong> Upgrade at any time to full-time or part-time, on-campus study to work around your busy life.</li>
+                        <li>✦ <strong>Registered Training Organisation:</strong> High standards of compliance, fully audited under RTO: 31903.</li>
                       </ul>
                     )}
 
                     {derivedMode === "campus" && (
-                      <ul className="space-y-1.5 text-[11px] text-gray-700 font-medium">
-                        <li>• <strong>Accredited On-Gym Facilities:</strong> Study in fully integrated running physical gyms.</li>
-                        <li>• <strong>Highly Qualified Instructors:</strong> Train directly under professionals operating active fitness agencies.</li>
-                        <li>• <strong>Full Learning Portability:</strong> Read, edit, and access curriculum offline and on standard mobile devices.</li>
-                        <li>• <strong>Local Gym Introductions:</strong> Exclusive entry network and employer partner connections.</li>
+                      <ul className="space-y-1.5 text-[11px] text-gray-700 font-medium animate-fade-in">
+                        <li>✦ <strong>World Class Facilities:</strong> High-specification real gym classrooms for actual hands-on fitness education.</li>
+                        <li>✦ <strong>Qualified Industry Evaluators:</strong> Learn directly from qualified fitness professionals with running businesses.</li>
+                        <li>✦ <strong>Blended Study Access:</strong> Complete digital resources coupled face-to-face learning</li>
+                        <li>✦ <strong>Liason Network:</strong> Immediate access to interviews and opportunities with commercial gyms upon graduation.</li>
                       </ul>
                     )}
 
                     {derivedMode === "default" && (
-                      <ul className="space-y-1.5 text-[11px] text-gray-700 font-medium">
-                        <li>• <strong>Outstanding Training Venues:</strong> Real gym locations provide hands-on experience on day one.</li>
-                        <li>• <strong>Top-Tier Graduate Outcomes:</strong> Custom fitness mentorship designed to secure active industry roles.</li>
-                        <li>• <strong>Full Portal Mobility:</strong> 100% downloadable workbook files for flexible reading.</li>
-                        <li>• <strong>Support Daily:</strong> Academic mentors are available via call or email from 9:00 AM to 5:00 PM.</li>
+                      <ul className="space-y-1.5 text-[11px] text-gray-700 font-medium animate-fade-in">
+                        <li>✦ <strong>Proven Success:</strong> Proven Success - 20k+ Online Graduates</li>
+                        <li>✦ <strong>Unmatched Campus & Virtual Support:</strong> Full education support available from 9am to 5pm daily.</li>
+                        <li>✦ <strong>Flexible Upgrade Options:</strong> Upgrade at any time to full-time or part-time, on-campus study to work around your busy life.</li>
+                        <li>✦ <strong>Registered Training Organisation:</strong> High standards of compliance, fully audited under RTO: 31903.</li>
                       </ul>
                     )}
                   </div>

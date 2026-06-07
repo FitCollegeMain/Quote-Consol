@@ -578,19 +578,19 @@ export default function PathwayCard({
           <ul className="space-y-1.5 text-xs text-gray-700">
             <li className="flex items-start gap-2">
               <span className="text-fit-red">✦</span>
-              <span><strong>Responsive Marking:</strong> Proud 3-day marking turnaround for all online course units.</span>
+              <span><strong>Proven Success:</strong> Proven Success - 20k+ Online Graduates</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-fit-red">✦</span>
-              <span><strong>Comprehensive Support:</strong> Dedicated student advisors and assessors available 5 days a week.</span>
+              <span><strong>Unmatched Campus & Virtual Support:</strong> Full education support available from 9am to 5pm daily.</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-fit-red">✦</span>
-              <span><strong>Flexible Learning:</strong> Portal available 24/7 with 100% downloadable content with virtual lectures.</span>
+              <span><strong>Flexible Upgrade Options:</strong> Upgrade at any time to full-time or part-time, on-campus study to work around your busy life.</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-fit-red">✦</span>
-              <span><strong>Genuine Graduate Outcomes:</strong> Custom-designed practical mentorship to make you career-ready!</span>
+              <span><strong>Registered Training Organisation:</strong> High standards of compliance, fully audited under RTO: 31903.</span>
             </li>
           </ul>
         )}
@@ -607,11 +607,11 @@ export default function PathwayCard({
             </li>
             <li className="flex items-start gap-2">
               <span className="text-fit-red">✦</span>
-              <span><strong>Blended Study Access:</strong> Complete digital resources coupled with mandatory direct face-to-face modules.</span>
+              <span><strong>Blended Study Access:</strong> Complete digital resources coupled face-to-face learning</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-fit-red">✦</span>
-              <span><strong>Gym Partners Network:</strong> Immediate access to interviews with commercial gyms upon graduation.</span>
+              <span><strong>Liason Network:</strong> Immediate access to interviews and opportunities with commercial gyms upon graduation.</span>
             </li>
           </ul>
         )}
@@ -620,7 +620,7 @@ export default function PathwayCard({
           <ul className="space-y-1.5 text-xs text-gray-700">
             <li className="flex items-start gap-2">
               <span className="text-fit-red">✦</span>
-              <span><strong>World Class Facilities:</strong> Practical training occurs inside functional gyms, not isolated classrooms.</span>
+              <span><strong>Proven Success:</strong> Proven Success - 20k+ Online Graduates</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-fit-red">✦</span>
@@ -628,7 +628,7 @@ export default function PathwayCard({
             </li>
             <li className="flex items-start gap-2">
               <span className="text-fit-red">✦</span>
-              <span><strong>Flexible Options:</strong> Blend on-campus practical sessions with flexible online theories.</span>
+              <span><strong>Flexible Upgrade Options:</strong> Upgrade at any time to full-time or part-time, on-campus study to work around your busy life.</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-fit-red">✦</span>
