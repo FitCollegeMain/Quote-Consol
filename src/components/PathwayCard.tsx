@@ -35,8 +35,6 @@ export default function PathwayCard({
   onAcceptToggle,
   advisorName,
 }: PathwayCardProps) {
-  // Determine pathway mode from the first course
-  const [showOtherAdvisers, setShowOtherAdvisers] = React.useState(false);
   const firstCourseName = pathway.courses[0]?.name || "";
   let derivedMode: "online" | "campus" | "default" = "default";
   if (firstCourseName.includes("ONLINE")) {
@@ -844,86 +842,6 @@ export default function PathwayCard({
         )}
       </div>
 
-      {/* Careers Advisor Meeting Booking Prompt Section */}
-      <div className="mt-8 pt-6 border-t border-[#D5D8DE]/60 flex flex-col gap-4">
-        <div className="flex flex-col md:flex-row items-stretch justify-between gap-4 p-4 md:p-5 rounded-xl transition-all duration-300 bg-slate-50 border border-[#D5D8DE]/40">
-          <div className="text-left flex-1 flex items-start gap-3.5">
-            <div className="p-2.5 bg-fit-red/10 text-fit-red rounded-lg mt-0.5 shrink-0">
-              <CalendarDays size={20} className="animate-pulse" />
-            </div>
-            <div>
-              <span className="text-[10px] font-black uppercase tracking-wider text-fit-red block mb-1">
-                Next Steps • Book Consultation
-              </span>
-              <h4 className="font-bold text-sm text-slate-800 leading-tight">
-                Secure your study pathway & active intake
-              </h4>
-              <p className="text-xs text-slate-500 font-medium leading-relaxed mt-1">
-                Schedule a quick 1-on-1 with <strong className="text-slate-800">{advisorName || "your Careers Advisor"}</strong> to confirm schedules and lock in tuition options.
-              </p>
-            </div>
-          </div>
-          
-          <div className="flex flex-col justify-center items-stretch sm:items-end gap-2 shrink-0 md:min-w-[200px] no-print">
-            <a
-              href={(advisorName && ADVISER_CONTACTS[advisorName]?.meetingUrl) || "https://meetings-ap1.hubspot.com/dean-eggins"}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 px-5 py-3 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-300 hover:scale-102 active:scale-98 shadow-sm bg-fit-red hover:bg-[#a80d13] text-white"
-            >
-              <CalendarDays size={14} />
-              <span>Book Consultation ↗</span>
-            </a>
-            
-            <button
-              type="button"
-              onClick={() => setShowOtherAdvisers(!showOtherAdvisers)}
-              className="text-[10px] font-bold text-slate-500 hover:text-slate-800 uppercase tracking-wide underline transition-colors cursor-pointer text-center bg-transparent border-none outline-none"
-            >
-              {showOtherAdvisers ? "Hide Other Schedules ↑" : "Choose Another Advisor ↓"}
-            </button>
-          </div>
-
-          {/* Print-Only Booking Instruction */}
-          <div className="hidden print:block text-right self-center text-[10px] text-slate-500 font-mono max-w-[250px]">
-            <strong>Book Consultation Link:</strong>
-            <p className="text-fit-black font-semibold break-all text-[9px] mt-0.5">
-              {(advisorName && ADVISER_CONTACTS[advisorName]?.meetingUrl) || "https://meetings-ap1.hubspot.com/dean-eggins"}
-            </p>
-          </div>
-        </div>
-
-        {/* Other Advisors Quick Link Table */}
-        {showOtherAdvisers && (
-          <div className="p-4 rounded-xl border border-slate-200/80 bg-white shadow-xs no-print text-left animate-fade-in">
-            <h5 className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1">
-              <User size={12} />
-              <span>Admissions Specialist Availability (HubSpot Bookings)</span>
-            </h5>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-              {Object.keys(ADVISER_CONTACTS)
-                .filter(name => name !== advisorName)
-                .map((name) => {
-                  const info = ADVISER_CONTACTS[name];
-                  return (
-                    <a
-                      key={name}
-                      href={info.meetingUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-between p-2 rounded-lg border border-slate-100 hover:border-slate-300 bg-slate-50/60 hover:bg-slate-50 transition-all text-xs font-semibold text-slate-700"
-                    >
-                      <span className="truncate">{name}</span>
-                      <span className="text-[10px] text-fit-red shrink-0 flex items-center gap-0.5 hover:underline font-bold">
-                        Schedule ↗
-                      </span>
-                    </a>
-                  );
-                })}
-            </div>
-          </div>
-        )}
-      </div>
     </div>
   );
 }
