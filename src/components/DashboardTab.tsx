@@ -291,7 +291,7 @@ export default function DashboardTab({ quotes, onToggleQuoteAccept, currentUser 
               <span>Conversion Dashboard Functions Locked</span>
             </h4>
             <p className="text-xs text-amber-700/90 leading-relaxed font-semibold mt-1">
-              Interactive target setting, team goal planning, and real-time conversion actions are currently locked in <strong>read-only mode</strong>. Persistent admissions targets are undergoing IT authorization reviews. All values are locked.
+              Interactive target setting, team goal planning, and real-time conversion actions are currently locked in <strong>read-only mode</strong>. Persistent admissions targets are undergoing IT authorisation reviews. All values are locked.
             </p>
           </div>
         </div>

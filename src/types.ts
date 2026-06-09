@@ -21,6 +21,11 @@ export interface Pathway {
   timetable: string;
   timetableDesc: string;
   courses: SelectedCourse[];
+  paymentPlanType?: "full" | "weekly" | "fortnightly" | "monthly";
+  depositAmount?: number;
+  paymentPlanWeeks?: number;
+  paymentPlanConfigMode?: "weeks" | "amount";
+  paymentPlanAmount?: number;
 }
 
 export interface QuoteDetails {
@@ -77,7 +82,19 @@ export const COURSE_PRICES: Record<string, number> = {
   "F2F Provide First Aid (HLTAID011)": 150.00,
   "ONLINE Certificate IV in Training & Assessment (TAE40122)": 3000.00,
   "F2F Certificate IV in Training & Assessment (TAE40122)": 4500.00,
-  "ONLINE Training Package Upgrade - Cert IV in T&A (TAE40122)": 2000.00
+  "ONLINE Training Package Upgrade - Cert IV in T&A (TAE40122)": 2000.00,
+  // Funded Courses - Non-Concession
+  "Non-Concession - ONLINE FIT Elite (Funded)": 8400.00,
+  "Non-Concession - On Campus FIT Elite (Funded)": 11400.00,
+  "Non-Concession - ONLINE Complete PT (Funded)": 6000.00,
+  "Non-Concession - F2F Complete PT (Funded)": 9000.00,
+  "Non-Concession - ONLINE Certificate III in Fitness (Funded)": 3000.00,
+  // Funded Courses - Concession
+  "Concession - ONLINE FIT Elite (Funded)": 8400.00,
+  "Concession - On Campus FIT Elite (Funded)": 11400.00,
+  "Concession - ONLINE Complete PT (Funded)": 6000.00,
+  "Concession - F2F Complete PT (Funded)": 9000.00,
+  "Concession - ONLINE Certificate III in Fitness (Funded)": 3000.00
 };
 
 export const AUTOMATIC_INCLUSIONS = [
@@ -125,7 +142,7 @@ export const CAMPUSES_BY_STATE: Record<string, string[]> = {
   ],
   "ACT & Tasmania": [
     "Canberra – Deakin",
-    "Hobart - Aquatic Center"
+    "Hobart - Aquatic Centre"
   ]
 };
 
@@ -227,7 +244,7 @@ export const CAMPUS_LINKS: Record<string, CampusLinkInfo> = {
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=FIT+College+Canberra+Deakin",
     address: "Deakin, ACT 2600"
   },
-  "Hobart - Aquatic Center": {
+  "Hobart - Aquatic Centre": {
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=FIT+College+Hobart+TAS",
     address: "Doone Kennedy Hobart Aquatic Centre, Davies Ave, Hobart TAS 7000"
   }
@@ -246,6 +263,7 @@ export function cleanCourseName(name: string): string {
   clean = clean.replace(/\bfull\s+time\b/gi, "");
   clean = clean.replace(/\bonline\b/gi, "");
   clean = clean.replace(/\bf2f\b/gi, "");
+  clean = clean.replace(/\bon\s+campus\b/gi, "");
   
   // Collapse whitespace
   clean = clean.replace(/\s+/g, " ");
@@ -256,13 +274,21 @@ export function cleanCourseName(name: string): string {
 
 export function getDropdownLabel(priceKey: string): string {
   if (!priceKey) return "";
-  const cleanName = cleanCourseName(priceKey);
-  const upperKey = priceKey.toUpperCase();
+  
+  let keyToClean = priceKey;
+  if (priceKey.startsWith("Non-Concession - ")) {
+    keyToClean = priceKey.replace("Non-Concession - ", "");
+  } else if (priceKey.startsWith("Concession - ")) {
+    keyToClean = priceKey.replace("Concession - ", "");
+  }
+  
+  const cleanName = cleanCourseName(keyToClean);
+  const upperKey = keyToClean.toUpperCase();
   
   let modeSuffix = "";
   if (upperKey.includes("ONLINE") || upperKey.includes("ONL")) {
     modeSuffix = " [Online]";
-  } else if (upperKey.includes("F2F") || upperKey.includes("PART TIME") || upperKey.includes("FULL TIME")) {
+  } else if (upperKey.includes("F2F") || upperKey.includes("PART TIME") || upperKey.includes("FULL TIME") || upperKey.includes("ON CAMPUS") || upperKey.includes("CAMPUS")) {
     modeSuffix = " [On Campus]";
   }
   

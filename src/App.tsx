@@ -739,7 +739,7 @@ export default function App() {
               <span>7-Day Security Session Protocol Enforced</span>
             </div>
             <p className="leading-relaxed">
-              Standard admissions representatives and careers advisors are authorized strictly to generate active fee estimators. Contact lead operations for database inquiries.
+              Standard admissions representatives and careers advisors are authorised strictly to generate active fee estimators. Contact lead operations for database inquiries.
             </p>
           </div>
         </div>
@@ -1131,7 +1131,7 @@ export default function App() {
               {/* Dynamic Mockup Sheet Footer */}
               <div className="border-t border-[#D5D8DE] pt-8 mt-12 text-center text-xs text-slate-500">
                 <p className="font-bold text-fit-black tracking-wide uppercase mb-3">
-                  To progress this enrollment quote, book a 1-on-1 session with your careers advisor above.
+                  To progress this enrolment quote, book a 1-on-1 session with your careers advisor above.
                 </p>
                 <div className="bg-[#F8FAFC] border border-[#D5D8DE] p-4 rounded-lg inline-block w-full max-w-[550px]">
                   <strong className="text-fit-black block mb-1 tracking-widest uppercase text-[11px]">
@@ -1167,7 +1167,7 @@ export default function App() {
                 <span className="px-1.5 py-0.5 bg-amber-500 text-black text-[9px] font-black rounded uppercase">BETA ACTIVE</span>
               </h4>
               <p className="text-xs text-amber-700/90 leading-relaxed font-semibold mt-1">
-                Persistent log actions, status updates, Google Sheets real-time cloud synchronisation, and record modifications are <strong>currently locked</strong> in this sandboxed Beta environment while IT completes domain authorization. All actions are disabled.
+                Persistent log actions, status updates, Google Sheets real-time cloud synchronisation, and record modifications are <strong>currently locked</strong> in this sandboxed Beta environment while IT completes domain authorisation. All actions are disabled.
               </p>
             </div>
           </div>

@@ -115,7 +115,12 @@ export default function PathwayCard({
 
       if (selectedName.includes("ONLINE")) {
         mode = "Online";
-      } else if (selectedName.includes("F2F") || selectedName.includes("PART TIME") || selectedName.includes("FULL TIME")) {
+      } else if (
+        selectedName.includes("F2F") ||
+        selectedName.includes("PART TIME") ||
+        selectedName.includes("FULL TIME") ||
+        selectedName.toUpperCase().includes("CAMPUS")
+      ) {
         mode = "On Campus";
       } else if (selectedName) {
         mode = "Blended";
@@ -131,7 +136,9 @@ export default function PathwayCard({
       const normName = selectedName.toLowerCase();
       const isComposite = normName.includes("elite ultra") || 
                           normName.includes("elite pt program") || 
-                          normName.includes("complete pt program");
+                          normName.includes("complete pt program") ||
+                          normName.includes("elite (funded)") ||
+                          normName.includes("complete pt (funded)");
 
       if (isComposite) {
         // Remove prior inclusions first to avoid duplicates or piling them up
@@ -146,12 +153,29 @@ export default function PathwayCard({
         ];
 
         // If the selected package is face-to-face, match the inclusions mode
-        const isF2F = selectedName.includes("F2F") || selectedName.includes("PART TIME") || selectedName.includes("FULL TIME");
+        const isF2F = selectedName.includes("F2F") || 
+                      selectedName.includes("PART TIME") || 
+                      selectedName.includes("FULL TIME") ||
+                      selectedName.toUpperCase().includes("CAMPUS");
         if (isF2F) {
           inclusionsToAppend = [
             "PART TIME or FULL TIME Certificate III in Fitness (SIS30321)",
             "PART TIME or FULL TIME Certificate IV in Fitness (SIS40221)"
           ];
+        }
+
+        // If the selected parent has "(funded)" or "funded" in the name, rename Cert III inclusion to show it is funded
+        const isParentFunded = normName.includes("funded");
+        if (isParentFunded) {
+          inclusionsToAppend = inclusionsToAppend.map((name) => {
+            if (name === "ONLINE Certificate III in Fitness (SIS30321)") {
+              return "ONLINE Certificate III in Fitness (Funded)";
+            }
+            if (name === "PART TIME or FULL TIME Certificate III in Fitness (SIS30321)") {
+              return "PART TIME or FULL TIME Certificate III in Fitness (Funded)";
+            }
+            return name;
+          });
         }
 
         // Elite/Ultra also get the standard automatic short courses
@@ -214,6 +238,33 @@ export default function PathwayCard({
     totalSavings += savings;
     totalInvestment += finalPrice;
   });
+
+  const paymentPlanType = pathway.paymentPlanType || "full";
+  const depositAmount = pathway.depositAmount === undefined ? 500 : pathway.depositAmount;
+  const paymentPlanAmount = pathway.paymentPlanAmount === undefined ? 100 : pathway.paymentPlanAmount;
+
+  const setPaymentPlanType = (type: "full" | "weekly" | "fortnightly") => {
+    onUpdatePathway({
+      ...pathway,
+      paymentPlanType: type,
+    });
+  };
+
+  const setDepositAmount = (deposit: number) => {
+    onUpdatePathway({
+      ...pathway,
+      depositAmount: deposit,
+    });
+  };
+
+  const setPaymentPlanAmount = (amount: number) => {
+    onUpdatePathway({
+      ...pathway,
+      paymentPlanAmount: amount,
+    });
+  };
+
+
 
   return (
     <div className="border border-fit-lightgray p-6 sm:p-8 rounded-lg bg-white relative shadow-sm mb-12 last:mb-0 print:border-none print:shadow-none print:p-0 print:m-0 break-inside-avoid">
@@ -446,11 +497,36 @@ export default function PathwayCard({
                         className="w-full bg-transparent text-xs text-fit-darkgray rounded border border-gray-200 px-2 py-1.5 outline-none focus:border-fit-red focus:ring-1 focus:ring-fit-red"
                       >
                         <option value="">-- Select Course Product --</option>
-                        {Object.keys(COURSE_PRICES).map((priceKey) => (
-                          <option key={priceKey} value={priceKey}>
-                            {getDropdownLabel(priceKey)}
-                          </option>
-                        ))}
+                        
+                        <optgroup label="Standard Course Products" className="font-bold text-slate-700 bg-slate-50">
+                          {Object.keys(COURSE_PRICES)
+                            .filter((priceKey) => !priceKey.startsWith("Non-Concession - ") && !priceKey.startsWith("Concession - "))
+                            .map((priceKey) => (
+                              <option key={priceKey} value={priceKey} className="font-normal text-slate-600 bg-white">
+                                {getDropdownLabel(priceKey)}
+                              </option>
+                            ))}
+                        </optgroup>
+
+                        <optgroup label="Funded Courses - Non-Concession" className="font-bold text-emerald-700 bg-emerald-50">
+                          {Object.keys(COURSE_PRICES)
+                            .filter((priceKey) => priceKey.startsWith("Non-Concession - "))
+                            .map((priceKey) => (
+                              <option key={priceKey} value={priceKey} className="font-normal text-slate-600 bg-white">
+                                {getDropdownLabel(priceKey)}
+                              </option>
+                            ))}
+                        </optgroup>
+
+                        <optgroup label="Funded Courses - Concession" className="font-bold text-amber-700 bg-amber-50">
+                          {Object.keys(COURSE_PRICES)
+                            .filter((priceKey) => priceKey.startsWith("Concession - "))
+                            .map((priceKey) => (
+                              <option key={priceKey} value={priceKey} className="font-normal text-slate-600 bg-white">
+                                {getDropdownLabel(priceKey)}
+                              </option>
+                            ))}
+                        </optgroup>
                       </select>
                     </td>
 
@@ -553,12 +629,29 @@ export default function PathwayCard({
               </td>
               <td className="no-print"></td>
             </tr>
+
+            {/* 1-line note below Total Final Investment */}
+            <tr className="border-t border-fit-lightgray bg-slate-50/50">
+              <td colSpan={7} className="py-2.5 px-3 text-[10px] text-center text-slate-500 font-medium italic">
+                {paymentPlanType === "full" ? (
+                  <span>
+                    Note: This price is to be paid in full upfront. <strong className="text-slate-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available OR Payment Plans are interest free - $6.60 set up fee. Either $1.30 a week or $1.95 a fortnight billing fee. Automatic approval from $75 week/$150 fortnight with a small deposit. You choose the day that the money comes out.
+                  </span>
+                ) : (
+                  <span>
+                    Note: This price is on a <strong className="text-slate-850 font-extrabold uppercase">{paymentPlanType}</strong> payment plan, consisting of a{" "}
+                    <strong className="text-slate-850 font-extrabold">{formatMoney(depositAmount)}</strong> minimum deposit and{" "}
+                    <strong className="text-slate-850 font-extrabold">{formatMoney(paymentPlanAmount)}/{paymentPlanType === "fortnightly" ? "fortnight" : "week"}</strong> payment repayments. <strong className="text-slate-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available OR Payment Plans are interest free - $6.60 set up fee. Either $1.30 a week or $1.95 a fortnight billing fee. Automatic approval from $75 week/$150 fortnight with a small deposit. You choose the day that the money comes out.
+                  </span>
+                )}
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
 
       <div className="mt-4 flex justify-end no-print">
-        <button
+         <button
           type="button"
           onClick={handleAddCourseRow}
           className="flex items-center gap-1 px-3 py-1.5 bg-fit-black hover:bg-fit-darkgray text-white text-xs font-bold rounded cursor-pointer transition-colors"
@@ -566,6 +659,119 @@ export default function PathwayCard({
           <Plus size={14} />
           Add Course to this Pathway
         </button>
+      </div>
+
+      {/* Tuition Option Configuration */}
+      <div className="mt-6 border border-slate-200/80 rounded-xl p-5 bg-slate-50/50 no-print text-left">
+        <label className="block text-[11px] font-black uppercase tracking-wider text-slate-400 mb-3">
+          Tuition Payment Method Option:
+        </label>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+          {/* Pay In Full Option */}
+          <button
+            type="button"
+            onClick={() => setPaymentPlanType("full")}
+            className={`flex items-center gap-2.5 p-3.5 rounded-lg border text-xs font-bold transition-all cursor-pointer ${
+              paymentPlanType === "full"
+                ? "bg-white border-fit-red text-fit-red shadow-xs ring-1 ring-fit-red"
+                : "bg-white border-slate-200 hover:border-slate-300 text-slate-600"
+            }`}
+          >
+            <input
+              type="radio"
+              checked={paymentPlanType === "full"}
+              onChange={() => setPaymentPlanType("full")}
+              className="h-4.5 w-4.5 text-fit-red focus:ring-fit-red border-slate-300 cursor-pointer pointer-events-none"
+            />
+            <span className="cursor-pointer">Pay In Full (Upfront)</span>
+          </button>
+
+          {/* Weekly Payment Plan Option */}
+          <button
+            type="button"
+            onClick={() => setPaymentPlanType("weekly")}
+            className={`flex items-center gap-2.5 p-3.5 rounded-lg border text-xs font-bold transition-all cursor-pointer ${
+              paymentPlanType === "weekly"
+                ? "bg-white border-fit-red text-fit-red shadow-xs ring-1 ring-fit-red"
+                : "bg-white border-slate-200 hover:border-slate-300 text-slate-600"
+            }`}
+          >
+            <input
+              type="radio"
+              checked={paymentPlanType === "weekly"}
+              onChange={() => setPaymentPlanType("weekly")}
+              className="h-4.5 w-4.5 text-fit-red focus:ring-fit-red border-slate-300 cursor-pointer pointer-events-none"
+            />
+            <span className="cursor-pointer">Weekly Payment Plan</span>
+          </button>
+
+          {/* Fortnightly Payment Plan Option */}
+          <button
+            type="button"
+            onClick={() => setPaymentPlanType("fortnightly")}
+            className={`flex items-center gap-2.5 p-3.5 rounded-lg border text-xs font-bold transition-all cursor-pointer ${
+              paymentPlanType === "fortnightly"
+                ? "bg-white border-fit-red text-fit-red shadow-xs ring-1 ring-fit-red"
+                : "bg-white border-slate-200 hover:border-slate-300 text-slate-600"
+            }`}
+          >
+            <input
+              type="radio"
+              checked={paymentPlanType === "fortnightly"}
+              onChange={() => setPaymentPlanType("fortnightly")}
+              className="h-4.5 w-4.5 text-fit-red focus:ring-fit-red border-slate-300 cursor-pointer pointer-events-none"
+            />
+            <span className="cursor-pointer">Fortnightly Payment Plan</span>
+          </button>
+        </div>
+
+        {/* If Payment Plan is selected, show customisable Inputs for Deposit and Repayment */}
+        {paymentPlanType !== "full" && (
+          <div className="pt-4 border-t border-slate-200/80 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Minimum Deposit Input */}
+            <div>
+              <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-1.5">
+                Minimum Deposit ($)
+              </label>
+              <div className="relative">
+                <span className="absolute left-2.5 top-2.5 text-xs font-bold text-slate-400">$</span>
+                <input
+                  type="number"
+                  value={depositAmount}
+                  onChange={(e) => {
+                    const val = parseFloat(e.target.value);
+                    setDepositAmount(isNaN(val) ? 0 : val);
+                  }}
+                  className="w-full bg-white border border-slate-200 rounded px-2.5 pl-6 py-1.5 text-xs text-slate-800 font-bold focus:outline-none focus:ring-1 focus:ring-fit-red"
+                  placeholder="e.g. 500"
+                  min="0"
+                />
+              </div>
+            </div>
+
+            {/* Repayment Amount Input */}
+            <div>
+              <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-1.5">
+                {paymentPlanType === "weekly" ? "Weekly Payment Amount ($)" : "Fortnightly Payment Amount ($)"}
+              </label>
+              <div className="relative">
+                <span className="absolute left-2.5 top-2.5 text-xs font-bold text-slate-400">$</span>
+                <input
+                  type="number"
+                  value={paymentPlanAmount}
+                  onChange={(e) => {
+                    const val = parseFloat(e.target.value);
+                    setPaymentPlanAmount(isNaN(val) ? 0 : val);
+                  }}
+                  className="w-full bg-white border border-slate-200 rounded px-2.5 pl-6 py-1.5 text-xs text-slate-800 font-bold focus:outline-none focus:ring-1 focus:ring-fit-red"
+                  placeholder={paymentPlanType === "weekly" ? "e.g. 100" : "e.g. 200"}
+                  min="1"
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Why Choose FIT College Box - changes conditionally based on path mode */}
