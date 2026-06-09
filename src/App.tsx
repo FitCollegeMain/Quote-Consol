@@ -1723,33 +1723,33 @@ export default function App() {
 
         {/* 3.1. DEDICATED WHY STUDY WITH FIT COLLEGE PAGE AT THE END OF THE PRINT DOCUMENT */}
         <div
-          className="bg-white min-h-[282mm] w-full p-[10mm] flex flex-col justify-between print-page-break-before font-sans text-left"
+          className="bg-white min-h-[265mm] print:min-h-0 w-full p-[10mm] print:p-[5.5mm] flex flex-col justify-between print-page-break-before font-sans text-left"
           style={{ boxSizing: "border-box" }}
         >
           <div>
             {/* Header section */}
-            <div className="bg-white border-b-2 border-fit-red flex items-center justify-between pb-4 mb-8">
+            <div className="bg-white border-b-2 border-fit-red flex items-center justify-between pb-4 print:pb-2 mb-8 print:mb-3">
               <div className="text-left">
-                <h2 className="font-bebas text-[30px] tracking-widest leading-none text-[#D62828] font-black uppercase">
+                <h2 className="font-bebas text-[30px] print:text-[23px] tracking-widest leading-none text-[#D62828] font-black uppercase">
                   STUDENT VALUE PROPOSITION
                 </h2>
-                <p className="font-bebas text-[11px] tracking-widest text-gray-500 mt-1 font-semibold uppercase">
+                <p className="font-bebas text-[11px] print:text-[9px] tracking-widest text-gray-500 mt-1 print:mt-0.5 font-semibold uppercase">
                   Why Study with FIT College
                 </p>
               </div>
-              <Logo variant="light" className="h-16 w-auto" />
+              <Logo variant="light" className="h-16 print:h-11 w-auto" />
             </div>
 
             {/* Section main title */}
-            <div className="mb-6">
-              <h3 className="font-bebas text-2xl tracking-wider text-fit-red text-left font-black">
+            <div className="mb-6 print:mb-3">
+              <h3 className="font-bebas text-2xl print:text-lg tracking-wider text-fit-red text-left font-black">
                 WHY STUDY WITH FIT COLLEGE?
               </h3>
-              <div className="h-0.5 bg-fit-red w-32 mt-1" />
+              <div className="h-0.5 bg-fit-red w-32 print:w-20 mt-1 print:mt-0.5" />
             </div>
 
             {/* Listing each pathway's custom value proposition based on its modes & selected courses */}
-            <div className="space-y-6">
+            <div className="space-y-6 print:space-y-3">
               {pathways.map((pathway, index) => {
                 const derivedMode = pathway.courses[0]?.name.includes("ONLINE")
                   ? "online"
@@ -1804,8 +1804,8 @@ export default function App() {
           </div>
 
           {/* Footer of the Dedicated page */}
-          <div className="text-center text-[10px] text-gray-400 border-t border-gray-100 pt-3 mt-8">
-            <p className="font-semibold text-gray-600 uppercase tracking-widest text-[11px] mb-1">
+          <div className="text-center text-[10px] print:text-[8.5px] text-gray-400 border-t border-gray-100 pt-3 print:pt-1.5 mt-8 print:mt-4">
+            <p className="font-semibold text-gray-600 uppercase tracking-widest text-[11px] print:text-[9.5px] mb-1 print:mb-0.5">
               FIT COLLEGE HEAD OFFICE
             </p>
             <p className="text-gray-500">
