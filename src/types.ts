@@ -249,8 +249,16 @@ export function cleanCourseName(name: string): string {
   if (!name) return "";
   let clean = name;
   
-  // Remove all detail in brackets/parentheses, leave on-campus or online details as clean text
-  clean = clean.replace(/\s*\([^)]*\)/g, "");
+  // Remove all detail in brackets/parentheses, leave valid course codes intact
+  clean = clean.replace(/\s*\(([^)]*)\)/g, (match, content) => {
+    const trimmed = content.trim();
+    // If the parentheses contain a standard course code or codes combination (uppercase, numbers, hyphens, ampersands, spaces)
+    const isCourseCode = /^[A-Z0-9\s&-]+$/.test(trimmed) && trimmed.length <= 40;
+    if (isCourseCode) {
+      return ` (${trimmed})`;
+    }
+    return "";
+  });
   
   // Replace modes and schedules with case-insensitive regex
   clean = clean.replace(/\bpart\s*-\s*time\s*or\s*full\s*-\s*time\b/gi, "");
