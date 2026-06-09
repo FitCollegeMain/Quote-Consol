@@ -1472,74 +1472,74 @@ export default function App() {
           return (
             <div
               key={`print-page-${pathway.id}`}
-              className="bg-white w-full p-[10mm] flex flex-col pathway-print-block print-page-break-after font-sans"
+              className="bg-white w-full p-[10mm] print:p-[5.5mm] flex flex-col pathway-print-block print-page-break-after font-sans text-xs print:text-[10px]"
               style={{ boxSizing: "border-box" }}
             >
               {/* Top Section wrap */}
               <div>
                 {/* Print page Header */}
-                <div className="bg-white border-b-2 border-fit-red flex items-center justify-between pb-4 mb-5">
+                <div className="bg-white border-b-2 border-fit-red flex items-center justify-between pb-4 print:pb-2 mb-5 print:mb-2.5">
                   <div className="text-left">
-                    <h2 className="font-bebas text-[30px] tracking-widest leading-none text-[#D62828] font-black uppercase">
+                    <h2 className="font-bebas text-[30px] print:text-[23px] tracking-widest leading-none text-[#D62828] font-black uppercase">
                       OFFICIAL QUOTE SHEET
                     </h2>
-                    <p className="font-bebas text-[11px] tracking-widest text-gray-500 mt-1 font-semibold uppercase">
+                    <p className="font-bebas text-[11px] print:text-[9px] tracking-widest text-gray-500 mt-1 print:mt-0.5 font-semibold uppercase">
                       {derivedTitle}
                     </p>
                   </div>
                   
-                  <Logo variant="light" className="h-16 w-auto" />
+                  <Logo variant="light" className="h-16 print:h-11 w-auto" />
                 </div>
 
                 {/* Print Metadata fields */}
-                <div className="grid grid-cols-2 gap-6 mb-4 text-[11px] border-b border-fit-lightgray pb-3">
-                  <div className="space-y-1 text-left">
+                <div className="grid grid-cols-2 gap-6 print:gap-4 mb-4 print:mb-2 text-[11px] print:text-[10px] border-b border-fit-lightgray pb-3 print:pb-1.5">
+                  <div className="space-y-1 print:space-y-0.5 text-left">
                     <div className="flex">
-                      <span className="w-24 font-bold text-gray-500 uppercase tracking-wider shrink-0">Prepared For:</span>
-                      <span className="font-bold text-fit-black text-xs">{details.studentName || "Prospect Student"}</span>
+                      <span className="w-24 print:w-20 font-bold text-gray-500 uppercase tracking-wider shrink-0">Prepared For:</span>
+                      <span className="font-bold text-fit-black text-xs print:text-[10.5px]">{details.studentName || "Prospect Student"}</span>
                     </div>
                     {details.hubspotDealCode && (
                       <div className="flex">
-                        <span className="w-24 font-bold text-gray-500 uppercase tracking-wider shrink-0 font-mono">Enquiry Code:</span>
-                        <span className="text-gray-800 font-mono">{details.hubspotDealCode}</span>
+                        <span className="w-24 print:w-20 font-bold text-gray-500 uppercase tracking-wider shrink-0 font-mono">Enquiry Code:</span>
+                        <span className="text-gray-800 font-mono font-semibold print:text-[10px]">{details.hubspotDealCode}</span>
                       </div>
                     )}
                     <div className="flex">
-                      <span className="w-24 font-bold text-gray-500 uppercase tracking-wider shrink-0">Quote Date:</span>
+                      <span className="w-24 print:w-20 font-bold text-gray-500 uppercase tracking-wider shrink-0">Quote Date:</span>
                       <span className="text-gray-800 font-medium">{cleanDate(details.date)}</span>
                     </div>
                     <div className="flex">
-                      <span className="w-24 font-bold text-gray-500 uppercase tracking-wider shrink-0">Valid Until:</span>
+                      <span className="w-24 print:w-20 font-bold text-gray-500 uppercase tracking-wider shrink-0">Valid Until:</span>
                       <span className="text-gray-800 font-medium">{cleanDate(details.validUntil)}</span>
                     </div>
                   </div>
  
-                  <div className="space-y-1 text-left">
+                  <div className="space-y-1 print:space-y-0.5 text-left">
                     {details.adviserName && (
                       <>
                         <div className="flex">
-                          <span className="w-24 font-bold text-gray-500 uppercase tracking-wider shrink-0">Advisor:</span>
+                          <span className="w-24 print:w-20 font-bold text-gray-500 uppercase tracking-wider shrink-0">Advisor:</span>
                           <span className="text-fit-black font-semibold">{details.adviserName}</span>
                         </div>
                         {details.adviserPhone && (
                           <div className="flex">
-                            <span className="w-24 font-bold text-gray-500 uppercase tracking-wider shrink-0">Adv. Phone:</span>
+                            <span className="w-24 print:w-20 font-bold text-gray-500 uppercase tracking-wider shrink-0">Adv. Phone:</span>
                             <span className="text-gray-800 font-medium">{details.adviserPhone}</span>
                           </div>
                         )}
                         {details.adviserEmail && (
                           <div className="flex">
-                            <span className="w-24 font-bold text-gray-500 uppercase tracking-wider shrink-0">Adv. Email:</span>
+                            <span className="w-24 print:w-20 font-bold text-gray-500 uppercase tracking-wider shrink-0">Adv. Email:</span>
                             <span className="text-gray-800 break-all">{details.adviserEmail}</span>
                           </div>
                         )}
                         <div className="flex items-start text-fit-red font-semibold">
-                          <span className="w-24 font-bold text-gray-500 uppercase tracking-wider shrink-0">Booking Link:</span>
+                          <span className="w-24 print:w-20 font-bold text-gray-500 uppercase tracking-wider shrink-0">Booking Link:</span>
                           <a
                             href={(details.adviserName && ADVISER_CONTACTS[details.adviserName]?.meetingUrl) || "https://meetings-ap1.hubspot.com/dean-eggins"}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="hover:underline text-fit-red font-black break-all text-[10px] leading-tight"
+                            className="hover:underline text-fit-red font-black break-all text-[10px] print:text-[8px] leading-tight"
                           >
                             {((details.adviserName && ADVISER_CONTACTS[details.adviserName]?.meetingUrl) || "https://meetings-ap1.hubspot.com/dean-eggins").replace("https://", "")}
                           </a>
@@ -1550,23 +1550,23 @@ export default function App() {
                 </div>
 
                 {/* Pathway Header Title */}
-                <div className="mb-3">
-                  <h3 className="font-bebas text-2xl tracking-wider text-fit-red text-left font-black">
+                <div className="mb-3 print:mb-1.55">
+                  <h3 className="font-bebas text-2xl print:text-lg tracking-wider text-fit-red text-left font-black">
                     {derivedTitle}
                   </h3>
-                  <div className="h-0.5 bg-fit-red w-24 mt-1" />
+                  <div className="h-0.5 bg-fit-red w-24 print:w-16 mt-1 print:mt-0.5" />
                 </div>
 
                 {/* Mode description section */}
-                <div className="mb-4 text-left">
+                <div className="mb-4 print:mb-2 text-left">
                   {derivedMode === "campus" && (
-                    <div className="border border-fit-lightgray rounded-md p-3.5 bg-gray-50 text-[11px] grid grid-cols-2 gap-4">
+                    <div className="border border-fit-lightgray rounded-md p-3.5 print:p-2 bg-gray-50 text-[11px] print:text-[10px] grid grid-cols-2 gap-4 print:gap-2">
                       {pathway.campusLocation && (
                         <div>
-                          <strong className="text-gray-500 uppercase block tracking-wider text-[9px] mb-0.5">Campus:</strong>
+                          <strong className="text-gray-500 uppercase block tracking-wider text-[9px] print:text-[8px] mb-0.5">Campus:</strong>
                           <span className="font-semibold text-fit-darkgray block">{pathway.campusLocation}</span>
                           {CAMPUS_LINKS[pathway.campusLocation] && (
-                            <div className="mt-1 flex items-center gap-1.5 text-[9px] font-bold">
+                            <div className="mt-1 print:mt-0.5 flex items-center gap-1.5 text-[9px] print:text-[8px] font-bold">
                               <a
                                 href={CAMPUS_LINKS[pathway.campusLocation].mapsUrl}
                                 target="_blank"
@@ -1581,35 +1581,35 @@ export default function App() {
                       )}
                       {pathway.startDate && (
                         <div>
-                          <strong className="text-gray-500 uppercase block tracking-wider text-[9px] mb-0.5">Start Date:</strong>
+                          <strong className="text-gray-500 uppercase block tracking-wider text-[9px] print:text-[8px] mb-0.5">Start Date:</strong>
                           <span className="font-semibold text-fit-darkgray">{cleanDate(pathway.startDate)}</span>
                         </div>
                       )}
                       {pathway.timetable && (
                         <div className="col-span-2">
-                          <strong className="text-gray-500 uppercase block tracking-wider text-[9px] mb-0.5">Timetable schedule:</strong>
-                          <span className="font-bold text-fit-red uppercase text-xs">{pathway.timetableDesc}</span>
+                          <strong className="text-gray-500 uppercase block tracking-wider text-[9px] print:text-[8px] mb-0.5">Timetable schedule:</strong>
+                          <span className="font-bold text-fit-red uppercase text-xs print:text-[10px]">{pathway.timetableDesc}</span>
                         </div>
                       )}
                     </div>
                   )}
 
                   {derivedMode === "online" && (
-                    <div className="border border-fit-lightgray rounded-md p-3.5 bg-gray-50 text-[11px]">
+                    <div className="border border-fit-lightgray rounded-md p-3.5 print:p-2 bg-gray-50 text-[11px] print:text-[10px] print:leading-normal">
                       <span className="text-fit-red font-bold uppercase tracking-wider">Online Mode study:</span> Start anytime, anywhere! Fully flexible, self-paced, and comprehensive online assessment portal with designated tutor evaluations.
                     </div>
                   )}
                 </div>
 
                 {/* Table for Hardcopy */}
-                <table className="w-full text-xs text-left border-collapse mb-6">
+                <table className="w-full text-xs print:text-[10px] text-left border-collapse mb-6 print:mb-2">
                   <thead>
-                    <tr className="bg-fit-black text-white font-bebas text-sm">
-                      <th className="py-2.5 px-3 uppercase text-left">Course Qualification</th>
-                      <th className="py-2.5 px-3 uppercase text-center w-[80px]">Mode</th>
-                      <th className="py-2.5 px-3 uppercase text-right w-[85px]">RRP</th>
-                      <th className="py-2.5 px-3 uppercase text-right w-[85px]">Savings</th>
-                      <th className="py-2.5 px-3 uppercase text-right w-[95px] rounded-r-md">Final Total</th>
+                    <tr className="bg-fit-black text-white font-bebas text-sm print:text-xs">
+                      <th className="py-2.5 px-3 print:py-1.5 print:px-2 uppercase text-left">Course Qualification</th>
+                      <th className="py-2.5 px-3 print:py-1.5 print:px-2 uppercase text-center w-[80px] print:w-[65px]">Mode</th>
+                      <th className="py-2.5 px-3 print:py-1.5 print:px-2 uppercase text-right w-[85px] print:w-[70px]">RRP</th>
+                      <th className="py-2.5 px-3 print:py-1.5 print:px-2 uppercase text-right w-[85px] print:w-[70px]">Savings</th>
+                      <th className="py-2.5 px-3 print:py-1.5 print:px-2 uppercase text-right w-[95px] print:w-[85px] rounded-r-md">Final Total</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1633,25 +1633,25 @@ export default function App() {
                         if (course.isIncluded) {
                           return (
                             <tr key={course.id} className="border-b border-gray-200 bg-gray-50 text-gray-500 font-medium">
-                              <td className="py-2 px-3 font-semibold text-gray-600 flex items-center gap-1">
+                              <td className="py-2 px-3 print:py-1 print:px-2 font-semibold text-gray-600 flex items-center gap-1">
                                 <span>{cleanCourseName(course.name)}</span>
-                                <span className="text-[9px] text-fit-red font-bold tracking-wider uppercase">(Included)</span>
+                                <span className="text-[9px] print:text-[8px] text-fit-red font-bold tracking-wider uppercase">(Included)</span>
                               </td>
-                              <td className="py-2 px-3 text-center text-xs">{course.mode || "Online"}</td>
-                              <td className="py-2 px-3 text-right text-gray-400"></td>
-                              <td className="py-2 px-3 text-right text-gray-400"></td>
-                              <td className="py-2 px-3 text-right font-bold text-gray-600"></td>
+                              <td className="py-2 px-3 print:py-1 print:px-2 text-center text-xs print:text-[9px]">{course.mode || "Online"}</td>
+                              <td className="py-2 px-3 print:py-1 print:px-2 text-right text-gray-400"></td>
+                              <td className="py-2 px-3 print:py-1 print:px-2 text-right text-gray-400"></td>
+                              <td className="py-2 px-3 print:py-1 print:px-2 text-right font-bold text-gray-600"></td>
                             </tr>
                           );
                         }
 
                         return (
                           <tr key={course.id} className="border-b border-gray-100 font-medium">
-                            <td className="py-2.5 px-3 text-fit-darkgray">{cleanCourseName(course.name) || "Custom Study Qualification"}</td>
-                            <td className="py-2.5 px-3 text-center">{course.mode || "-"}</td>
-                            <td className="py-2.5 px-3 text-right">{formatVal(course.rrp)}</td>
-                            <td className="py-2.5 px-3 text-right text-fit-red">-{formatVal(savings)}</td>
-                            <td className="py-2.5 px-3 text-right font-bold text-fit-darkgray">{formatVal(finalPrice)}</td>
+                            <td className="py-2.5 px-3 print:py-1.25 print:px-2 text-fit-darkgray">{cleanCourseName(course.name) || "Custom Study Qualification"}</td>
+                            <td className="py-2.5 px-3 print:py-1.25 print:px-2 text-center">{course.mode || "-"}</td>
+                            <td className="py-2.5 px-3 print:py-1.25 print:px-2 text-right">{formatVal(course.rrp)}</td>
+                            <td className="py-2.5 px-3 print:py-1.25 print:px-2 text-right text-fit-red">-{formatVal(savings)}</td>
+                            <td className="py-2.5 px-3 print:py-1.25 print:px-2 text-right font-bold text-fit-darkgray">{formatVal(finalPrice)}</td>
                           </tr>
                         );
                       })
@@ -1659,20 +1659,20 @@ export default function App() {
 
                     {/* Print savings totals row */}
                     <tr className="border-t border-gray-300 font-bold bg-gray-50/50">
-                      <td colSpan={3} className="py-2 px-3 text-right text-[10px] text-gray-500 uppercase tracking-widest">
+                      <td colSpan={3} className="py-2 px-3 print:py-1 print:px-2 text-right text-[10px] print:text-[8px] text-gray-500 uppercase tracking-widest">
                         Total Program Savings:
                       </td>
-                      <td className="py-2 px-3 text-right text-fit-red font-black">
+                      <td className="py-2 px-3 print:py-1 print:px-2 text-right text-fit-red font-black">
                         -{new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" }).format(runningSavings)}
                       </td>
                       <td></td>
                     </tr>
 
                     <tr className="border-t border-gray-300 font-bold bg-gray-50">
-                      <td colSpan={4} className="py-2.5 px-3 text-right font-bold text-fit-black text-xs uppercase tracking-wider">
+                      <td colSpan={4} className="py-2.5 px-3 print:py-1.5 print:px-2 text-right font-bold text-fit-black text-xs print:text-[10px] uppercase tracking-wider">
                         Total Course Investment:
                       </td>
-                      <td className="py-2.5 px-3 text-right text-sm text-fit-red font-black">
+                      <td className="py-2.5 px-3 print:py-1.5 print:px-2 text-right text-sm print:text-xs text-fit-red font-black">
                         {new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" }).format(runningInvestment)}
                       </td>
                     </tr>
@@ -1680,36 +1680,36 @@ export default function App() {
                 </table>
 
                 {/* Tuition Payment Option for Printout */}
-                <div className="mt-4 border border-gray-200 rounded-lg p-4 bg-gray-50/50 text-[11px] text-left">
+                <div className="mt-4 print:mt-1 border border-gray-200 rounded-lg p-4 print:p-2 bg-gray-50/50 text-[11px] print:text-[10px] text-left">
                   {pathway.paymentPlanType === "weekly" || pathway.paymentPlanType === "fortnightly" ? (
                     <div>
-                      <p className="text-slate-800 font-bold text-xs">
+                      <p className="text-slate-800 font-bold text-xs print:text-[10.5px]">
                         Payment Method: <span className="text-fit-red uppercase font-black">{pathway.paymentPlanType} Study Payment Plan</span>
                       </p>
-                      <div className="grid grid-cols-2 gap-4 mt-2 border-t border-gray-200/60 pt-2 font-medium">
+                      <div className="grid grid-cols-2 gap-4 print:gap-2 mt-2 print:mt-1 border-t border-gray-200/60 pt-2 print:pt-1 font-medium">
                         <div>
-                          <span className="text-gray-400 uppercase text-[9px] block">Minimum Deposit:</span>
-                          <span className="text-slate-800 font-black text-xs">
+                          <span className="text-gray-400 uppercase text-[9px] print:text-[8px] block">Minimum Deposit:</span>
+                          <span className="text-slate-800 font-black text-xs print:text-[10.5px]">
                             {new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" }).format(pathway.depositAmount === undefined ? 500 : pathway.depositAmount)}
                           </span>
                         </div>
                         <div>
-                          <span className="text-gray-400 uppercase text-[9px] block">Recurring Repayment:</span>
-                          <span className="text-slate-800 font-black text-xs">
+                          <span className="text-gray-400 uppercase text-[9px] print:text-[8px] block">Recurring Repayment:</span>
+                          <span className="text-slate-800 font-black text-xs print:text-[10.5px]">
                             {new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" }).format(pathway.paymentPlanAmount === undefined ? 100 : pathway.paymentPlanAmount)} / {pathway.paymentPlanType === "fortnightly" ? "fortnight" : "week"}
                           </span>
                         </div>
                       </div>
-                      <p className="text-gray-500 text-[9px] leading-relaxed mt-3 italic">
+                      <p className="text-gray-500 text-[9px] print:text-[8px] leading-relaxed mt-3 print:mt-1 italic">
                         <strong className="text-gray-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available OR Payment Plans are interest free - $6.60 set up fee. Either $1.30 a week or $1.95 a fortnight billing fee.
                       </p>
                     </div>
                   ) : (
                     <div>
-                      <p className="text-slate-800 font-bold text-xs select-none">
+                      <p className="text-slate-800 font-bold text-xs print:text-[10.5px] select-none">
                         Payment Method: <span className="text-fit-black uppercase font-black">Pay In Full Upfront (Upfront Discount Applies)</span>
                       </p>
-                      <p className="text-gray-500 text-[9px] leading-relaxed mt-2 italic">
+                      <p className="text-gray-500 text-[9px] print:text-[8px] leading-relaxed mt-2 print:mt-1 italic">
                         <strong className="text-gray-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available OR Payment Plans are interest free - $6.60 set up fee. Either $1.30 a week or $1.95 a fortnight billing fee.
                       </p>
                     </div>
