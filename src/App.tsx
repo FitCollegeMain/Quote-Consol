@@ -1715,6 +1715,46 @@ export default function App() {
                   </tbody>
                 </table>
 
+                {/* Tuition Payment Option for Printout */}
+                <div className="mt-4 border border-gray-200 rounded-lg p-4 bg-gray-50/50 text-[11px] text-left">
+                  <div className="mb-2 font-extrabold uppercase text-gray-500 tracking-wider text-[9px]">
+                    Tuition Payment Plan Details:
+                  </div>
+                  {pathway.paymentPlanType === "weekly" || pathway.paymentPlanType === "fortnightly" ? (
+                    <div>
+                      <p className="text-slate-800 font-bold text-xs">
+                        Payment Method: <span className="text-fit-red uppercase font-black">{pathway.paymentPlanType} Study Payment Plan</span>
+                      </p>
+                      <div className="grid grid-cols-2 gap-4 mt-2 border-t border-gray-200/60 pt-2 font-medium">
+                        <div>
+                          <span className="text-gray-400 uppercase text-[9px] block">Minimum Deposit:</span>
+                          <span className="text-slate-800 font-black text-xs">
+                            {new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" }).format(pathway.depositAmount === undefined ? 500 : pathway.depositAmount)}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-gray-400 uppercase text-[9px] block">Recurring Repayment:</span>
+                          <span className="text-slate-800 font-black text-xs">
+                            {new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" }).format(pathway.paymentPlanAmount === undefined ? 100 : pathway.paymentPlanAmount)} / {pathway.paymentPlanType === "fortnightly" ? "fortnight" : "week"}
+                          </span>
+                        </div>
+                      </div>
+                      <p className="text-gray-500 text-[9px] leading-relaxed mt-3 italic">
+                        <strong className="text-gray-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available OR Payment Plans are interest free - $6.60 set up fee. Either $1.30 a week or $1.95 a fortnight billing fee. Automatic approval from $75 week/$150 fortnight with a small deposit. You choose the day that the money comes out.
+                      </p>
+                    </div>
+                  ) : (
+                    <div>
+                      <p className="text-slate-800 font-bold text-xs select-none">
+                        Payment Method: <span className="text-fit-black uppercase font-black">Pay In Full Upfront (Upfront Discount Applies)</span>
+                      </p>
+                      <p className="text-gray-500 text-[9px] leading-relaxed mt-2 italic">
+                        <strong className="text-gray-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available OR Payment Plans are interest free - $6.60 set up fee. Either $1.30 a week or $1.95 a fortnight billing fee. Automatic approval from $75 week/$150 fortnight with a small deposit. You choose the day that the money comes out.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
               </div>
             </div>
           );
