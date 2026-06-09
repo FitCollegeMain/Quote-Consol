@@ -131,7 +131,7 @@ const getSeedQuotes = (): SavedQuote[] => {
       studentEmail: "bruce@waynecorp.com",
       dateIssued: getDynamicDate(15), // Middle of the month (outside closeout, inside month)
       validUntil: getDynamicDate(-15),
-      courseSummary: "Pathway 1: Fit Elite Ultra F2F (SIS30321 & SIS40221 & SIS50321 / TAE40122)",
+      courseSummary: "Pathway 1: Fit Elite Ultra F2F (SIS30321 & SIS40221 & SIS50321)",
       totalCost: 12900,
       status: "accepted",
       updatedAt: new Date().toISOString(),
@@ -1717,9 +1717,6 @@ export default function App() {
 
                 {/* Tuition Payment Option for Printout */}
                 <div className="mt-4 border border-gray-200 rounded-lg p-4 bg-gray-50/50 text-[11px] text-left">
-                  <div className="mb-2 font-extrabold uppercase text-gray-500 tracking-wider text-[9px]">
-                    Tuition Payment Plan Details:
-                  </div>
                   {pathway.paymentPlanType === "weekly" || pathway.paymentPlanType === "fortnightly" ? (
                     <div>
                       <p className="text-slate-800 font-bold text-xs">
@@ -1740,7 +1737,7 @@ export default function App() {
                         </div>
                       </div>
                       <p className="text-gray-500 text-[9px] leading-relaxed mt-3 italic">
-                        <strong className="text-gray-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available OR Payment Plans are interest free - $6.60 set up fee. Either $1.30 a week or $1.95 a fortnight billing fee. Automatic approval from $75 week/$150 fortnight with a small deposit. You choose the day that the money comes out.
+                        <strong className="text-gray-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available OR Payment Plans are interest free - $6.60 set up fee. Either $1.30 a week or $1.95 a fortnight billing fee.
                       </p>
                     </div>
                   ) : (
@@ -1749,7 +1746,7 @@ export default function App() {
                         Payment Method: <span className="text-fit-black uppercase font-black">Pay In Full Upfront (Upfront Discount Applies)</span>
                       </p>
                       <p className="text-gray-500 text-[9px] leading-relaxed mt-2 italic">
-                        <strong className="text-gray-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available OR Payment Plans are interest free - $6.60 set up fee. Either $1.30 a week or $1.95 a fortnight billing fee. Automatic approval from $75 week/$150 fortnight with a small deposit. You choose the day that the money comes out.
+                        <strong className="text-gray-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available OR Payment Plans are interest free - $6.60 set up fee. Either $1.30 a week or $1.95 a fortnight billing fee.
                       </p>
                     </div>
                   )}

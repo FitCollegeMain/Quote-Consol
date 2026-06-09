@@ -635,13 +635,13 @@ export default function PathwayCard({
               <td colSpan={7} className="py-2.5 px-3 text-[10px] text-center text-slate-500 font-medium italic">
                 {paymentPlanType === "full" ? (
                   <span>
-                    Note: This price is to be paid in full upfront. <strong className="text-slate-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available OR Payment Plans are interest free - $6.60 set up fee. Either $1.30 a week or $1.95 a fortnight billing fee. Automatic approval from $75 week/$150 fortnight with a small deposit. You choose the day that the money comes out.
+                    Note: This price is to be paid in full upfront. <strong className="text-slate-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available OR Payment Plans are interest free - $6.60 set up fee. Either $1.30 a week or $1.95 a fortnight billing fee.
                   </span>
                 ) : (
                   <span>
                     Note: This price is on a <strong className="text-slate-850 font-extrabold uppercase">{paymentPlanType}</strong> payment plan, consisting of a{" "}
                     <strong className="text-slate-850 font-extrabold">{formatMoney(depositAmount)}</strong> minimum deposit and{" "}
-                    <strong className="text-slate-850 font-extrabold">{formatMoney(paymentPlanAmount)}/{paymentPlanType === "fortnightly" ? "fortnight" : "week"}</strong> payment repayments. <strong className="text-slate-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available OR Payment Plans are interest free - $6.60 set up fee. Either $1.30 a week or $1.95 a fortnight billing fee. Automatic approval from $75 week/$150 fortnight with a small deposit. You choose the day that the money comes out.
+                    <strong className="text-slate-850 font-extrabold">{formatMoney(paymentPlanAmount)}/{paymentPlanType === "fortnightly" ? "fortnight" : "week"}</strong> payment repayments. <strong className="text-slate-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available OR Payment Plans are interest free - $6.60 set up fee. Either $1.30 a week or $1.95 a fortnight billing fee.
                   </span>
                 )}
               </td>

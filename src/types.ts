@@ -54,8 +54,8 @@ export const ADVISER_CONTACTS: Record<string, { email: string; phone: string; me
 export const ADVISERS = Object.keys(ADVISER_CONTACTS);
 
 export const COURSE_PRICES: Record<string, number> = {
-  "Fit Elite Ultra ONLINE (SIS30321 & SIS40221 & SIS50321 / TAE40122)": 9900.00,
-  "Fit Elite Ultra F2F (SIS30321 & SIS40221 & SIS50321 / TAE40122)": 12900.00,
+  "Fit Elite Ultra ONLINE (SIS30321 & SIS40221 & SIS50321)": 9900.00,
+  "Fit Elite Ultra F2F (SIS30321 & SIS40221 & SIS50321)": 12900.00,
   "ONLINE FIT Elite PT Program (SIS30321 & SIS40221 & Specialty)": 8400.00,
   "F2F FIT Elite PT Program (SIS30321 & SIS40221 & Specialty)": 11400.00,
   "ONLINE Complete PT Program - Dual Qualification (SIS30321 & SIS40221)": 6000.00,
@@ -80,9 +80,6 @@ export const COURSE_PRICES: Record<string, number> = {
   "F2F Suspension FIT Foundation Skills (SUS-FIT)": 400.00,
   "F2F Provide Cardiopulmonary Resuscitation (HLTAID009)": 75.00,
   "F2F Provide First Aid (HLTAID011)": 150.00,
-  "ONLINE Certificate IV in Training & Assessment (TAE40122)": 3000.00,
-  "F2F Certificate IV in Training & Assessment (TAE40122)": 4500.00,
-  "ONLINE Training Package Upgrade - Cert IV in T&A (TAE40122)": 2000.00,
   // Funded Courses - Non-Concession
   "Non-Concession - ONLINE FIT Elite (Funded)": 8400.00,
   "Non-Concession - On Campus FIT Elite (Funded)": 11400.00,
@@ -253,6 +250,9 @@ export const CAMPUS_LINKS: Record<string, CampusLinkInfo> = {
 export function cleanCourseName(name: string): string {
   if (!name) return "";
   let clean = name;
+  
+  // Remove all detail in brackets/parentheses, leave on-campus or online details as clean text
+  clean = clean.replace(/\s*\([^)]*\)/g, "");
   
   // Replace modes and schedules with case-insensitive regex
   clean = clean.replace(/\bpart\s*-\s*time\s*or\s*full\s*-\s*time\b/gi, "");
