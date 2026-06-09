@@ -30,8 +30,7 @@ export interface Pathway {
 
 export interface QuoteDetails {
   studentName: string;
-  phoneNumber: string;
-  emailAddress: string;
+  hubspotDealCode: string;
   date: string;
   validUntil: string;
   adviserName: string;
@@ -147,8 +146,7 @@ export interface SavedQuote {
   id: string;
   advisorName: string;
   studentName: string;
-  studentPhone: string;
-  studentEmail: string;
+  hubspotDealCode: string;
   dateIssued: string;
   validUntil: string;
   courseSummary: string;

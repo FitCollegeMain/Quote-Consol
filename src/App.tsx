@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { 
   Plus, Printer, HelpCircle, Check, Key, BookOpen, User, Phone, Mail, Award, Lock, 
   ShieldAlert, Calendar, RefreshCw, Database, FileSpreadsheet, AlertCircle, Trash2, 
-  LogOut, CheckCircle
+  LogOut, CheckCircle, Hash
 } from "lucide-react";
 import Logo from "./components/Logo";
 import PathwayCard from "./components/PathwayCard";
@@ -71,8 +71,7 @@ const getSeedQuotes = (): SavedQuote[] => {
       id: "quote_seed_1",
       advisorName: "Dean Eggins",
       studentName: "Ashley Cole",
-      studentPhone: "0412 345 678",
-      studentEmail: "ashley.cole@gmail.com",
+      hubspotDealCode: "HS-62849",
       dateIssued: getDynamicDate(2), // 2 days before end of month (inside closeout)
       validUntil: getDynamicDate(-28),
       courseSummary: "Pathway 1: F2F Complete PT Program - Dual Qualification (SIS30321 & SIS40221)",
@@ -85,8 +84,7 @@ const getSeedQuotes = (): SavedQuote[] => {
       id: "quote_seed_2",
       advisorName: "Ryan Crilly",
       studentName: "Zack Snyder",
-      studentPhone: "0498 765 432",
-      studentEmail: "z.snyder@warner.com",
+      hubspotDealCode: "HS-93821",
       dateIssued: getDynamicDate(3), // 3 days before end of month (inside closeout)
       validUntil: getDynamicDate(-27),
       courseSummary: "Pathway 1: F2F FIT Elite PT Program (SIS30321 & SIS40221 & Specialty)",
@@ -99,8 +97,7 @@ const getSeedQuotes = (): SavedQuote[] => {
       id: "quote_seed_3",
       advisorName: "Nicky Wood",
       studentName: "Mary Jane",
-      studentPhone: "0455 112 233",
-      studentEmail: "mj.watson@dailybugle.com",
+      hubspotDealCode: "HS-10492",
       dateIssued: getDynamicDate(1), // 1 day before end of month (inside closeout)
       validUntil: getDynamicDate(-29),
       courseSummary: "Pathway 1: ONLINE Diploma of Sport - Coaching (SIS50321)",
@@ -113,8 +110,7 @@ const getSeedQuotes = (): SavedQuote[] => {
       id: "quote_seed_4",
       advisorName: "Sam Russell",
       studentName: "Peter Parker",
-      studentPhone: "0433 998 877",
-      studentEmail: "spidey@midtownhigh.edu",
+      hubspotDealCode: "HS-48201",
       dateIssued: getDynamicDate(4), // 4 days before end of month (inside closeout)
       validUntil: getDynamicDate(-26),
       courseSummary: "Pathway 1: ONLINE Certificate III in Fitness (SIS30321)",
@@ -127,8 +123,7 @@ const getSeedQuotes = (): SavedQuote[] => {
       id: "quote_seed_5",
       advisorName: "Tess Szabath",
       studentName: "Bruce Wayne",
-      studentPhone: "0400 700 800",
-      studentEmail: "bruce@waynecorp.com",
+      hubspotDealCode: "HS-55921",
       dateIssued: getDynamicDate(15), // Middle of the month (outside closeout, inside month)
       validUntil: getDynamicDate(-15),
       courseSummary: "Pathway 1: Fit Elite Ultra F2F (SIS30321 & SIS40221 & SIS50321)",
@@ -141,8 +136,7 @@ const getSeedQuotes = (): SavedQuote[] => {
       id: "quote_seed_6",
       advisorName: "Marcus Krause",
       studentName: "Diana Prince",
-      studentPhone: "0466 223 344",
-      studentEmail: "diana@themyscira.org",
+      hubspotDealCode: "HS-38291",
       dateIssued: getDynamicDate(20), // 20 days ago (outside closeout, old)
       validUntil: getDynamicDate(-10),
       courseSummary: "Pathway 1: ONLINE Complete PT Program - Dual Qualification (SIS30321 & SIS40221)",
@@ -195,8 +189,7 @@ export default function App() {
     const contact = adviser ? ADVISER_CONTACTS[adviser] : undefined;
     return {
       studentName: "",
-      phoneNumber: "",
-      emailAddress: "",
+      hubspotDealCode: "",
       date: getDateString(),
       validUntil: getEndOfCurrentMonthString(), // Defaults to end of current month
       adviserName: adviser,
@@ -348,8 +341,7 @@ export default function App() {
         id: quoteId,
         advisorName: currentUser || "Unknown Advisor",
         studentName: details.studentName,
-        studentPhone: details.phoneNumber,
-        studentEmail: details.emailAddress,
+        hubspotDealCode: details.hubspotDealCode,
         dateIssued: details.date,
         validUntil: details.validUntil,
         courseSummary: courseSummaries || "No course selected",
@@ -442,8 +434,7 @@ export default function App() {
       const activeAdvisor = currentUser || quote.advisorName;
       setDetails({
         studentName: quote.studentName,
-        phoneNumber: quote.studentPhone,
-        emailAddress: quote.studentEmail,
+        hubspotDealCode: quote.hubspotDealCode || "",
         date: quote.dateIssued,
         validUntil: quote.validUntil,
         adviserName: activeAdvisor,
@@ -875,32 +866,16 @@ export default function App() {
 
                 <div>
                   <label className="block text-[10px] font-bold text-[#8B909A] uppercase mb-1">
-                    Phone Contact
+                    HubSpot Deal Code
                   </label>
                   <div className="relative">
-                    <Phone className="absolute left-3 top-3 h-3.5 w-3.5 text-gray-400" />
+                    <Hash className="absolute left-3 top-3 h-3.5 w-3.5 text-gray-400" />
                     <input
                       type="text"
-                      className="w-full bg-[#F8FAFC] border border-[#D5D8DE] rounded pl-9 pr-3 py-2 text-xs text-fit-black focus:outline-none focus:ring-1 focus:ring-fit-red focus:bg-white"
-                      placeholder="e.g. 0400 000 000"
-                      value={details.phoneNumber}
-                      onChange={(e) => setDetails({ ...details, phoneNumber: e.target.value })}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-[10px] font-bold text-[#8B909A] uppercase mb-1">
-                    Email Address
-                  </label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-3.5 w-3.5 text-gray-400" />
-                    <input
-                      type="email"
-                      className="w-full bg-[#F8FAFC] border border-[#D5D8DE] rounded pl-9 pr-3 py-2 text-xs text-fit-black focus:outline-none focus:ring-1 focus:ring-fit-red focus:bg-white"
-                      placeholder="student@email.com"
-                      value={details.emailAddress}
-                      onChange={(e) => setDetails({ ...details, emailAddress: e.target.value })}
+                      className="w-full bg-[#F8FAFC] border border-[#D5D8DE] rounded pl-9 pr-3 py-2 text-xs text-fit-black focus:outline-none focus:ring-1 focus:ring-fit-red focus:bg-white font-mono"
+                      placeholder="e.g. HS-12345"
+                      value={details.hubspotDealCode}
+                      onChange={(e) => setDetails({ ...details, hubspotDealCode: e.target.value })}
                     />
                   </div>
                 </div>
@@ -1077,10 +1052,9 @@ export default function App() {
                       <span className="text-[10px] font-bold text-[#8B909A] uppercase tracking-wider block mb-0.5">Prepared For:</span>
                       <span className="font-bold text-fit-black text-sm block">{details.studentName || "Prospect Student"}</span>
                     </div>
-                    {(details.phoneNumber || details.emailAddress) && (
+                    {details.hubspotDealCode && (
                       <div className="text-[#8B909A] space-y-0.5">
-                        {details.phoneNumber && <p className="flex items-center gap-1.5"><Phone size={12} className="shrink-0" />{details.phoneNumber}</p>}
-                        {details.emailAddress && <p className="flex items-center gap-1.5"><Mail size={12} className="shrink-0" />{details.emailAddress}</p>}
+                        <p className="flex items-center gap-1.5 font-mono"><Hash size={12} className="shrink-0 text-fit-red" />{details.hubspotDealCode}</p>
                       </div>
                     )}
                   </div>
@@ -1365,13 +1339,9 @@ export default function App() {
                           </div>
 
                           <div className="text-xs text-slate-500 space-y-1 font-medium select-text">
-                            <div className="flex items-center gap-1.5">
-                              <Phone size={11} className="text-slate-400 shrink-0" />
-                              <span>{quote.studentPhone || "No Phone Registered"}</span>
-                            </div>
-                            <div className="flex items-center gap-1.5">
-                              <Mail size={11} className="text-slate-400 shrink-0" />
-                              <span className="truncate">{quote.studentEmail || "No Email Registered"}</span>
+                            <div className="flex items-center gap-1.5 font-mono">
+                              <Hash size={11} className="text-slate-400 shrink-0" />
+                              <span>{quote.hubspotDealCode || "No HubSpot Deal Code"}</span>
                             </div>
                           </div>
                         </div>
@@ -1528,16 +1498,10 @@ export default function App() {
                       <span className="w-24 font-bold text-gray-500 uppercase tracking-wider shrink-0">Prepared For:</span>
                       <span className="font-bold text-fit-black text-xs">{details.studentName || "Prospect Student"}</span>
                     </div>
-                    {details.phoneNumber && (
+                    {details.hubspotDealCode && (
                       <div className="flex">
-                        <span className="w-24 font-bold text-gray-500 uppercase tracking-wider shrink-0">Phone:</span>
-                        <span className="text-gray-800">{details.phoneNumber}</span>
-                      </div>
-                    )}
-                    {details.emailAddress && (
-                      <div className="flex">
-                        <span className="w-24 font-bold text-gray-500 uppercase tracking-wider shrink-0">Email:</span>
-                        <span className="text-gray-800 break-all">{details.emailAddress}</span>
+                        <span className="w-24 font-bold text-gray-500 uppercase tracking-wider shrink-0 font-mono">Enquiry Code:</span>
+                        <span className="text-gray-800 font-mono">{details.hubspotDealCode}</span>
                       </div>
                     )}
                     <div className="flex">

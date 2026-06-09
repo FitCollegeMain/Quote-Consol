@@ -129,8 +129,7 @@ const SHEET_HEADERS = [
   "Quote ID",
   "Advisor Name",
   "Student Name",
-  "Student Phone",
-  "Student Email",
+  "HubSpot Deal Code",
   "Date Issued",
   "Expiry Date",
   "Course Summary",
@@ -141,7 +140,7 @@ const SHEET_HEADERS = [
 ];
 
 async function initializeSheetHeaders(spreadsheetId: string, token: string) {
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A1:L1?valueInputOption=USER_ENTERED`;
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A1:K1?valueInputOption=USER_ENTERED`;
   try {
     await fetch(url, {
       method: "PUT",
@@ -162,7 +161,7 @@ async function initializeSheetHeaders(spreadsheetId: string, token: string) {
 export const fetchSyncedQuotes = async (token: string, advisorName: string): Promise<SavedQuote[]> => {
   try {
     const spreadsheetId = await findOrCreateSpreadsheet(token);
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A2:L1000`;
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A2:K1000`;
     const res = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -175,22 +174,20 @@ export const fetchSyncedQuotes = async (token: string, advisorName: string): Pro
         const id = row[0] || "";
         const rowAdvisor = row[1] || "";
         const studentName = row[2] || "";
-        const studentPhone = row[3] || "";
-        const studentEmail = row[4] || "";
-        const dateIssued = row[5] || "";
-        const validUntil = row[6] || "";
-        const courseSummary = row[7] || "";
-        const totalCost = parseFloat(row[8] || "0");
-        const status = (row[9] || "amber pending") as "amber pending" | "accepted" | "expired";
-        const updatedAt = row[10] || "";
-        const pathwaysData = row[11] || "";
+        const hubspotDealCode = row[3] || "";
+        const dateIssued = row[4] || "";
+        const validUntil = row[5] || "";
+        const courseSummary = row[6] || "";
+        const totalCost = parseFloat(row[7] || "0");
+        const status = (row[8] || "amber pending") as "amber pending" | "accepted" | "expired";
+        const updatedAt = row[9] || "";
+        const pathwaysData = row[10] || "";
         
         return {
           id,
           advisorName: rowAdvisor,
           studentName,
-          studentPhone,
-          studentEmail,
+          hubspotDealCode,
           dateIssued,
           validUntil,
           courseSummary,
@@ -217,7 +214,7 @@ export const saveQuoteToSheet = async (token: string, quote: SavedQuote): Promis
     const spreadsheetId = await findOrCreateSpreadsheet(token);
     
     // 1. Read all rows to find if quote already exists
-    const readUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A2:L1000`;
+    const readUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A2:K1000`;
     const readRes = await fetch(readUrl, {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -232,8 +229,7 @@ export const saveQuoteToSheet = async (token: string, quote: SavedQuote): Promis
       quote.id,
       quote.advisorName,
       quote.studentName,
-      quote.studentPhone,
-      quote.studentEmail,
+      quote.hubspotDealCode,
       quote.dateIssued,
       quote.validUntil,
       quote.courseSummary,
@@ -246,7 +242,7 @@ export const saveQuoteToSheet = async (token: string, quote: SavedQuote): Promis
     if (existingRelativeRowIndex !== -1) {
       // 2. Overwrite existing row (Header is row 1, relative index 0 is row 2)
       const targetRow = existingRelativeRowIndex + 2;
-      const updateUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A${targetRow}:L${targetRow}?valueInputOption=USER_ENTERED`;
+      const updateUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A${targetRow}:K${targetRow}?valueInputOption=USER_ENTERED`;
       await fetch(updateUrl, {
         method: "PUT",
         headers: {
@@ -259,7 +255,7 @@ export const saveQuoteToSheet = async (token: string, quote: SavedQuote): Promis
       });
     } else {
       // 3. Append new row
-      const appendUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A:L:append?valueInputOption=USER_ENTERED`;
+      const appendUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A:K:append?valueInputOption=USER_ENTERED`;
       await fetch(appendUrl, {
         method: "POST",
         headers: {
