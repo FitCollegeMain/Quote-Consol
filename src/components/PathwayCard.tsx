@@ -52,10 +52,10 @@ export default function PathwayCard({
   // Derived Title based on mode containing elegant Bebas Neue font spacing
   const derivedTitle =
     derivedMode === "online"
-      ? "RECOMMENDED ONLINE STUDY PATHWAY"
+      ? "RECOMMENDED ONLINE PATHWAY"
       : derivedMode === "campus"
-      ? "RECOMMENDED ON-CAMPUS STUDY PATHWAY"
-      : "RECOMMENDED STUDY PATHWAY";
+      ? "RECOMMENDED ON-CAMPUS PATHWAY"
+      : "RECOMMENDED PATHWAY";
 
   // Helper to format money strings nicely
   const formatMoney = (amount: number) => {

@@ -1474,10 +1474,10 @@ export default function App() {
 
           const derivedTitle =
             derivedMode === "online"
-              ? "RECOMMENDED ONLINE STUDY PATHWAY"
+              ? "RECOMMENDED ONLINE PATHWAY"
               : derivedMode === "campus"
-              ? "RECOMMENDED ON-CAMPUS STUDY PATHWAY"
-              : "RECOMMENDED STUDY PATHWAY";
+              ? "RECOMMENDED ON-CAMPUS PATHWAY"
+              : "RECOMMENDED PATHWAY";
 
           let runningSavings = 0;
           let runningInvestment = 0;
