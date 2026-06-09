@@ -53,8 +53,8 @@ export const ADVISER_CONTACTS: Record<string, { email: string; phone: string; me
 export const ADVISERS = Object.keys(ADVISER_CONTACTS);
 
 export const COURSE_PRICES: Record<string, number> = {
-  "Fit Elite Ultra ONLINE (SIS30321 & SIS40221 & SIS50321)": 9900.00,
-  "Fit Elite Ultra F2F (SIS30321 & SIS40221 & SIS50321)": 12900.00,
+  "Fit Elite Ultra ONLINE (SIS30321 & SIS40221)": 9900.00,
+  "Fit Elite Ultra F2F (SIS30321 & SIS40221)": 12900.00,
   "ONLINE FIT Elite PT Program (SIS30321 & SIS40221 & Specialty)": 8400.00,
   "F2F FIT Elite PT Program (SIS30321 & SIS40221 & Specialty)": 11400.00,
   "ONLINE Complete PT Program - Dual Qualification (SIS30321 & SIS40221)": 6000.00,

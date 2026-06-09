@@ -126,7 +126,7 @@ const getSeedQuotes = (): SavedQuote[] => {
       hubspotDealCode: "HS-55921",
       dateIssued: getDynamicDate(15), // Middle of the month (outside closeout, inside month)
       validUntil: getDynamicDate(-15),
-      courseSummary: "Pathway 1: Fit Elite Ultra F2F (SIS30321 & SIS40221 & SIS50321)",
+      courseSummary: "Pathway 1: Fit Elite Ultra F2F (SIS30321 & SIS40221)",
       totalCost: 12900,
       status: "accepted",
       updatedAt: new Date().toISOString(),
