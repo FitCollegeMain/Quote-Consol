@@ -125,7 +125,7 @@ const getSeedQuotes = (): SavedQuote[] => {
     },
     {
       id: "quote_seed_5",
-      advisorName: "Tess Di Stefano",
+      advisorName: "Tess Szabath",
       studentName: "Bruce Wayne",
       studentPhone: "0400 700 800",
       studentEmail: "bruce@waynecorp.com",
@@ -439,15 +439,16 @@ export default function App() {
         const loadedPathways = JSON.parse(quote.pathwaysData);
         setPathways(loadedPathways);
       }
+      const activeAdvisor = currentUser || quote.advisorName;
       setDetails({
         studentName: quote.studentName,
         phoneNumber: quote.studentPhone,
         emailAddress: quote.studentEmail,
         date: quote.dateIssued,
         validUntil: quote.validUntil,
-        adviserName: quote.advisorName,
-        adviserEmail: ADVISER_CONTACTS[quote.advisorName]?.email || "",
-        adviserPhone: ADVISER_CONTACTS[quote.advisorName]?.phone || ""
+        adviserName: activeAdvisor,
+        adviserEmail: ADVISER_CONTACTS[activeAdvisor]?.email || "",
+        adviserPhone: ADVISER_CONTACTS[activeAdvisor]?.phone || ""
       });
       setIsQuoteAccepted(quote.isAccepted);
       setActiveTab("builder");
@@ -957,62 +958,48 @@ export default function App() {
 
                 <div>
                   <label className="block text-[10px] font-bold text-[#8B909A] uppercase mb-1">
-                    Careers Advisor
+                    Careers Advisor (Locked)
                   </label>
-                  <div className="relative">
+                  <div className="relative font-bold">
                     <Award className="absolute left-3 top-3 h-3.5 w-3.5 text-gray-400" />
-                    <select
-                      className="w-full bg-[#F8FAFC] border border-[#D5D8DE] rounded pl-9 pr-3 py-2 text-xs text-fit-black focus:outline-none focus:ring-1 focus:ring-fit-red cursor-pointer"
-                      value={details.adviserName}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        const contact = ADVISER_CONTACTS[val];
-                        setDetails({
-                          ...details,
-                          adviserName: val,
-                          adviserEmail: contact?.email || "",
-                          adviserPhone: contact?.phone || "",
-                        });
-                      }}
-                    >
-                      <option value="">-- Choose Sales Adviser --</option>
-                      {ADVISERS.map((name) => (
-                        <option key={name} value={name}>
-                          {name}
-                        </option>
-                      ))}
-                    </select>
+                    <input
+                      type="text"
+                      className="w-full bg-[#E2E8F0] border border-[#CBD5E1] rounded pl-9 pr-3 py-2 text-xs text-slate-600 font-semibold focus:outline-none cursor-not-allowed selection:bg-slate-300"
+                      value={currentUser || "No Advisor Logged In"}
+                      disabled
+                      readOnly
+                    />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-3 font-bold">
                   <div>
                     <label className="block text-[10px] font-bold text-[#8B909A] uppercase mb-1">
-                      Advisor Email (Prefilled)
+                      Advisor Email (Locked)
                     </label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-3 h-3.5 w-3.5 text-gray-400 font-bold" />
+                      <Mail className="absolute left-3 top-3 h-3.5 w-3.5 text-gray-400" />
                       <input
                         type="email"
-                        className="w-full bg-[#F8FAFC] border border-[#D5D8DE] rounded pl-9 pr-3 py-2 text-xs text-fit-black focus:outline-none focus:ring-1 focus:ring-fit-red focus:bg-white"
-                        placeholder="advisor@fitcollege.edu.au"
+                        className="w-full bg-[#E2E8F0] border border-[#CBD5E1] rounded pl-9 pr-3 py-2 text-xs text-slate-600 font-semibold focus:outline-none cursor-not-allowed selection:bg-slate-300"
                         value={details.adviserEmail || ""}
-                        onChange={(e) => setDetails({ ...details, adviserEmail: e.target.value })}
+                        disabled
+                        readOnly
                       />
                     </div>
                   </div>
                   <div>
                     <label className="block text-[10px] font-bold text-[#8B909A] uppercase mb-1">
-                      Advisor Phone (Prefilled)
+                      Advisor Phone (Locked)
                     </label>
                     <div className="relative">
-                      <Phone className="absolute left-3 top-3 h-3.5 w-3.5 text-gray-400 font-bold" />
+                      <Phone className="absolute left-3 top-3 h-3.5 w-3.5 text-gray-400" />
                       <input
                         type="text"
-                        className="w-full bg-[#F8FAFC] border border-[#D5D8DE] rounded pl-9 pr-3 py-2 text-xs text-fit-black focus:outline-none focus:ring-1 focus:ring-fit-red focus:bg-white"
-                        placeholder="1300 887 017"
+                        className="w-full bg-[#E2E8F0] border border-[#CBD5E1] rounded pl-9 pr-3 py-2 text-xs text-slate-600 font-semibold focus:outline-none cursor-not-allowed selection:bg-slate-300"
                         value={details.adviserPhone || ""}
-                        onChange={(e) => setDetails({ ...details, adviserPhone: e.target.value })}
+                        disabled
+                        readOnly
                       />
                     </div>
                   </div>

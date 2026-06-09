@@ -42,7 +42,7 @@ export const ADVISER_CONTACTS: Record<string, { email: string; phone: string; me
   "Ryan Crilly": { email: "ryan.crilly@fitcollege.edu.au", phone: "1300 887 017", meetingUrl: "https://meetings-ap1.hubspot.com/ryan-crilly" },
   "Sam Russell": { email: "sam.russell@fitcollege.edu.au", phone: "1300 887 017", meetingUrl: "https://meetings-ap1.hubspot.com/sam-russell2" },
   "Shay Best": { email: "shay.best@fitcollege.edu.au", phone: "1300 887 017", meetingUrl: "https://meetings-ap1.hubspot.com/shay-best" },
-  "Tess Di Stefano": { email: "tess.distefano@fitcollege.edu.au", phone: "1300 887 017", meetingUrl: "https://meetings-ap1.hubspot.com/tess-di-stefano" },
+  "Tess Szabath": { email: "tess.szabath@fitcollege.edu.au", phone: "1300 887 017", meetingUrl: "https://meetings-ap1.hubspot.com/tess-szabath" },
   "Thomas Jordan": { email: "thomas.jordan@fitcollege.edu.au", phone: "1300 887 017", meetingUrl: "https://meetings-ap1.hubspot.com/thomas-jordan2" }
 };
 
