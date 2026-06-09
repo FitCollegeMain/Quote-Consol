@@ -990,16 +990,16 @@ export default function App() {
                   </div>
                   <div>
                     <label className="block text-[10px] font-bold text-[#8B909A] uppercase mb-1">
-                      Advisor Phone (Locked)
+                      Advisor Phone
                     </label>
                     <div className="relative">
                       <Phone className="absolute left-3 top-3 h-3.5 w-3.5 text-gray-400" />
                       <input
                         type="text"
-                        className="w-full bg-[#E2E8F0] border border-[#CBD5E1] rounded pl-9 pr-3 py-2 text-xs text-slate-600 font-semibold focus:outline-none cursor-not-allowed selection:bg-slate-300"
+                        className="w-full bg-[#F8FAFC] border border-[#D5D8DE] rounded pl-9 pr-3 py-2 text-xs text-fit-black focus:outline-none focus:ring-1 focus:ring-fit-red focus:bg-white font-medium"
+                        placeholder="1300 887 017"
                         value={details.adviserPhone || ""}
-                        disabled
-                        readOnly
+                        onChange={(e) => setDetails({ ...details, adviserPhone: e.target.value })}
                       />
                     </div>
                   </div>
