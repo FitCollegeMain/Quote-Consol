@@ -28,14 +28,39 @@
   }
 }
 
+/* Base style overrides to prevent rendering bugs on macOS browsers */
+select, input {
+  box-sizing: border-box;
+}
+
 @media print {
-  body {
+  @page {
+    size: A4 portrait !important;
+    margin: 0 !important;
+  }
+
+  html, body {
+    width: 210mm !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
     background-color: white !important;
     color: #000000 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
+
+  /* Preserve all rich colors and borders on macOS Chrome */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    box-sizing: border-box !important;
+  }
+
   .no-print {
     display: none !important;
   }
+
   /* Reset page break on the last pathway block to prevent blank page generation */
   .pathway-print-block:last-child {
     page-break-after: avoid !important;
@@ -47,11 +72,30 @@
     background: transparent !important;
     box-shadow: none !important;
     outline: none !important;
-    appearance: none;
-    -webkit-appearance: none;
-    pointer-events: none;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    pointer-events: none !important;
   }
   input::placeholder {
-    color: transparent;
+    color: transparent !important;
+  }
+
+  /* Fixed premium PDF printable page styling to prevent overflow on macOS Chrome */
+  .print-page-layout {
+    width: 210mm !important;
+    height: 296mm !important; /* Shaved 1mm to absolutely safeguard against browser rounding page overflows */
+    min-height: 296mm !important;
+    max-height: 296mm !important;
+    margin: 0 !important;
+    padding: 10mm 12mm !important; /* Elegant internal padding */
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    background-color: white !important;
+    overflow: hidden !important;
+    position: relative !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 }

@@ -741,7 +741,7 @@ export default function App() {
   return (
     <div className="min-h-screen flex flex-col bg-[#F8FAFC] text-fit-darkgray font-sans print:bg-white antialiased">
       {/* 1. TOP HEADER BRAND BAR (Hides on print completely) */}
-      <header className="h-16 bg-[#0F0F10] text-white px-6 md:px-8 flex items-center justify-between shrink-0 border-b border-gray-800 no-print z-40">
+      <header className="h-16 bg-[#0F0F10] text-white px-6 md:px-8 flex items-center justify-between gap-4 sm:gap-6 shrink-0 border-b border-gray-800 no-print z-40">
         <div className="flex items-center gap-3">
           <Logo variant="dark" className="h-11 w-auto py-0.5" />
           <div className="h-8 w-[1px] bg-zinc-800 hidden sm:block"></div>
@@ -1472,7 +1472,7 @@ export default function App() {
           return (
             <div
               key={`print-page-${pathway.id}`}
-              className="bg-white w-full p-[10mm] print:p-[5.5mm] flex flex-col pathway-print-block print-page-break-after font-sans text-xs print:text-[10px]"
+              className="bg-white w-full p-[10mm] print:p-0 flex flex-col pathway-print-block print-page-layout print-page-break-after font-sans text-xs print:text-[10px]"
               style={{ boxSizing: "border-box" }}
             >
               {/* Top Section wrap */}
@@ -1723,7 +1723,7 @@ export default function App() {
 
         {/* 3.1. DEDICATED WHY STUDY WITH FIT COLLEGE PAGE AT THE END OF THE PRINT DOCUMENT */}
         <div
-          className="bg-white min-h-[265mm] print:min-h-0 w-full p-[10mm] print:p-[5.5mm] flex flex-col justify-between print-page-break-before font-sans text-left"
+          className="bg-white min-h-[265mm] print:min-h-0 w-full p-[10mm] print:p-0 flex flex-col justify-between print-page-layout print-page-break-before font-sans text-left"
           style={{ boxSizing: "border-box" }}
         >
           <div>
