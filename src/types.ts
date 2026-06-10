@@ -42,7 +42,7 @@ export const ADVISER_CONTACTS: Record<string, { email: string; phone: string; me
   "Dean Eggins": { email: "dean.eggins@fitcollege.edu.au", phone: "1300 887 017", meetingUrl: "https://meetings-ap1.hubspot.com/dean-eggins" },
   "Marcus Krause": { email: "marcus.krause@fitcollege.edu.au", phone: "1300 887 017", meetingUrl: "https://blog.fitcollege.edu.au/meetings/marcus-krause" },
   "Matthew Johnson": { email: "matthew.johnson@fitcollege.edu.au", phone: "1300 887 017", meetingUrl: "https://meetings-ap1.hubspot.com/matthew-johnson" },
-  "Nicky Wood": { email: "nicky.wood@fitcollege.edu.au", phone: "1300 887 017", meetingUrl: "https://meetings-ap1.hubspot.com/nicky-wood" },
+  "Nicky Wood": { email: "nicola.wood@fitcollege.edu.au", phone: "1300 887 017", meetingUrl: "https://meetings-ap1.hubspot.com/nicky-wood" },
   "Ryan Crilly": { email: "ryan.crilly@fitcollege.edu.au", phone: "1300 887 017", meetingUrl: "https://meetings-ap1.hubspot.com/ryan-crilly" },
   "Sam Russell": { email: "sam.russell@fitcollege.edu.au", phone: "1300 887 017", meetingUrl: "https://meetings-ap1.hubspot.com/sam-russell2" },
   "Shay Best": { email: "shay.best@fitcollege.edu.au", phone: "1300 887 017", meetingUrl: "https://meetings-ap1.hubspot.com/shay-best" },
