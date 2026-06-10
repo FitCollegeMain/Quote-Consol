@@ -85,12 +85,14 @@ export const COURSE_PRICES: Record<string, number> = {
   "Non-Concession - ONLINE Complete PT (Funded)": 6000.00,
   "Non-Concession - F2F Complete PT (Funded)": 9000.00,
   "Non-Concession - ONLINE Certificate III in Fitness (Funded)": 3000.00,
+  "Non-Concession - Certificate III in Fitness [On Campus]": 4500.00,
   // Funded Courses - Concession
   "Concession - ONLINE FIT Elite (Funded)": 8400.00,
   "Concession - On Campus FIT Elite (Funded)": 11400.00,
   "Concession - ONLINE Complete PT (Funded)": 6000.00,
   "Concession - F2F Complete PT (Funded)": 9000.00,
-  "Concession - ONLINE Certificate III in Fitness (Funded)": 3000.00
+  "Concession - ONLINE Certificate III in Fitness (Funded)": 3000.00,
+  "Concession - Certificate III in Fitness [On Campus]": 4500.00
 };
 
 export const AUTOMATIC_INCLUSIONS = [
@@ -249,6 +251,9 @@ export function cleanCourseName(name: string): string {
   if (!name) return "";
   let clean = name;
   
+  // Remove all detail in square brackets
+  clean = clean.replace(/\s*\[[^\]]*\]/g, "");
+
   // Remove all detail in brackets/parentheses, leave valid course codes intact
   clean = clean.replace(/\s*\(([^)]*)\)/g, (match, content) => {
     const trimmed = content.trim();
