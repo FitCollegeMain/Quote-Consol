@@ -498,7 +498,17 @@ export default function PathwayCard({
                         
                         <optgroup label="Standard Course Products" className="font-bold text-slate-700 bg-slate-50">
                           {Object.keys(COURSE_PRICES)
-                            .filter((priceKey) => !priceKey.startsWith("Non-Concession - ") && !priceKey.startsWith("Concession - "))
+                            .filter((priceKey) => !priceKey.startsWith("Non-Concession - ") && !priceKey.startsWith("Concession - ") && !priceKey.includes("TAE40122"))
+                            .map((priceKey) => (
+                              <option key={priceKey} value={priceKey} className="font-normal text-slate-600 bg-white">
+                                {getDropdownLabel(priceKey)}
+                              </option>
+                            ))}
+                        </optgroup>
+
+                        <optgroup label="TAE Course Products" className="font-bold text-rose-700 bg-rose-50">
+                          {Object.keys(COURSE_PRICES)
+                            .filter((priceKey) => priceKey.includes("TAE40122"))
                             .map((priceKey) => (
                               <option key={priceKey} value={priceKey} className="font-normal text-slate-600 bg-white">
                                 {getDropdownLabel(priceKey)}

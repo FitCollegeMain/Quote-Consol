@@ -67,6 +67,7 @@ export const COURSE_PRICES: Record<string, number> = {
   "PART TIME or FULL TIME Certificate IV in Fitness (SIS40221)": 4500.00,
   "SIS40221 Study Mode Upgrade (ONL to F2F)": 2000.00,
   "ONLINE Diploma of Sport - Coaching (SIS50321)": 20000.00,
+  "TAE40122 Certificate IV in Training and Assessment (online)": 3000.00,
   "ONLINE Strength & Conditioning (SAC) - ASCA L1 Accredited": 1500.00,
   "ONLINE Individual Support - Disability Skillset (CHCSS00130)": 1500.00,
   "ONLINE Kettlebell FIT Foundation Skills (KBB-FIT)": 300.00,
