@@ -554,7 +554,7 @@ export default function App() {
       }
     }
     const adviserFirstName = details.adviserName.split(" ")[0] || "Advisor";
-    document.title = `FIT College Quote - ${studentNameTrimmed} (${formattedDate}) by ${adviserFirstName}`;
+    document.title = `Quote - FIT College - ${studentNameTrimmed} (${formattedDate}) by ${adviserFirstName}`;
   }, [details]);
 
   // Handle adding a new secondary pathway
@@ -1434,11 +1434,12 @@ export default function App() {
       {/* 3. HARDCOPY PRINT PAGE CLONES (Beautiful independent pages rendering on print) */}
       <div className="hidden print:block w-full">
         {pathways.map((pathway, index) => {
-          const derivedMode = pathway.courses[0]?.name.includes("ONLINE")
+          const firstCourseUpper = pathway.courses[0]?.name?.toUpperCase() || "";
+          const derivedMode = firstCourseUpper.includes("ONLINE")
             ? "online"
-            : pathway.courses[0]?.name.includes("F2F") ||
-              pathway.courses[0]?.name.includes("PART TIME") ||
-              pathway.courses[0]?.name.includes("FULL TIME")
+            : firstCourseUpper.includes("F2F") ||
+              firstCourseUpper.includes("PART TIME") ||
+              firstCourseUpper.includes("FULL TIME")
             ? "campus"
             : "default";
 
@@ -1472,7 +1473,7 @@ export default function App() {
           return (
             <div
               key={`print-page-${pathway.id}`}
-              className="bg-white w-full p-[10mm] print:p-0 flex flex-col pathway-print-block print-page-layout print-page-break-after font-sans text-xs print:text-[10px]"
+              className={`bg-white w-full p-[10mm] print:p-0 flex flex-col pathway-print-block print-page-layout font-sans text-xs print:text-[10px] ${index > 0 ? "print-page-break-before" : ""}`}
               style={{ boxSizing: "border-box" }}
             >
               {/* Top Section wrap */}
@@ -1533,15 +1534,16 @@ export default function App() {
                             <span className="text-gray-800 break-all">{details.adviserEmail}</span>
                           </div>
                         )}
-                        <div className="flex items-start text-fit-red font-semibold">
-                          <span className="w-24 print:w-20 font-bold text-gray-500 uppercase tracking-wider shrink-0">Booking Link:</span>
+                        <div className="flex flex-col gap-1 mt-1 pb-1 pt-0.5">
+                          <span className="text-[10px] print:text-[8.5px] font-bold text-gray-500 uppercase tracking-wider block">Booking Link:</span>
                           <a
                             href={(details.adviserName && ADVISER_CONTACTS[details.adviserName]?.meetingUrl) || "https://meetings-ap1.hubspot.com/dean-eggins"}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="hover:underline text-fit-red font-black break-all text-[10px] print:text-[8px] leading-tight"
+                            className="inline-flex items-center justify-center gap-1.5 px-3 py-2 print:py-1.5 bg-fit-red text-white font-extrabold tracking-wide uppercase text-[10px] print:text-[8px] rounded hover:bg-red-700 transition-all text-center w-full max-w-[200px]"
+                            style={{ display: "inline-flex", textDecoration: "none" }}
                           >
-                            {((details.adviserName && ADVISER_CONTACTS[details.adviserName]?.meetingUrl) || "https://meetings-ap1.hubspot.com/dean-eggins").replace("https://", "")}
+                            <span>📅 Book Consultation</span>
                           </a>
                         </div>
                       </>
@@ -1683,24 +1685,53 @@ export default function App() {
                 <div className="mt-4 print:mt-1 border border-gray-200 rounded-lg p-4 print:p-2 bg-gray-50/50 text-[11px] print:text-[10px] text-left">
                   {pathway.paymentPlanType === "weekly" || pathway.paymentPlanType === "fortnightly" ? (
                     <div>
-                      <p className="text-slate-800 font-bold text-xs print:text-[10.5px]">
-                        Payment Method: <span className="text-fit-red uppercase font-black">{pathway.paymentPlanType} Study Payment Plan</span>
-                      </p>
-                      <div className="grid grid-cols-2 gap-4 print:gap-2 mt-2 print:mt-1 border-t border-gray-200/60 pt-2 print:pt-1 font-medium">
-                        <div>
-                          <span className="text-gray-400 uppercase text-[9px] print:text-[8px] block">Minimum Deposit:</span>
-                          <span className="text-slate-800 font-black text-xs print:text-[10.5px]">
-                            {new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" }).format(pathway.depositAmount === undefined ? 500 : pathway.depositAmount)}
-                          </span>
+                      <h4 className="text-slate-800 font-extrabold text-[12px] print:text-[10px] uppercase tracking-wider mb-2 border-b border-gray-200 pb-1.5">
+                        TUITION INVESTMENT OPTIONS:
+                      </h4>
+                      <div className="grid grid-cols-2 gap-6 print:gap-4 font-medium">
+                        {/* Option 1: Pay In Full */}
+                        <div className="border-r border-gray-200/60 pr-4">
+                          <p className="text-fit-black font-extrabold text-[11px] print:text-[9.5px] uppercase tracking-wide mb-1 flex items-center gap-1">
+                            <span className="h-2 w-2 rounded-full bg-slate-700 inline-block"></span>
+                            Option 1: Pay In Full Upfront
+                          </p>
+                          <div className="mt-1.5 bg-white border border-gray-100 rounded p-2 print:p-1.5">
+                            <span className="text-gray-400 uppercase text-[8px] block">Upfront Investment:</span>
+                            <span className="text-slate-800 font-black text-xs print:text-[11px] text-base">
+                              {new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" }).format(runningInvestment)}
+                            </span>
+                          </div>
+                          <p className="text-gray-400 text-[8.5px] print:text-[7.5px] leading-tight mt-1">
+                            Upfront discount applied. Rest of fees waived.
+                          </p>
                         </div>
+
+                        {/* Option 2: Payment Plan */}
                         <div>
-                          <span className="text-gray-400 uppercase text-[9px] print:text-[8px] block">Recurring Repayment:</span>
-                          <span className="text-slate-800 font-black text-xs print:text-[10.5px]">
-                            {new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" }).format(pathway.paymentPlanAmount === undefined ? 100 : pathway.paymentPlanAmount)} / {pathway.paymentPlanType === "fortnightly" ? "fortnight" : "week"}
-                          </span>
+                          <p className="text-fit-red font-extrabold text-[11px] print:text-[9.5px] uppercase tracking-wide mb-1 flex items-center gap-1">
+                            <span className="h-2 w-2 rounded-full bg-fit-red inline-block"></span>
+                            Option 2: Study Payment Plan
+                          </p>
+                          <div className="grid grid-cols-2 gap-2 mt-1.5 bg-white border border-gray-100 rounded p-2 print:p-1.5">
+                            <div>
+                              <span className="text-gray-400 uppercase text-[8px] block">Minimum Deposit:</span>
+                              <span className="text-slate-800 font-black text-xs print:text-[11px] text-base block">
+                                {new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" }).format(pathway.depositAmount === undefined ? 500 : pathway.depositAmount)}
+                              </span>
+                            </div>
+                            <div>
+                              <span className="text-gray-400 uppercase text-[8px] block">Recurring:</span>
+                              <span className="text-slate-800 font-black text-xs print:text-[11px] text-base block">
+                                {new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" }).format(pathway.paymentPlanAmount === undefined ? 100 : pathway.paymentPlanAmount)}<span className="text-[10px] text-gray-500 font-normal">/{pathway.paymentPlanType === "fortnightly" ? "fn" : "wk"}</span>
+                              </span>
+                            </div>
+                          </div>
+                          <p className="text-gray-400 text-[8.5px] print:text-[7.5px] leading-tight mt-1">
+                            Interest-free structure. Standard billing fees apply.
+                          </p>
                         </div>
                       </div>
-                      <p className="text-gray-500 text-[9px] print:text-[8px] leading-relaxed mt-3 print:mt-1 italic">
+                      <p className="text-gray-500 text-[9px] print:text-[8px] leading-relaxed mt-2.5 print:mt-1.5 border-t border-gray-100 pt-2 print:pt-1 italic">
                         <strong className="text-gray-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available OR Payment Plans are interest free - $6.60 set up fee. Either $1.30 a week or $1.95 a fortnight billing fee.
                       </p>
                     </div>
@@ -1751,11 +1782,12 @@ export default function App() {
             {/* Listing each pathway's custom value proposition based on its modes & selected courses */}
             <div className="space-y-6 print:space-y-3">
               {pathways.map((pathway, index) => {
-                const derivedMode = pathway.courses[0]?.name.includes("ONLINE")
+                const firstCourseUpper = pathway.courses[0]?.name?.toUpperCase() || "";
+                const derivedMode = firstCourseUpper.includes("ONLINE")
                   ? "online"
-                  : pathway.courses[0]?.name.includes("F2F") ||
-                    pathway.courses[0]?.name.includes("PART TIME") ||
-                    pathway.courses[0]?.name.includes("FULL TIME")
+                  : firstCourseUpper.includes("F2F") ||
+                    firstCourseUpper.includes("PART TIME") ||
+                    firstCourseUpper.includes("FULL TIME")
                   ? "campus"
                   : "default";
 

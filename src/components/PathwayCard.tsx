@@ -37,12 +37,13 @@ export default function PathwayCard({
 }: PathwayCardProps) {
   const firstCourseName = pathway.courses[0]?.name || "";
   let derivedMode: "online" | "campus" | "default" = "default";
-  if (firstCourseName.includes("ONLINE")) {
+  const upperFirstName = firstCourseName.toUpperCase();
+  if (upperFirstName.includes("ONLINE")) {
     derivedMode = "online";
   } else if (
-    firstCourseName.includes("F2F") ||
-    firstCourseName.includes("PART TIME") ||
-    firstCourseName.includes("FULL TIME")
+    upperFirstName.includes("F2F") ||
+    upperFirstName.includes("PART TIME") ||
+    upperFirstName.includes("FULL TIME")
   ) {
     derivedMode = "campus";
   }
@@ -110,14 +111,15 @@ export default function PathwayCard({
       const selectedName = updatedFields.name;
       const rrp = COURSE_PRICES[selectedName] || 0;
       let mode = "";
+      const upperSelectedName = selectedName.toUpperCase();
 
-      if (selectedName.includes("ONLINE")) {
+      if (upperSelectedName.includes("ONLINE")) {
         mode = "Online";
       } else if (
-        selectedName.includes("F2F") ||
-        selectedName.includes("PART TIME") ||
-        selectedName.includes("FULL TIME") ||
-        selectedName.toUpperCase().includes("CAMPUS")
+        upperSelectedName.includes("F2F") ||
+        upperSelectedName.includes("PART TIME") ||
+        upperSelectedName.includes("FULL TIME") ||
+        upperSelectedName.includes("CAMPUS")
       ) {
         mode = "On Campus";
       } else if (selectedName) {
@@ -262,7 +264,54 @@ export default function PathwayCard({
     });
   };
 
+  const isSingleCert3or4 = () => {
+    const mainQualifications = pathway.courses.filter(course => {
+      const hasIncluded = course.name.includes("(Included)");
+      if (hasIncluded) return false;
+      
+      const isSpecialInclusion = AUTOMATIC_INCLUSIONS.some(inc => course.name.includes(inc)) || course.isIncluded;
+      if (isSpecialInclusion) return false;
+      
+      const nameUpper = course.name.toUpperCase();
+      return nameUpper.includes("CERTIFICATE III") || 
+             nameUpper.includes("CERTIFICATE IV") || 
+             nameUpper.includes("CERT III") || 
+             nameUpper.includes("CERT IV") || 
+             nameUpper.includes("TAE40122");
+    });
+    
+    if (mainQualifications.length !== 1) return false;
+    
+    const singleNameUpper = mainQualifications[0].name.toUpperCase();
+    if (singleNameUpper.includes("&") || singleNameUpper.includes("AND") || singleNameUpper.includes("DUAL")) {
+      return false;
+    }
+    return true;
+  };
 
+  const getTimetableOptions = () => {
+    if (isSingleCert3or4()) {
+      return [
+        { value: "FT", desc: "Monday to Thursday 10am to 1pm for 7 weeks on campus", label: "Full-Time" },
+        { value: "PT-MW", desc: "Mondays and Wednesdays 6pm - 9pm for 14 weeks on campus", label: "Part-Time (Mon/Wed)" },
+        { value: "PT-TT", desc: "Tuesdays and Thursdays 6pm - 9pm for 14 weeks on campus", label: "Part-Time (Tue/Thu)" }
+      ];
+    }
+    return TIMETABLES;
+  };
+
+  React.useEffect(() => {
+    if (pathway.timetable) {
+      const currentOpts = getTimetableOptions();
+      const matched = currentOpts.find(o => o.value === pathway.timetable);
+      if (matched && pathway.timetableDesc !== matched.desc) {
+        onUpdatePathway({
+          ...pathway,
+          timetableDesc: matched.desc
+        });
+      }
+    }
+  }, [pathway.courses, pathway.timetable, pathway.timetableDesc, onUpdatePathway]);
 
   return (
     <div className="border border-fit-lightgray p-6 sm:p-8 rounded-lg bg-white relative shadow-sm mb-12 last:mb-0 print:border-none print:shadow-none print:p-0 print:m-0 break-inside-avoid">
@@ -364,11 +413,12 @@ export default function PathwayCard({
               <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
                 <div className="relative flex-1">
                   <Clock className="absolute left-3 top-2.5 h-4 w-4 text-fit-gray pointer-events-none" />
-                  <select
+                   <select
                     value={pathway.timetable}
                     onChange={(e) => {
                       const selectedVal = e.target.value;
-                      const selectedItem = TIMETABLES.find((t) => t.value === selectedVal);
+                      const currentOpts = getTimetableOptions();
+                      const selectedItem = currentOpts.find((t) => t.value === selectedVal);
                       onUpdatePathway({
                         ...pathway,
                         timetable: selectedVal,
@@ -378,7 +428,7 @@ export default function PathwayCard({
                     className="w-full bg-white border border-gray-300 text-gray-800 text-xs rounded-md pl-9 pr-3 py-2.5 focus:border-fit-red focus:ring-1 focus:ring-fit-red outline-none cursor-pointer"
                   >
                     <option value="">-- Select Timetable --</option>
-                    {TIMETABLES.map((t) => (
+                    {getTimetableOptions().map((t) => (
                       <option key={t.value} value={t.value}>
                         {t.label}
                       </option>

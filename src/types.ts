@@ -40,7 +40,7 @@ export interface QuoteDetails {
 
 export const ADVISER_CONTACTS: Record<string, { email: string; phone: string; meetingUrl?: string }> = {
   "Dean Eggins": { email: "dean.eggins@fitcollege.edu.au", phone: "1300 887 017", meetingUrl: "https://meetings-ap1.hubspot.com/dean-eggins" },
-  "Marcus Krause": { email: "marcus.krause@fitcollege.edu.au", phone: "1300 887 017", meetingUrl: "https://blog.fitcollege.edu.au/meetings/marcus-krause" },
+  "Marcus Krause": { email: "marcus.krause@fitcollege.edu.au", phone: "1300 887 017", meetingUrl: "https://statics.teams.cdn.office.net/evergreen-assets/safelinks/2/atp-safelinks.html" },
   "Matthew Johnson": { email: "matthew.johnson@fitcollege.edu.au", phone: "1300 887 017", meetingUrl: "https://meetings-ap1.hubspot.com/matthew-johnson" },
   "Nicky Wood": { email: "nicola.wood@fitcollege.edu.au", phone: "1300 887 017", meetingUrl: "https://meetings-ap1.hubspot.com/nicky-wood" },
   "Ryan Crilly": { email: "ryan.crilly@fitcollege.edu.au", phone: "1300 887 017", meetingUrl: "https://meetings-ap1.hubspot.com/ryan-crilly" },
