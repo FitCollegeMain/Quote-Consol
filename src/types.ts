@@ -171,8 +171,8 @@ export const CAMPUS_LINKS: Record<string, CampusLinkInfo> = {
     address: "PCYC, 60 Church Street, Fortitude Valley QLD 4006"
   },
   "Brisbane North – Carseldine": {
-    mapsUrl: "https://www.google.com/maps/search/?api=1&query=FIT+College+Carseldine+Goodlife+Brisbane",
-    address: "Goodlife Health Clubs, Carseldine Central, 735 Beams Road, Carseldine QLD 4034"
+    mapsUrl: "https://www.google.com/maps/search/?api=1&query=16+Graham+Rd,+Carseldine+QLD+4034",
+    address: "16 Graham Rd, Carseldine QLD 4034"
   },
   "Cairns - City Centre": {
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=FIT+College+Cairns+Grafton+St",
