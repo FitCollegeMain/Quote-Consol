@@ -167,7 +167,7 @@ export interface CampusLinkInfo {
 
 export const CAMPUS_LINKS: Record<string, CampusLinkInfo> = {
   "Brisbane – Fortitude Valley": {
-    mapsUrl: "https://www.google.com/maps/search/?api=1&query=FIT+College+Fortitude+Valley+PCYC+Brisbane",
+    mapsUrl: "https://www.google.com/search?sca_esv=9b5c4a1df88459b7&rlz=1C1GCEA_enAU971AU971&sxsrf=ANbL-n6ceVsqZbhDlrLE14tlkYPzaedyfg:1781660692024&si=AL3DRZEsmMGCryMMFSHJ3StBhOdZ2-6yYkXd_doETEE1OR-qOQigWrwKfb83UP3jl2DWM1kh3PHlCYMeMOI-cJc38ahIIYmS2XwBixg6sKrgtzDXm1i9nPqyAtXicBONjSh1uDfuSJE-Jw-fYQFT7V-uur2k4_4S8lOdyR5L2fulQ0-oY4KA9SY%3D&q=FIT+College:+Fitness+Courses+in+Brisbane+Reviews&sa=X&ved=2ahUKEwik7KGlk42VAxWhS2cHHZVnMWEQ0bkNegQIPxAH&biw=2133&bih=1021&dpr=0.9",
     address: "PCYC, 60 Church Street, Fortitude Valley QLD 4006"
   },
   "Brisbane North – Carseldine": {
@@ -187,8 +187,8 @@ export const CAMPUS_LINKS: Record<string, CampusLinkInfo> = {
     address: "Ipswich, QLD 4305"
   },
   "Sunshine Coast – Maroochydore": {
-    mapsUrl: "https://www.google.com/maps/search/?api=1&query=FIT+College+Maroochydore+Goodlife",
-    address: "Goodlife Health Clubs, 32 Wises Rd, Maroochydore QLD 4558"
+    mapsUrl: "https://www.google.com/maps/search/?api=1&query=Suncoast+Health+and+Fitness+Maroochydore",
+    address: "Suncoast Health and Fitness, 8/102 Wises Rd, Maroochydore QLD 4558"
   },
   "Toowoomba": {
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=FIT+College+Toowoomba+QLD",
