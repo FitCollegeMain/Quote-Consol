@@ -175,8 +175,8 @@ export const CAMPUS_LINKS: Record<string, CampusLinkInfo> = {
     address: "16 Graham Rd, Carseldine QLD 4034"
   },
   "Cairns - City Centre": {
-    mapsUrl: "https://www.google.com/maps/search/?api=1&query=FIT+College+Cairns+Grafton+St",
-    address: "Goodlife Health Clubs, 107 Grafton Street, Cairns QLD 4870"
+    mapsUrl: "https://www.google.com/maps/search/?api=1&query=PCYC+91-97+Macnamara+St+Manunda+QLD+4870",
+    address: "PCYC, 91-97 Macnamara St, Manunda QLD 4870"
   },
   "Gold Coast – Nerang": {
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=FIT+College+Gold+Coast+Nerang",
