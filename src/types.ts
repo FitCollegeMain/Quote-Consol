@@ -39,15 +39,15 @@ export interface QuoteDetails {
 }
 
 export const ADVISER_CONTACTS: Record<string, { email: string; phone: string; meetingUrl?: string }> = {
-  "Dean Eggins": { email: "dean.eggins@fitcollege.edu.au", phone: "1300 887 017", meetingUrl: "https://meetings-ap1.hubspot.com/dean-eggins" },
-  "Marcus Krause": { email: "marcus.krause@fitcollege.edu.au", phone: "1300 887 017", meetingUrl: "https://statics.teams.cdn.office.net/evergreen-assets/safelinks/2/atp-safelinks.html" },
-  "Matthew Johnson": { email: "matthew.johnson@fitcollege.edu.au", phone: "1300 887 017", meetingUrl: "https://meetings-ap1.hubspot.com/matthew-johnson" },
-  "Nicky Wood": { email: "nicola.wood@fitcollege.edu.au", phone: "1300 887 017", meetingUrl: "https://meetings-ap1.hubspot.com/nicky-wood" },
-  "Ryan Crilly": { email: "ryan.crilly@fitcollege.edu.au", phone: "1300 887 017", meetingUrl: "https://meetings-ap1.hubspot.com/ryan-crilly" },
-  "Sam Russell": { email: "sam.russell@fitcollege.edu.au", phone: "1300 887 017", meetingUrl: "https://meetings-ap1.hubspot.com/sam-russell2" },
-  "Shay Best": { email: "shay.best@fitcollege.edu.au", phone: "1300 887 017", meetingUrl: "https://meetings-ap1.hubspot.com/shay-best" },
-  "Tess Szabath": { email: "tess.szabath@fitcollege.edu.au", phone: "1300 887 017", meetingUrl: "https://meetings-ap1.hubspot.com/tess-szabath" },
-  "Thomas Jordan": { email: "thomas.jordan@fitcollege.edu.au", phone: "1300 887 017", meetingUrl: "https://meetings-ap1.hubspot.com/thomas-jordan2" }
+  "Dean Eggins": { email: "dean.eggins@fitcollege.edu.au", phone: "0418 263 653", meetingUrl: "https://meetings-ap1.hubspot.com/dean-eggins" },
+  "Marcus Krause": { email: "marcus.krause@fitcollege.edu.au", phone: "0400 873 123", meetingUrl: "https://statics.teams.cdn.office.net/evergreen-assets/safelinks/2/atp-safelinks.html" },
+  "Matthew Johnson": { email: "matthew.johnson@fitcollege.edu.au", phone: "0473 371 780", meetingUrl: "https://meetings-ap1.hubspot.com/matthew-johnson" },
+  "Nicky Wood": { email: "nicola.wood@fitcollege.edu.au", phone: "0473 371 780", meetingUrl: "https://meetings-ap1.hubspot.com/nicky-wood" },
+  "Ryan Crilly": { email: "ryan.crilly@fitcollege.edu.au", phone: "0455 655 650", meetingUrl: "https://meetings-ap1.hubspot.com/ryan-crilly" },
+  "Sam Russell": { email: "sam.russell@fitcollege.edu.au", phone: "0460 844 442", meetingUrl: "https://meetings-ap1.hubspot.com/sam-russell2" },
+  "Shay Best": { email: "shay.best@fitcollege.edu.au", phone: "0438 303 005", meetingUrl: "https://meetings-ap1.hubspot.com/shay-best" },
+  "Tess Szabath": { email: "tess.szabath@fitcollege.edu.au", phone: "0457 279 143", meetingUrl: "https://meetings-ap1.hubspot.com/tess-szabath" },
+  "Thomas Jordan": { email: "thomas.jordan@fitcollege.edu.au", phone: "0407 220 808", meetingUrl: "https://meetings-ap1.hubspot.com/thomas-jordan2" }
 };
 
 export const ADVISERS = Object.keys(ADVISER_CONTACTS);

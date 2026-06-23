@@ -205,9 +205,9 @@ export default function App() {
         const contact = ADVISER_CONTACTS[currentUser];
         return {
           ...prev,
-          adviserName: prev.adviserName || currentUser,
-          adviserEmail: prev.adviserEmail || contact?.email || "",
-          adviserPhone: prev.adviserPhone || contact?.phone || "",
+          adviserName: currentUser,
+          adviserEmail: contact?.email || "",
+          adviserPhone: contact?.phone || "",
         };
       });
     }
