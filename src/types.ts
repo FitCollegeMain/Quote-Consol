@@ -203,8 +203,8 @@ export const CAMPUS_LINKS: Record<string, CampusLinkInfo> = {
     address: "Vision Personal Training, 7 Stokes Ave, Caringbah NSW 2229"
   },
   "Sydney - City Centre": {
-    mapsUrl: "https://www.google.com/maps/search/?api=1&query=FIT+College+Sydney+Gym",
-    address: "Fitness First, 259 George St, Sydney NSW 2000"
+    mapsUrl: "https://www.google.com/maps/search/?api=1&query=20+Bond+St+Sydney+NSW+2000",
+    address: "20 Bond St, Sydney NSW 2000"
   },
   "Sydney - Penrith": {
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=FIT+College+Penrith+NSW",
