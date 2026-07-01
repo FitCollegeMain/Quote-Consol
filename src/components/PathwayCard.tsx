@@ -239,7 +239,8 @@ export default function PathwayCard({
     totalInvestment += finalPrice;
   });
 
-  const paymentPlanType = pathway.paymentPlanType || "full";
+  const rawPlanType = pathway.paymentPlanType;
+  const paymentPlanType = (!rawPlanType || rawPlanType === "full") ? "weekly" : rawPlanType;
   const depositAmount = pathway.depositAmount === undefined ? 500 : pathway.depositAmount;
   const paymentPlanAmount = pathway.paymentPlanAmount === undefined ? 100 : pathway.paymentPlanAmount;
 
@@ -691,17 +692,11 @@ export default function PathwayCard({
             {/* 1-line note below Total Final Investment */}
             <tr className="border-t border-fit-lightgray bg-slate-50/50">
               <td colSpan={7} className="py-2.5 px-3 text-[10px] text-center text-slate-500 font-medium italic">
-                {paymentPlanType === "full" ? (
-                  <span>
-                    Note: This price is to be paid in full upfront. <strong className="text-slate-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available OR Payment Plans are interest free - $6.60 set up fee. Either $1.30 a week or $1.95 a fortnight billing fee.
-                  </span>
-                ) : (
-                  <span>
-                    Note: This price is on a <strong className="text-slate-850 font-extrabold uppercase">{paymentPlanType}</strong> payment plan, consisting of a{" "}
-                    <strong className="text-slate-850 font-extrabold">{formatMoney(depositAmount)}</strong> minimum deposit and{" "}
-                    <strong className="text-slate-850 font-extrabold">{formatMoney(paymentPlanAmount)}/{paymentPlanType === "fortnightly" ? "fortnight" : "week"}</strong> payment repayments. <strong className="text-slate-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available OR Payment Plans are interest free - $6.60 set up fee. Either $1.30 a week or $1.95 a fortnight billing fee.
-                  </span>
-                )}
+                <span>
+                  Note: This price can be paid in full upfront (<strong>{formatMoney(totalInvestment)}</strong>) OR on a <strong className="text-slate-850 font-extrabold uppercase">{paymentPlanType}</strong> payment plan, consisting of a{" "}
+                  <strong className="text-slate-850 font-extrabold">{formatMoney(depositAmount)}</strong> minimum deposit and{" "}
+                  <strong className="text-slate-850 font-extrabold">{formatMoney(paymentPlanAmount)}/{paymentPlanType === "fortnightly" ? "fortnight" : "week"}</strong> payment repayments. <strong className="text-slate-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available OR Payment Plans are interest free - $6.60 set up fee. Either $1.30 a week or $1.95 a fortnight billing fee.
+                </span>
               </td>
             </tr>
           </tbody>
@@ -722,29 +717,10 @@ export default function PathwayCard({
       {/* Tuition Option Configuration */}
       <div className="mt-6 border border-slate-200/80 rounded-xl p-5 bg-slate-50/50 no-print text-left">
         <label className="block text-[11px] font-black uppercase tracking-wider text-slate-400 mb-3">
-          Tuition Payment Method Option:
+          Payment Plan Configuration:
         </label>
         
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
-          {/* Pay In Full Option */}
-          <button
-            type="button"
-            onClick={() => setPaymentPlanType("full")}
-            className={`flex items-center gap-2.5 p-3.5 rounded-lg border text-xs font-bold transition-all cursor-pointer ${
-              paymentPlanType === "full"
-                ? "bg-white border-fit-red text-fit-red shadow-xs ring-1 ring-fit-red"
-                : "bg-white border-slate-200 hover:border-slate-300 text-slate-600"
-            }`}
-          >
-            <input
-              type="radio"
-              checked={paymentPlanType === "full"}
-              onChange={() => setPaymentPlanType("full")}
-              className="h-4.5 w-4.5 text-fit-red focus:ring-fit-red border-slate-300 cursor-pointer pointer-events-none"
-            />
-            <span className="cursor-pointer">Pay In Full (Upfront)</span>
-          </button>
-
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
           {/* Weekly Payment Plan Option */}
           <button
             type="button"
@@ -784,52 +760,50 @@ export default function PathwayCard({
           </button>
         </div>
 
-        {/* If Payment Plan is selected, show customisable Inputs for Deposit and Repayment */}
-        {paymentPlanType !== "full" && (
-          <div className="pt-4 border-t border-slate-200/80 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Minimum Deposit Input */}
-            <div>
-              <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-1.5">
-                Minimum Deposit ($)
-              </label>
-              <div className="relative">
-                <span className="absolute left-2.5 top-2.5 text-xs font-bold text-slate-400">$</span>
-                <input
-                  type="number"
-                  value={depositAmount}
-                  onChange={(e) => {
-                    const val = parseFloat(e.target.value);
-                    setDepositAmount(isNaN(val) ? 0 : val);
-                  }}
-                  className="w-full bg-white border border-slate-200 rounded px-2.5 pl-6 py-1.5 text-xs text-slate-800 font-bold focus:outline-none focus:ring-1 focus:ring-fit-red"
-                  placeholder="e.g. 500"
-                  min="0"
-                />
-              </div>
-            </div>
-
-            {/* Repayment Amount Input */}
-            <div>
-              <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-1.5">
-                {paymentPlanType === "weekly" ? "Weekly Payment Amount ($)" : "Fortnightly Payment Amount ($)"}
-              </label>
-              <div className="relative">
-                <span className="absolute left-2.5 top-2.5 text-xs font-bold text-slate-400">$</span>
-                <input
-                  type="number"
-                  value={paymentPlanAmount}
-                  onChange={(e) => {
-                    const val = parseFloat(e.target.value);
-                    setPaymentPlanAmount(isNaN(val) ? 0 : val);
-                  }}
-                  className="w-full bg-white border border-slate-200 rounded px-2.5 pl-6 py-1.5 text-xs text-slate-800 font-bold focus:outline-none focus:ring-1 focus:ring-fit-red"
-                  placeholder={paymentPlanType === "weekly" ? "e.g. 100" : "e.g. 200"}
-                  min="1"
-                />
-              </div>
+        {/* Inputs for Deposit and Repayment */}
+        <div className="pt-4 border-t border-slate-200/80 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Minimum Deposit Input */}
+          <div>
+            <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-1.5">
+              Minimum Deposit ($)
+            </label>
+            <div className="relative">
+              <span className="absolute left-2.5 top-2.5 text-xs font-bold text-slate-400">$</span>
+              <input
+                type="number"
+                value={depositAmount}
+                onChange={(e) => {
+                  const val = parseFloat(e.target.value);
+                  setDepositAmount(isNaN(val) ? 0 : val);
+                }}
+                className="w-full bg-white border border-slate-200 rounded px-2.5 pl-6 py-1.5 text-xs text-slate-800 font-bold focus:outline-none focus:ring-1 focus:ring-fit-red"
+                placeholder="e.g. 500"
+                min="0"
+              />
             </div>
           </div>
-        )}
+
+          {/* Repayment Amount Input */}
+          <div>
+            <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-1.5">
+              {paymentPlanType === "weekly" ? "Weekly Payment Amount ($)" : "Fortnightly Payment Amount ($)"}
+            </label>
+            <div className="relative">
+              <span className="absolute left-2.5 top-2.5 text-xs font-bold text-slate-400">$</span>
+              <input
+                type="number"
+                value={paymentPlanAmount}
+                onChange={(e) => {
+                  const val = parseFloat(e.target.value);
+                  setPaymentPlanAmount(isNaN(val) ? 0 : val);
+                }}
+                className="w-full bg-white border border-slate-200 rounded px-2.5 pl-6 py-1.5 text-xs text-slate-800 font-bold focus:outline-none focus:ring-1 focus:ring-fit-red"
+                placeholder={paymentPlanType === "weekly" ? "e.g. 100" : "e.g. 200"}
+                min="1"
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Why Choose FIT College Box - changes conditionally based on path mode */}

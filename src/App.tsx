@@ -522,6 +522,7 @@ export default function App() {
       startDate: "",
       timetable: "",
       timetableDesc: "",
+      paymentPlanType: "weekly",
       courses: [
         {
           id: "course-initial-1",
@@ -567,6 +568,7 @@ export default function App() {
       startDate: "",
       timetable: "",
       timetableDesc: "",
+      paymentPlanType: "weekly",
       courses: [
         {
           id: `course-${crypto.randomUUID()}`,
@@ -1443,6 +1445,9 @@ export default function App() {
             ? "campus"
             : "default";
 
+          const rawPlanType = pathway.paymentPlanType;
+          const pathwayPaymentPlanType = (!rawPlanType || rawPlanType === "full") ? "weekly" : rawPlanType;
+
           const derivedTitle =
             derivedMode === "online"
               ? "RECOMMENDED ONLINE PATHWAY"
@@ -1683,68 +1688,57 @@ export default function App() {
 
                 {/* Tuition Payment Option for Printout */}
                 <div className="mt-4 print:mt-1 border border-gray-200 rounded-lg p-4 print:p-2 bg-gray-50/50 text-[11px] print:text-[10px] text-left">
-                  {pathway.paymentPlanType === "weekly" || pathway.paymentPlanType === "fortnightly" ? (
-                    <div>
-                      <h4 className="text-slate-800 font-extrabold text-[12px] print:text-[10px] uppercase tracking-wider mb-2 border-b border-gray-200 pb-1.5">
-                        TUITION INVESTMENT OPTIONS:
-                      </h4>
-                      <div className="grid grid-cols-2 gap-6 print:gap-4 font-medium">
-                        {/* Option 1: Pay In Full */}
-                        <div className="border-r border-gray-200/60 pr-4">
-                          <p className="text-fit-black font-extrabold text-[11px] print:text-[9.5px] uppercase tracking-wide mb-1 flex items-center gap-1">
-                            <span className="h-2 w-2 rounded-full bg-slate-700 inline-block"></span>
-                            Option 1: Pay In Full Upfront
-                          </p>
-                          <div className="mt-1.5 bg-white border border-gray-100 rounded p-2 print:p-1.5">
-                            <span className="text-gray-400 uppercase text-[8px] block">Upfront Investment:</span>
-                            <span className="text-slate-800 font-black text-xs print:text-[11px] text-base">
-                              {new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" }).format(runningInvestment)}
+                  <div>
+                    <h4 className="text-slate-800 font-extrabold text-[12px] print:text-[10px] uppercase tracking-wider mb-2 border-b border-gray-200 pb-1.5">
+                      TUITION INVESTMENT OPTIONS:
+                    </h4>
+                    <div className="grid grid-cols-2 gap-6 print:gap-4 font-medium">
+                      {/* Option 1: Pay In Full */}
+                      <div className="border-r border-gray-200/60 pr-4">
+                        <p className="text-fit-black font-extrabold text-[11px] print:text-[9.5px] uppercase tracking-wide mb-1 flex items-center gap-1">
+                          <span className="h-2 w-2 rounded-full bg-slate-700 inline-block"></span>
+                          Option 1: Pay In Full Upfront
+                        </p>
+                        <div className="mt-1.5 bg-white border border-gray-100 rounded p-2 print:p-1.5">
+                          <span className="text-gray-400 uppercase text-[8px] block">Upfront Investment:</span>
+                          <span className="text-slate-800 font-black text-xs print:text-[11px] text-base">
+                            {new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" }).format(runningInvestment)}
+                          </span>
+                        </div>
+                        <p className="text-gray-400 text-[8.5px] print:text-[7.5px] leading-tight mt-1">
+                          Upfront discount applied. Rest of fees waived.
+                        </p>
+                      </div>
+
+                      {/* Option 2: Payment Plan */}
+                      <div>
+                        <p className="text-fit-red font-extrabold text-[11px] print:text-[9.5px] uppercase tracking-wide mb-1 flex items-center gap-1">
+                          <span className="h-2 w-2 rounded-full bg-fit-red inline-block"></span>
+                          Option 2: Study Payment Plan
+                        </p>
+                        <div className="grid grid-cols-2 gap-2 mt-1.5 bg-white border border-gray-100 rounded p-2 print:p-1.5">
+                          <div>
+                            <span className="text-gray-400 uppercase text-[8px] block">Minimum Deposit:</span>
+                            <span className="text-slate-800 font-black text-xs print:text-[11px] text-base block">
+                              {new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" }).format(pathway.depositAmount === undefined ? 500 : pathway.depositAmount)}
                             </span>
                           </div>
-                          <p className="text-gray-400 text-[8.5px] print:text-[7.5px] leading-tight mt-1">
-                            Upfront discount applied. Rest of fees waived.
-                          </p>
-                        </div>
-
-                        {/* Option 2: Payment Plan */}
-                        <div>
-                          <p className="text-fit-red font-extrabold text-[11px] print:text-[9.5px] uppercase tracking-wide mb-1 flex items-center gap-1">
-                            <span className="h-2 w-2 rounded-full bg-fit-red inline-block"></span>
-                            Option 2: Study Payment Plan
-                          </p>
-                          <div className="grid grid-cols-2 gap-2 mt-1.5 bg-white border border-gray-100 rounded p-2 print:p-1.5">
-                            <div>
-                              <span className="text-gray-400 uppercase text-[8px] block">Minimum Deposit:</span>
-                              <span className="text-slate-800 font-black text-xs print:text-[11px] text-base block">
-                                {new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" }).format(pathway.depositAmount === undefined ? 500 : pathway.depositAmount)}
-                              </span>
-                            </div>
-                            <div>
-                              <span className="text-gray-400 uppercase text-[8px] block">Recurring:</span>
-                              <span className="text-slate-800 font-black text-xs print:text-[11px] text-base block">
-                                {new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" }).format(pathway.paymentPlanAmount === undefined ? 100 : pathway.paymentPlanAmount)}<span className="text-[10px] text-gray-500 font-normal">/{pathway.paymentPlanType === "fortnightly" ? "fn" : "wk"}</span>
-                              </span>
-                            </div>
+                          <div>
+                            <span className="text-gray-400 uppercase text-[8px] block">Recurring:</span>
+                            <span className="text-slate-800 font-black text-xs print:text-[11px] text-base block">
+                              {new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" }).format(pathway.paymentPlanAmount === undefined ? 100 : pathway.paymentPlanAmount)}<span className="text-[10px] text-gray-500 font-normal">/{pathwayPaymentPlanType === "fortnightly" ? "fn" : "wk"}</span>
+                            </span>
                           </div>
-                          <p className="text-gray-400 text-[8.5px] print:text-[7.5px] leading-tight mt-1">
-                            Interest-free structure. Standard billing fees apply.
-                          </p>
                         </div>
+                        <p className="text-gray-400 text-[8.5px] print:text-[7.5px] leading-tight mt-1">
+                          Interest-free structure. Standard billing fees apply.
+                        </p>
                       </div>
-                      <p className="text-gray-500 text-[9px] print:text-[8px] leading-relaxed mt-2.5 print:mt-1.5 border-t border-gray-100 pt-2 print:pt-1 italic">
-                        <strong className="text-gray-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available OR Payment Plans are interest free - $6.60 set up fee. Either $1.30 a week or $1.95 a fortnight billing fee.
-                      </p>
                     </div>
-                  ) : (
-                    <div>
-                      <p className="text-slate-800 font-bold text-xs print:text-[10.5px] select-none">
-                        Payment Method: <span className="text-fit-black uppercase font-black">Pay In Full Upfront (Upfront Discount Applies)</span>
-                      </p>
-                      <p className="text-gray-500 text-[9px] print:text-[8px] leading-relaxed mt-2 print:mt-1 italic">
-                        <strong className="text-gray-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available OR Payment Plans are interest free - $6.60 set up fee. Either $1.30 a week or $1.95 a fortnight billing fee.
-                      </p>
-                    </div>
-                  )}
+                    <p className="text-gray-500 text-[9px] print:text-[8px] leading-relaxed mt-2.5 print:mt-1.5 border-t border-gray-100 pt-2 print:pt-1 italic">
+                      <strong className="text-gray-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available OR Payment Plans are interest free - $6.60 set up fee. Either $1.30 a week or $1.95 a fortnight billing fee.
+                    </p>
+                  </div>
                 </div>
 
               </div>
