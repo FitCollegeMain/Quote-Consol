@@ -243,6 +243,7 @@ export default function PathwayCard({
   const paymentPlanType = (!rawPlanType || rawPlanType === "full") ? "weekly" : rawPlanType;
   const depositAmount = pathway.depositAmount === undefined ? 500 : pathway.depositAmount;
   const paymentPlanAmount = pathway.paymentPlanAmount === undefined ? 100 : pathway.paymentPlanAmount;
+  const payInFullPrice = pathway.payInFullPrice ?? totalInvestment;
 
   const setPaymentPlanType = (type: "full" | "weekly" | "fortnightly") => {
     onUpdatePathway({
@@ -262,6 +263,13 @@ export default function PathwayCard({
     onUpdatePathway({
       ...pathway,
       paymentPlanAmount: amount,
+    });
+  };
+
+  const setPayInFullPrice = (price: number | undefined) => {
+    onUpdatePathway({
+      ...pathway,
+      payInFullPrice: price,
     });
   };
 
@@ -693,7 +701,7 @@ export default function PathwayCard({
             <tr className="border-t border-fit-lightgray bg-slate-50/50">
               <td colSpan={7} className="py-2.5 px-3 text-[10px] text-center text-slate-500 font-medium italic">
                 <span>
-                  Note: This price can be paid in full upfront (<strong>{formatMoney(totalInvestment)}</strong>) OR on a <strong className="text-slate-850 font-extrabold uppercase">{paymentPlanType}</strong> payment plan, consisting of a{" "}
+                  Note: This price can be paid in full upfront (<strong>{formatMoney(payInFullPrice)}</strong>) OR on a <strong className="text-slate-850 font-extrabold uppercase">{paymentPlanType}</strong> payment plan, consisting of a{" "}
                   <strong className="text-slate-850 font-extrabold">{formatMoney(depositAmount)}</strong> minimum deposit and{" "}
                   <strong className="text-slate-850 font-extrabold">{formatMoney(paymentPlanAmount)}/{paymentPlanType === "fortnightly" ? "fortnight" : "week"}</strong> payment repayments. <strong className="text-slate-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available OR Payment Plans are interest free - $6.60 set up fee. Either $1.30 a week or $1.95 a fortnight billing fee.
                 </span>
@@ -760,8 +768,40 @@ export default function PathwayCard({
           </button>
         </div>
 
-        {/* Inputs for Deposit and Repayment */}
-        <div className="pt-4 border-t border-slate-200/80 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* Inputs for Deposit, Repayment and Pay In Full Price */}
+        <div className="pt-4 border-t border-slate-200/80 grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {/* Pay In Full Price Input */}
+          <div>
+            <div className="flex justify-between items-center mb-1.5">
+              <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
+                Pay In Full Price ($)
+              </label>
+              {pathway.payInFullPrice !== undefined && (
+                <button
+                  type="button"
+                  onClick={() => setPayInFullPrice(undefined)}
+                  className="text-[10px] text-fit-red hover:underline font-bold cursor-pointer"
+                >
+                  Reset to total
+                </button>
+              )}
+            </div>
+            <div className="relative">
+              <span className="absolute left-2.5 top-2.5 text-xs font-bold text-slate-400">$</span>
+              <input
+                type="number"
+                value={pathway.payInFullPrice ?? totalInvestment}
+                onChange={(e) => {
+                  const val = parseFloat(e.target.value);
+                  setPayInFullPrice(isNaN(val) ? undefined : val);
+                }}
+                className="w-full bg-white border border-slate-200 rounded px-2.5 pl-6 py-1.5 text-xs text-slate-800 font-bold focus:outline-none focus:ring-1 focus:ring-fit-red"
+                placeholder={totalInvestment.toString()}
+                min="0"
+              />
+            </div>
+          </div>
+
           {/* Minimum Deposit Input */}
           <div>
             <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-1.5">

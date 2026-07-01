@@ -1702,7 +1702,7 @@ export default function App() {
                         <div className="mt-1.5 bg-white border border-gray-100 rounded p-2 print:p-1.5">
                           <span className="text-gray-400 uppercase text-[8px] block">Upfront Investment:</span>
                           <span className="text-slate-800 font-black text-xs print:text-[11px] text-base">
-                            {new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" }).format(runningInvestment)}
+                            {new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" }).format(pathway.payInFullPrice ?? runningInvestment)}
                           </span>
                         </div>
                         <p className="text-gray-400 text-[8.5px] print:text-[7.5px] leading-tight mt-1">

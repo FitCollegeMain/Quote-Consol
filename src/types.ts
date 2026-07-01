@@ -26,6 +26,7 @@ export interface Pathway {
   paymentPlanWeeks?: number;
   paymentPlanConfigMode?: "weeks" | "amount";
   paymentPlanAmount?: number;
+  payInFullPrice?: number;
 }
 
 export interface QuoteDetails {
