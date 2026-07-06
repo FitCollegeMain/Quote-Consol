@@ -43,7 +43,8 @@ export default function PathwayCard({
   } else if (
     upperFirstName.includes("F2F") ||
     upperFirstName.includes("PART TIME") ||
-    upperFirstName.includes("FULL TIME")
+    upperFirstName.includes("FULL TIME") ||
+    upperFirstName.includes("CAMPUS")
   ) {
     derivedMode = "campus";
   }

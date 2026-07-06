@@ -1441,7 +1441,8 @@ export default function App() {
             ? "online"
             : firstCourseUpper.includes("F2F") ||
               firstCourseUpper.includes("PART TIME") ||
-              firstCourseUpper.includes("FULL TIME")
+              firstCourseUpper.includes("FULL TIME") ||
+              firstCourseUpper.includes("CAMPUS")
             ? "campus"
             : "default";
 
