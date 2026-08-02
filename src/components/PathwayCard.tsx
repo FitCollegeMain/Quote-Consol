@@ -245,6 +245,7 @@ export default function PathwayCard({
   const depositAmount = pathway.depositAmount === undefined ? 500 : pathway.depositAmount;
   const paymentPlanAmount = pathway.paymentPlanAmount === undefined ? 100 : pathway.paymentPlanAmount;
   const payInFullPrice = pathway.payInFullPrice ?? totalInvestment;
+  const displayedPaymentMethods = pathway.displayedPaymentMethods ?? "both";
 
   const setPaymentPlanType = (type: "full" | "weekly" | "fortnightly") => {
     onUpdatePathway({
@@ -271,6 +272,13 @@ export default function PathwayCard({
     onUpdatePathway({
       ...pathway,
       payInFullPrice: price,
+    });
+  };
+
+  const setDisplayedPaymentMethods = (methods: "both" | "full" | "plan") => {
+    onUpdatePathway({
+      ...pathway,
+      displayedPaymentMethods: methods,
     });
   };
 
@@ -702,9 +710,25 @@ export default function PathwayCard({
             <tr className="border-t border-fit-lightgray bg-slate-50/50">
               <td colSpan={7} className="py-2.5 px-3 text-[10px] text-center text-slate-500 font-medium italic">
                 <span>
-                  Note: This price can be paid in full upfront (<strong>{formatMoney(payInFullPrice)}</strong>) OR on a <strong className="text-slate-850 font-extrabold uppercase">{paymentPlanType}</strong> payment plan, consisting of a{" "}
-                  <strong className="text-slate-850 font-extrabold">{formatMoney(depositAmount)}</strong> minimum deposit and{" "}
-                  <strong className="text-slate-850 font-extrabold">{formatMoney(paymentPlanAmount)}/{paymentPlanType === "fortnightly" ? "fortnight" : "week"}</strong> payment repayments. <strong className="text-slate-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available OR Payment Plans are interest free - $6.60 set up fee. Either $1.30 a week or $1.95 a fortnight billing fee.
+                  Note:{" "}
+                  {displayedPaymentMethods === "full" ? (
+                    <>
+                      This price is paid in full upfront (<strong>{formatMoney(payInFullPrice)}</strong>).
+                    </>
+                  ) : displayedPaymentMethods === "plan" ? (
+                    <>
+                      This price can be paid on a <strong className="text-slate-850 font-extrabold uppercase">{paymentPlanType}</strong> payment plan, consisting of a{" "}
+                      <strong className="text-slate-850 font-extrabold">{formatMoney(depositAmount)}</strong> minimum deposit and{" "}
+                      <strong className="text-slate-850 font-extrabold">{formatMoney(paymentPlanAmount)}/{paymentPlanType === "fortnightly" ? "fortnight" : "week"}</strong> payment repayments.
+                    </>
+                  ) : (
+                    <>
+                      This price can be paid in full upfront (<strong>{formatMoney(payInFullPrice)}</strong>) OR on a <strong className="text-slate-850 font-extrabold uppercase">{paymentPlanType}</strong> payment plan, consisting of a{" "}
+                      <strong className="text-slate-850 font-extrabold">{formatMoney(depositAmount)}</strong> minimum deposit and{" "}
+                      <strong className="text-slate-850 font-extrabold">{formatMoney(paymentPlanAmount)}/{paymentPlanType === "fortnightly" ? "fortnight" : "week"}</strong> payment repayments.
+                    </>
+                  )}{" "}
+                  <strong className="text-slate-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available OR Payment Plans are interest free - $6.60 set up fee. Either $1.30 a week or $1.95 a fortnight billing fee.
                 </span>
               </td>
             </tr>
@@ -725,125 +749,201 @@ export default function PathwayCard({
 
       {/* Tuition Option Configuration */}
       <div className="mt-6 border border-slate-200/80 rounded-xl p-5 bg-slate-50/50 no-print text-left">
-        <label className="block text-[11px] font-black uppercase tracking-wider text-slate-400 mb-3">
-          Payment Plan Configuration:
-        </label>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-          {/* Weekly Payment Plan Option */}
-          <button
-            type="button"
-            onClick={() => setPaymentPlanType("weekly")}
-            className={`flex items-center gap-2.5 p-3.5 rounded-lg border text-xs font-bold transition-all cursor-pointer ${
-              paymentPlanType === "weekly"
-                ? "bg-white border-fit-red text-fit-red shadow-xs ring-1 ring-fit-red"
-                : "bg-white border-slate-200 hover:border-slate-300 text-slate-600"
-            }`}
-          >
-            <input
-              type="radio"
-              checked={paymentPlanType === "weekly"}
-              onChange={() => setPaymentPlanType("weekly")}
-              className="h-4.5 w-4.5 text-fit-red focus:ring-fit-red border-slate-300 cursor-pointer pointer-events-none"
-            />
-            <span className="cursor-pointer">Weekly Payment Plan</span>
-          </button>
-
-          {/* Fortnightly Payment Plan Option */}
-          <button
-            type="button"
-            onClick={() => setPaymentPlanType("fortnightly")}
-            className={`flex items-center gap-2.5 p-3.5 rounded-lg border text-xs font-bold transition-all cursor-pointer ${
-              paymentPlanType === "fortnightly"
-                ? "bg-white border-fit-red text-fit-red shadow-xs ring-1 ring-fit-red"
-                : "bg-white border-slate-200 hover:border-slate-300 text-slate-600"
-            }`}
-          >
-            <input
-              type="radio"
-              checked={paymentPlanType === "fortnightly"}
-              onChange={() => setPaymentPlanType("fortnightly")}
-              className="h-4.5 w-4.5 text-fit-red focus:ring-fit-red border-slate-300 cursor-pointer pointer-events-none"
-            />
-            <span className="cursor-pointer">Fortnightly Payment Plan</span>
-          </button>
+        {/* Toggle between showing multiple payment methods, upfront, or plan only */}
+        <div className="mb-5">
+          <label className="block text-[11px] font-black uppercase tracking-wider text-slate-400 mb-2.5">
+            Show Payment Options in Proposal:
+          </label>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <button
+              type="button"
+              onClick={() => setDisplayedPaymentMethods("both")}
+              className={`flex items-center gap-2 p-2.5 rounded-lg border text-xs font-bold transition-all cursor-pointer ${
+                displayedPaymentMethods === "both"
+                  ? "bg-white border-fit-red text-fit-red shadow-xs ring-1 ring-fit-red font-extrabold"
+                  : "bg-white border-slate-200 hover:border-slate-300 text-slate-600"
+              }`}
+            >
+              <input
+                type="radio"
+                checked={displayedPaymentMethods === "both"}
+                onChange={() => setDisplayedPaymentMethods("both")}
+                className="h-3.5 w-3.5 text-fit-red focus:ring-fit-red border-slate-300 cursor-pointer pointer-events-none"
+              />
+              Display Both Options
+            </button>
+            <button
+              type="button"
+              onClick={() => setDisplayedPaymentMethods("full")}
+              className={`flex items-center gap-2 p-2.5 rounded-lg border text-xs font-bold transition-all cursor-pointer ${
+                displayedPaymentMethods === "full"
+                  ? "bg-white border-fit-red text-fit-red shadow-xs ring-1 ring-fit-red font-extrabold"
+                  : "bg-white border-slate-200 hover:border-slate-300 text-slate-600"
+              }`}
+            >
+              <input
+                type="radio"
+                checked={displayedPaymentMethods === "full"}
+                onChange={() => setDisplayedPaymentMethods("full")}
+                className="h-3.5 w-3.5 text-fit-red focus:ring-fit-red border-slate-300 cursor-pointer pointer-events-none"
+              />
+              Pay in Full Only
+            </button>
+            <button
+              type="button"
+              onClick={() => setDisplayedPaymentMethods("plan")}
+              className={`flex items-center gap-2 p-2.5 rounded-lg border text-xs font-bold transition-all cursor-pointer ${
+                displayedPaymentMethods === "plan"
+                  ? "bg-white border-fit-red text-fit-red shadow-xs ring-1 ring-fit-red font-extrabold"
+                  : "bg-white border-slate-200 hover:border-slate-300 text-slate-600"
+              }`}
+            >
+              <input
+                type="radio"
+                checked={displayedPaymentMethods === "plan"}
+                onChange={() => setDisplayedPaymentMethods("plan")}
+                className="h-3.5 w-3.5 text-fit-red focus:ring-fit-red border-slate-300 cursor-pointer pointer-events-none"
+              />
+              Payment Plan Only
+            </button>
+          </div>
         </div>
 
-        {/* Inputs for Deposit, Repayment and Pay In Full Price */}
-        <div className="pt-4 border-t border-slate-200/80 grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {/* Pay In Full Price Input */}
-          <div>
-            <div className="flex justify-between items-center mb-1.5">
-              <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
-                Pay In Full Price ($)
-              </label>
-              {pathway.payInFullPrice !== undefined && (
-                <button
-                  type="button"
-                  onClick={() => setPayInFullPrice(undefined)}
-                  className="text-[10px] text-fit-red hover:underline font-bold cursor-pointer"
-                >
-                  Reset to total
-                </button>
-              )}
-            </div>
-            <div className="relative">
-              <span className="absolute left-2.5 top-2.5 text-xs font-bold text-slate-400">$</span>
-              <input
-                type="number"
-                value={pathway.payInFullPrice ?? totalInvestment}
-                onChange={(e) => {
-                  const val = parseFloat(e.target.value);
-                  setPayInFullPrice(isNaN(val) ? undefined : val);
-                }}
-                className="w-full bg-white border border-slate-200 rounded px-2.5 pl-6 py-1.5 text-xs text-slate-800 font-bold focus:outline-none focus:ring-1 focus:ring-fit-red"
-                placeholder={totalInvestment.toString()}
-                min="0"
-              />
+        {/* Payment Plan Frequency - only visible if Payment Plan is displayed */}
+        {displayedPaymentMethods !== "full" && (
+          <div className="mb-4 pt-4 border-t border-slate-200/80">
+            <label className="block text-[11px] font-black uppercase tracking-wider text-slate-400 mb-2.5">
+              Payment Plan Frequency:
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Weekly Payment Plan Option */}
+              <button
+                type="button"
+                onClick={() => setPaymentPlanType("weekly")}
+                className={`flex items-center gap-2.5 p-3.5 rounded-lg border text-xs font-bold transition-all cursor-pointer ${
+                  paymentPlanType === "weekly"
+                    ? "bg-white border-fit-red text-fit-red shadow-xs ring-1 ring-fit-red"
+                    : "bg-white border-slate-200 hover:border-slate-300 text-slate-600"
+                }`}
+              >
+                <input
+                  type="radio"
+                  checked={paymentPlanType === "weekly"}
+                  onChange={() => setPaymentPlanType("weekly")}
+                  className="h-4.5 w-4.5 text-fit-red focus:ring-fit-red border-slate-300 cursor-pointer pointer-events-none"
+                />
+                <span className="cursor-pointer">Weekly Payment Plan</span>
+              </button>
+
+              {/* Fortnightly Payment Plan Option */}
+              <button
+                type="button"
+                onClick={() => setPaymentPlanType("fortnightly")}
+                className={`flex items-center gap-2.5 p-3.5 rounded-lg border text-xs font-bold transition-all cursor-pointer ${
+                  paymentPlanType === "fortnightly"
+                    ? "bg-white border-fit-red text-fit-red shadow-xs ring-1 ring-fit-red"
+                    : "bg-white border-slate-200 hover:border-slate-300 text-slate-600"
+                }`}
+              >
+                <input
+                  type="radio"
+                  checked={paymentPlanType === "fortnightly"}
+                  onChange={() => setPaymentPlanType("fortnightly")}
+                  className="h-4.5 w-4.5 text-fit-red focus:ring-fit-red border-slate-300 cursor-pointer pointer-events-none"
+                />
+                <span className="cursor-pointer">Fortnightly Payment Plan</span>
+              </button>
             </div>
           </div>
+        )}
+
+        {/* Inputs for Deposit, Repayment and Pay In Full Price */}
+        <div className={`pt-4 border-t border-slate-200/80 grid grid-cols-1 gap-4 ${
+          displayedPaymentMethods === "both"
+            ? "sm:grid-cols-3"
+            : displayedPaymentMethods === "plan"
+            ? "sm:grid-cols-2"
+            : "sm:grid-cols-1 max-w-xs"
+        }`}>
+          {/* Pay In Full Price Input */}
+          {displayedPaymentMethods !== "plan" && (
+            <div>
+              <div className="flex justify-between items-center mb-1.5">
+                <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
+                  Pay In Full Price ($)
+                </label>
+                {pathway.payInFullPrice !== undefined && (
+                  <button
+                    type="button"
+                    onClick={() => setPayInFullPrice(undefined)}
+                    className="text-[10px] text-fit-red hover:underline font-bold cursor-pointer"
+                  >
+                    Reset to total
+                  </button>
+                )}
+              </div>
+              <div className="relative">
+                <span className="absolute left-2.5 top-2.5 text-xs font-bold text-slate-400">$</span>
+                <input
+                  type="number"
+                  value={pathway.payInFullPrice ?? totalInvestment}
+                  onChange={(e) => {
+                    const val = parseFloat(e.target.value);
+                    setPayInFullPrice(isNaN(val) ? undefined : val);
+                  }}
+                  className="w-full bg-white border border-slate-200 rounded px-2.5 pl-6 py-1.5 text-xs text-slate-800 font-bold focus:outline-none focus:ring-1 focus:ring-fit-red"
+                  placeholder={totalInvestment.toString()}
+                  min="0"
+                />
+              </div>
+            </div>
+          )}
 
           {/* Minimum Deposit Input */}
-          <div>
-            <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-1.5">
-              Minimum Deposit ($)
-            </label>
-            <div className="relative">
-              <span className="absolute left-2.5 top-2.5 text-xs font-bold text-slate-400">$</span>
-              <input
-                type="number"
-                value={depositAmount}
-                onChange={(e) => {
-                  const val = parseFloat(e.target.value);
-                  setDepositAmount(isNaN(val) ? 0 : val);
-                }}
-                className="w-full bg-white border border-slate-200 rounded px-2.5 pl-6 py-1.5 text-xs text-slate-800 font-bold focus:outline-none focus:ring-1 focus:ring-fit-red"
-                placeholder="e.g. 500"
-                min="0"
-              />
+          {displayedPaymentMethods !== "full" && (
+            <div>
+              <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-1.5">
+                Minimum Deposit ($)
+              </label>
+              <div className="relative">
+                <span className="absolute left-2.5 top-2.5 text-xs font-bold text-slate-400">$</span>
+                <input
+                  type="number"
+                  value={depositAmount}
+                  onChange={(e) => {
+                    const val = parseFloat(e.target.value);
+                    setDepositAmount(isNaN(val) ? 0 : val);
+                  }}
+                  className="w-full bg-white border border-slate-200 rounded px-2.5 pl-6 py-1.5 text-xs text-slate-800 font-bold focus:outline-none focus:ring-1 focus:ring-fit-red"
+                  placeholder="e.g. 500"
+                  min="0"
+                />
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Repayment Amount Input */}
-          <div>
-            <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-1.5">
-              {paymentPlanType === "weekly" ? "Weekly Payment Amount ($)" : "Fortnightly Payment Amount ($)"}
-            </label>
-            <div className="relative">
-              <span className="absolute left-2.5 top-2.5 text-xs font-bold text-slate-400">$</span>
-              <input
-                type="number"
-                value={paymentPlanAmount}
-                onChange={(e) => {
-                  const val = parseFloat(e.target.value);
-                  setPaymentPlanAmount(isNaN(val) ? 0 : val);
-                }}
-                className="w-full bg-white border border-slate-200 rounded px-2.5 pl-6 py-1.5 text-xs text-slate-800 font-bold focus:outline-none focus:ring-1 focus:ring-fit-red"
-                placeholder={paymentPlanType === "weekly" ? "e.g. 100" : "e.g. 200"}
-                min="1"
-              />
+          {displayedPaymentMethods !== "full" && (
+            <div>
+              <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-1.5">
+                {paymentPlanType === "weekly" ? "Weekly Payment Amount ($)" : "Fortnightly Payment Amount ($)"}
+              </label>
+              <div className="relative">
+                <span className="absolute left-2.5 top-2.5 text-xs font-bold text-slate-400">$</span>
+                <input
+                  type="number"
+                  value={paymentPlanAmount}
+                  onChange={(e) => {
+                    const val = parseFloat(e.target.value);
+                    setPaymentPlanAmount(isNaN(val) ? 0 : val);
+                  }}
+                  className="w-full bg-white border border-slate-200 rounded px-2.5 pl-6 py-1.5 text-xs text-slate-800 font-bold focus:outline-none focus:ring-1 focus:ring-fit-red"
+                  placeholder={paymentPlanType === "weekly" ? "e.g. 100" : "e.g. 200"}
+                  min="1"
+                />
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
