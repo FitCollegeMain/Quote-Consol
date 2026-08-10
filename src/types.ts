@@ -45,6 +45,7 @@ export const ADVISER_CONTACTS: Record<string, { email: string; phone: string; me
   "Marcus Krause": { email: "marcus.krause@fitcollege.edu.au", phone: "0400 873 123", meetingUrl: "https://statics.teams.cdn.office.net/evergreen-assets/safelinks/2/atp-safelinks.html" },
   "Matthew Johnson": { email: "matthew.johnson@fitcollege.edu.au", phone: "0473 371 780", meetingUrl: "https://meetings-ap1.hubspot.com/matthew-johnson" },
   "Nicky Wood": { email: "nicola.wood@fitcollege.edu.au", phone: "0475 705 050", meetingUrl: "https://meetings-ap1.hubspot.com/nicky-wood" },
+  "Paul Mountain": { email: "Paul.Mountain@fitcollege.edu.au", phone: "0467 434 534", meetingUrl: "https://meetings-ap1.hubspot.com/paul-mountain" },
   "Ryan Crilly": { email: "ryan.crilly@fitcollege.edu.au", phone: "0455 655 650", meetingUrl: "https://meetings-ap1.hubspot.com/ryan-crilly" },
   "Sam Russell": { email: "sam.russell@fitcollege.edu.au", phone: "0460 844 442", meetingUrl: "https://meetings-ap1.hubspot.com/sam-russell2" },
   "Shay Best": { email: "shay.best@fitcollege.edu.au", phone: "0438 303 005", meetingUrl: "https://meetings-ap1.hubspot.com/shay-best" },
