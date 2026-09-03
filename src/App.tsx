@@ -1453,11 +1453,17 @@ export default function App() {
           let runningSavings = 0;
           let runningInvestment = 0;
 
-          // Date formatter for clean printing (YYYY-MM-DD -> DD/MM/YYYY)
+          // Date formatter for clean printing (YYYY-MM-DD or DD-MM-YYYY -> DD/MM/YYYY)
           const cleanDate = (dStr: string) => {
             if (!dStr) return "";
-            const p = dStr.split("-");
-            return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : dStr;
+            if (dStr.includes("-")) {
+              const p = dStr.split("-");
+              if (p.length === 3) {
+                if (p[0].length === 4) return `${p[2]}/${p[1]}/${p[0]}`;
+                if (p[2].length === 4) return `${p[0]}/${p[1]}/${p[2]}`;
+              }
+            }
+            return dStr;
           };
 
           return (
