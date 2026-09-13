@@ -5,7 +5,7 @@ import {
   persistentLocalCache,
   persistentMultipleTabManager,
 } from "firebase/firestore";
-import firebaseConfig from "../../firebase-applet-config.json";
+import firebaseConfig from "../../firebase-config.json";
 
 // One Firebase app for the whole console. The web API key in the config file is
 // a public project identifier, not a secret — every read and write is gated by

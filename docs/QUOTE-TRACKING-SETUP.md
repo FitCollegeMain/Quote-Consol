@@ -36,32 +36,26 @@ each one depends on the one before it. Budget about forty minutes.
 Console labels move around between versions. Where this document names a sidebar
 item, look for that word rather than the group heading above it.
 
-### Stage 0 — a project you own
+### Stage 0 — a project you own (done)
 
-`industrious-sonar-l7k72`, the project in `firebase-applet-config.json`, was
-created automatically by Google AI Studio when the console was first built. It
-sits on a restricted Starter tier and the people running this console are not
-owners of it, so the Authentication page refuses edits with "ask a project owner
-for the necessary permission". None of the stages below work there.
+The console originally pointed at `industrious-sonar-l7k72`, a project Google AI
+Studio created automatically when the app was first built. It sat on a restricted
+Starter tier that nobody at the college owned, so the Authentication page refused
+edits with "ask a project owner for the necessary permission" and none of the
+stages below could be completed there.
 
-First check which Google account you are signed in as — if the applet was built
-under a different one, that account may already be the owner. Otherwise create a
-project you control:
+It now points at **`fit-college-equote`**, a project the business owns outright,
+configured in [`firebase-config.json`](../firebase-config.json). Those values
+identify the project rather than granting access to it; the rules in stage 3 are
+what protect the data.
 
-1. **Create a project** at the Firebase console, named something durable such as
-   `FIT College Quote Console`.
-2. Switch **Google Analytics off**. Nothing here uses it.
-3. On **Project Overview**, click the web icon `</>` to register a web app,
-   nickname it `Quote Console`, and leave **Firebase Hosting unticked** — the
-   console is served from GitHub Pages.
-4. Copy the `firebaseConfig` values and put them into
-   [`firebase-applet-config.json`](../firebase-applet-config.json), matching the
-   existing keys.
+Nothing else was tied to the old project — no Gemini calls, no AI Studio APIs —
+so swapping that one file was the whole migration.
 
-Those values identify the project rather than granting access to it; the rules in
-stage 3 are what actually protect the data. Nothing else in the app is tied to
-the old project — no Gemini calls, no AI Studio APIs — so swapping the config
-file is the whole migration.
+If you ever need to move projects again: create the project, register a web app
+(`</>` on Project Overview, Firebase Hosting left unticked since the console is
+served from GitHub Pages), and replace the values in `firebase-config.json` with
+the `firebaseConfig` block Firebase shows you.
 
 ### Stage 1 — turn on sign-in
 
@@ -188,7 +182,7 @@ from the repository root:
 
 ```bash
 npx firebase-tools login
-npx firebase-tools use industrious-sonar-l7k72
+npx firebase-tools use fit-college-equote
 npx firebase-tools deploy --only firestore:rules,firestore:indexes
 ```
 
