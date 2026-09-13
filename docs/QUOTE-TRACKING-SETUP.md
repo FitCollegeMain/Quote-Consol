@@ -31,16 +31,42 @@ free tier with room to spare.
 
 All of it happens in the [Firebase console](https://console.firebase.google.com/)
 in a browser. No terminal is needed. Work through the stages in order, because
-each one depends on the one before it. You need to be an Owner or Editor on
-project **industrious-sonar-l7k72**, and it takes about half an hour.
+each one depends on the one before it. Budget about forty minutes.
 
 Console labels move around between versions. Where this document names a sidebar
 item, look for that word rather than the group heading above it.
 
+### Stage 0 — a project you own
+
+`industrious-sonar-l7k72`, the project in `firebase-applet-config.json`, was
+created automatically by Google AI Studio when the console was first built. It
+sits on a restricted Starter tier and the people running this console are not
+owners of it, so the Authentication page refuses edits with "ask a project owner
+for the necessary permission". None of the stages below work there.
+
+First check which Google account you are signed in as — if the applet was built
+under a different one, that account may already be the owner. Otherwise create a
+project you control:
+
+1. **Create a project** at the Firebase console, named something durable such as
+   `FIT College Quote Console`.
+2. Switch **Google Analytics off**. Nothing here uses it.
+3. On **Project Overview**, click the web icon `</>` to register a web app,
+   nickname it `Quote Console`, and leave **Firebase Hosting unticked** — the
+   console is served from GitHub Pages.
+4. Copy the `firebaseConfig` values and put them into
+   [`firebase-applet-config.json`](../firebase-applet-config.json), matching the
+   existing keys.
+
+Those values identify the project rather than granting access to it; the rules in
+stage 3 are what actually protect the data. Nothing else in the app is tied to
+the old project — no Gemini calls, no AI Studio APIs — so swapping the config
+file is the whole migration.
+
 ### Stage 1 — turn on sign-in
 
-1. Open the project, then click **Authentication** in the left sidebar (it sits
-   under a heading reading either Build or Security).
+1. Open the project from stage 0, then click **Authentication** in the left
+   sidebar (it sits under a heading reading either Build or Security).
 2. Click **Get started** if it is offered.
 3. Open the **Sign-in method** tab.
 4. Under **Native providers**, click **Email/Password**.
@@ -147,6 +173,7 @@ the management view.
 
 | Symptom | Cause |
 |---------|-------|
+| "ask a project owner for the necessary permission" | You are in a project you do not own, most likely the AI Studio Starter tier one. See stage 0 |
 | "has no console profile yet" | The profile document ID does not match the User UID, or `active` was saved as a string rather than a boolean |
 | "Missing or insufficient permissions" | Stage 3 was skipped or the rules did not publish |
 | "The query requires an index" | Stage 4 was skipped, is still building, or a field name is misspelled |
