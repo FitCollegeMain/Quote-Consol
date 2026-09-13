@@ -29,19 +29,135 @@ free tier with room to spare.
 
 ## One-off setup
 
-### 1. Turn on the two Firebase services
+All of it happens in the [Firebase console](https://console.firebase.google.com/)
+in a browser. No terminal is needed. Work through the stages in order, because
+each one depends on the one before it. You need to be an Owner or Editor on
+project **industrious-sonar-l7k72**, and it takes about half an hour.
 
-In the [Firebase console](https://console.firebase.google.com/) for project
-**industrious-sonar-l7k72**:
+Console labels move around between versions. Where this document names a sidebar
+item, look for that word rather than the group heading above it.
 
-- **Build → Authentication → Sign-in method** → enable **Email/Password**.
-- **Build → Firestore Database** → **Create database** → production mode →
-  location `australia-southeast1`.
+### Stage 1 — turn on sign-in
 
-### 2. Publish the security rules
+1. Open the project, then click **Authentication** in the left sidebar (it sits
+   under a heading reading either Build or Security).
+2. Click **Get started** if it is offered.
+3. Open the **Sign-in method** tab.
+4. Under **Native providers**, click **Email/Password**.
+5. Enable the **first** toggle only. Leave "Email link (passwordless sign-in)"
+   off — nothing in the app uses it.
+6. **Save**.
 
-The rules are the whole access-control model, so they must be deployed before
-anyone signs in. From the repository root:
+Email/Password should now show as `Enabled`.
+
+### Stage 2 — create the database
+
+1. Click **Firestore** in the sidebar (newer consoles group it under Databases &
+   Storage; older ones call it Firestore Database). Not Realtime Database, which
+   is a different product.
+2. **Create database**.
+3. Location: **australia-southeast1 (Sydney)**. This is permanent — changing it
+   later means building a new database from scratch.
+4. If asked for a starting mode, choose **Production mode**. Stage 3 replaces the
+   rules anyway, but test mode opens the database to the public after 30 days.
+5. If asked for an edition, **Standard**. Most projects are assigned it without
+   asking.
+6. **Create**.
+
+You should land on an empty **Data** tab for a database named `(default)`.
+
+### Stage 3 — publish the security rules
+
+The rules are the entire access-control model, so nothing works until they are
+published.
+
+1. Firestore → **Rules** tab.
+2. Select everything in the editor and delete it.
+3. Paste the full contents of [`firestore.rules`](../firestore.rules) from this
+   repository.
+4. **Publish**.
+
+The "last published" timestamp at the top of the tab should update.
+
+### Stage 4 — add the two indexes
+
+Without these, the advisor list and the management report show an index error
+instead of data.
+
+1. Firestore → **Indexes** tab → **Composite** → **Create index**.
+2. Build both of the following. Collection ID is `quotes` and query scope is
+   `Collection` for both. Field names are case sensitive.
+
+   | Index  | Field 1      | Order     | Field 2     | Order      |
+   |--------|--------------|-----------|-------------|------------|
+   | First  | `advisorUid` | Ascending | `createdAt` | Descending |
+   | Second | `issueMonth` | Ascending | `createdAt` | Descending |
+
+3. Wait for both to move from Building to **Enabled**, usually a minute or two.
+
+### Stage 5 — create the people
+
+Each person needs two things: an account so they can sign in, and a profile
+saying who they are and what they may see. An account with no profile is refused,
+by design.
+
+**Part A, the account.** Authentication → **Users** tab → **Add user**. Enter
+their work email and a temporary password of at least six characters, then copy
+the **User UID** from their row in the list.
+
+**Part B, the profile.** Firestore → **Data** tab. For the first person, click
+**Start collection** and name it `users`; after that, open the existing `users`
+collection and click **Add document**. Set the **Document ID** to the User UID
+you copied — not Auto-ID; this is the step that most often goes wrong. Then add
+four fields:
+
+| Field    | Type    | Value                                          |
+|----------|---------|------------------------------------------------|
+| `name`   | string  | `Dean Eggins` — must match the advisor list     |
+| `email`  | string  | `dean.eggins@fitcollege.edu.au`                 |
+| `role`   | string  | `advisor` or `admin`, lower case                |
+| `active` | boolean | `true` — the boolean, not the text "true"       |
+
+`name` matters twice over: it prints on the quote PDF, and it is matched against
+`ADVISER_CONTACTS` in `src/types.ts` to fill in the advisor's phone number and
+booking link. Copy the spelling from there.
+
+Admins can still build and send quotes, so somebody who is both an advisor and a
+manager gets one account with `role` set to `admin`, not two.
+
+### Stage 6 — test before announcing it
+
+Sign in as an admin and check the **Management** tab is present. Build a throwaway
+quote, export it, and confirm it appears in My Quotes and in Management, that
+marking it closed moves the figures immediately, and that exporting it a second
+time does not create a duplicate. Delete the test document from Firestore → Data
+→ `quotes`. Finally, have one advisor sign in and confirm they see only their own
+quotes and have no Management tab.
+
+### Revoking access
+
+Set `active` to `false` on someone's `users` document. They are locked out on
+their next action, and their historical quotes stay in the reports.
+
+Nothing in the app can write to `users`. Roles change here, in the Firebase
+console, and nowhere else — which is what stops an advisor granting themselves
+the management view.
+
+### If something goes wrong
+
+| Symptom | Cause |
+|---------|-------|
+| "has no console profile yet" | The profile document ID does not match the User UID, or `active` was saved as a string rather than a boolean |
+| "Missing or insufficient permissions" | Stage 3 was skipped or the rules did not publish |
+| "The query requires an index" | Stage 4 was skipped, is still building, or a field name is misspelled |
+| Quotes save, but Management is empty | Your own profile has `role` set to `advisor` |
+| Advisor's phone or booking link missing from the PDF | `name` does not match the spelling in `ADVISER_CONTACTS` |
+| Sign-in refused, unauthorised domain | Add the hosting domain under Authentication → Settings → Authorised domains |
+
+### Deploying rules from the command line instead
+
+For anyone who would rather not use the console UI, stages 3 and 4 can be done
+from the repository root:
 
 ```bash
 npx firebase-tools login
@@ -49,39 +165,7 @@ npx firebase-tools use industrious-sonar-l7k72
 npx firebase-tools deploy --only firestore:rules,firestore:indexes
 ```
 
-You can also paste `firestore.rules` into **Firestore → Rules** in the console
-and publish from there, but the indexes in `firestore.indexes.json` still need
-creating (Firestore will offer a one-click link the first time a report runs
-without them).
-
-### 3. Create the accounts
-
-For each advisor and each administrator:
-
-1. **Authentication → Users → Add user.** Enter their work email and a starting
-   password. Copy the **User UID** it generates.
-2. **Firestore → Data →** collection `users` → add a document whose **ID is that
-   UID**, with these fields:
-
-   | Field    | Type    | Value                                         |
-   |----------|---------|-----------------------------------------------|
-   | `name`   | string  | `Dean Eggins` — must match the advisor list    |
-   | `email`  | string  | `dean.eggins@fitcollege.edu.au`                |
-   | `role`   | string  | `advisor` or `admin`                           |
-   | `active` | boolean | `true`                                         |
-
-`name` matters: it is what appears on the printed quote and in the management
-report, and it is matched against the contact list in `src/types.ts` to fill in
-the advisor's phone and booking link. Spell it exactly as it appears there.
-
-Nothing in the app can write to `users`. Roles are changed in the Firebase
-console and nowhere else, which is what stops an advisor granting themselves the
-management view.
-
-### 4. Revoking access
-
-Set `active` to `false` on someone's `users` document. They are locked out on
-their next action, and their historical quotes stay in the reports.
+Stages 1, 2 and 5 still have to be done in the console.
 
 ---
 
