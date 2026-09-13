@@ -1,32 +1,32 @@
-import React, { useState, useEffect } from "react";
-import { 
-  Plus, Printer, HelpCircle, Check, Key, BookOpen, User, Phone, Mail, Award, Lock, 
-  ShieldAlert, Calendar, RefreshCw, Database, FileSpreadsheet, AlertCircle, Trash2, 
-  LogOut, CheckCircle, Hash
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  Plus, Printer, HelpCircle, Check, Key, BookOpen, User, Phone, Mail, Award, Lock,
+  ShieldAlert, Calendar, AlertCircle, CheckCircle, Hash, ShieldCheck
 } from "lucide-react";
 import Logo from "./components/Logo";
 import PathwayCard from "./components/PathwayCard";
 import DashboardTab from "./components/DashboardTab";
+import AdminTab from "./components/AdminTab";
+import LoginScreen from "./components/LoginScreen";
 import {
   Pathway,
   SelectedCourse,
   QuoteDetails,
-  ADVISERS,
+  AppUser,
   ADVISER_CONTACTS,
   TIMETABLES,
-  SavedQuote,
+  QuoteOutcome,
+  QuoteRecord,
   CAMPUS_LINKS,
   cleanCourseName,
 } from "./types";
+import { watchSession, signOutOfConsole } from "./lib/auth";
 import {
-  initGoogleAuth,
-  connectGoogleAccount,
-  disconnectGoogleAccount,
-  getGoogleAccessToken,
-  getConnectedUser,
-  fetchSyncedQuotes,
-  saveQuoteToSheet,
-} from "./lib/workspace";
+  newQuoteId,
+  recordQuote,
+  setQuoteOutcome,
+  subscribeToAdvisorQuotes,
+} from "./lib/quotes";
 
 
 // Helper to get formatted date string relative to today
@@ -46,465 +46,37 @@ const getDefaultExpiryDateString = () => {
   return "2026-09-07";
 };
 
-const getSeedQuotes = (): SavedQuote[] => {
-  const getDynamicDate = (dayOffsetFromCurrentEnd: number): string => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth();
-    const totalDays = new Date(year, month + 1, 0).getDate();
-    const day = Math.max(1, Math.min(totalDays, totalDays - dayOffsetFromCurrentEnd));
-    
-    const yyyy = year;
-    const mm = String(month + 1).padStart(2, "0");
-    const dd = String(day).padStart(2, "0");
-    return `${yyyy}-${mm}-${dd}`;
-  };
-
-  return [
-    {
-      id: "quote_seed_1",
-      advisorName: "Dean Eggins",
-      studentName: "Ashley Cole",
-      hubspotDealCode: "HS-62849",
-      dateIssued: getDynamicDate(2), // 2 days before end of month (inside closeout)
-      validUntil: getDynamicDate(-28),
-      courseSummary: "Pathway 1: F2F Complete PT Program - Dual Qualification (SIS30321 & SIS40221)",
-      totalCost: 9000,
-      status: "accepted",
-      updatedAt: new Date().toISOString(),
-      isAccepted: true
-    },
-    {
-      id: "quote_seed_2",
-      advisorName: "Ryan Crilly",
-      studentName: "Zack Snyder",
-      hubspotDealCode: "HS-93821",
-      dateIssued: getDynamicDate(3), // 3 days before end of month (inside closeout)
-      validUntil: getDynamicDate(-27),
-      courseSummary: "Pathway 1: F2F FIT Elite PT Program (SIS30321 & SIS40221 & Specialty)",
-      totalCost: 11400,
-      status: "amber pending",
-      updatedAt: new Date().toISOString(),
-      isAccepted: false
-    },
-    {
-      id: "quote_seed_3",
-      advisorName: "Nicky Wood",
-      studentName: "Mary Jane",
-      hubspotDealCode: "HS-10492",
-      dateIssued: getDynamicDate(1), // 1 day before end of month (inside closeout)
-      validUntil: getDynamicDate(-29),
-      courseSummary: "Pathway 1: ONLINE Diploma of Sport - Coaching (SIS50321)",
-      totalCost: 20000,
-      status: "amber pending",
-      updatedAt: new Date().toISOString(),
-      isAccepted: false
-    },
-    {
-      id: "quote_seed_4",
-      advisorName: "Sam Russell",
-      studentName: "Peter Parker",
-      hubspotDealCode: "HS-48201",
-      dateIssued: getDynamicDate(4), // 4 days before end of month (inside closeout)
-      validUntil: getDynamicDate(-26),
-      courseSummary: "Pathway 1: ONLINE Certificate III in Fitness (SIS30321)",
-      totalCost: 3000,
-      status: "accepted",
-      updatedAt: new Date().toISOString(),
-      isAccepted: true
-    },
-    {
-      id: "quote_seed_5",
-      advisorName: "Tess Szabath",
-      studentName: "Bruce Wayne",
-      hubspotDealCode: "HS-55921",
-      dateIssued: getDynamicDate(15), // Middle of the month (outside closeout, inside month)
-      validUntil: getDynamicDate(-15),
-      courseSummary: "Pathway 1: Fit Elite Ultra F2F (SIS30321 & SIS40221)",
-      totalCost: 12900,
-      status: "accepted",
-      updatedAt: new Date().toISOString(),
-      isAccepted: true
-    },
-    {
-      id: "quote_seed_6",
-      advisorName: "Marcus Krause",
-      studentName: "Diana Prince",
-      hubspotDealCode: "HS-38291",
-      dateIssued: getDynamicDate(20), // 20 days ago (outside closeout, old)
-      validUntil: getDynamicDate(-10),
-      courseSummary: "Pathway 1: ONLINE Complete PT Program - Dual Qualification (SIS30321 & SIS40221)",
-      totalCost: 6000,
-      status: "amber pending",
-      updatedAt: new Date().toISOString(),
-      isAccepted: false
-    }
-  ];
-};
-
 export default function App() {
-  // Session login system matching "Each career advisor must log in every 7 days"
-  const [currentUser, setCurrentUser] = useState<string | null>(() => {
-    const user = localStorage.getItem("fit_advisor");
-    const time = localStorage.getItem("fit_advisor_login_time");
-    if (user && time) {
-      const isExpired = Date.now() - Number(time) >= 7 * 24 * 60 * 60 * 1000;
-      if (!isExpired) return user;
-    }
-    return null;
-  });
+  // --- Session ------------------------------------------------------------
+  // Identity comes from Firebase Auth; the role and display name come from the
+  // user's profile document, which the Firestore rules read too. Nothing about
+  // who you are is decided in the browser.
+  const [user, setUser] = useState<AppUser | null>(null);
+  const [authReady, setAuthReady] = useState(false);
+  const [sessionError, setSessionError] = useState<string | null>(null);
 
-  const [sessionTime, setSessionTime] = useState<number | null>(() => {
-    const time = localStorage.getItem("fit_advisor_login_time");
-    if (time) {
-      const isExpired = Date.now() - Number(time) >= 7 * 24 * 60 * 60 * 1000;
-      if (!isExpired) return Number(time);
-    }
-    return null;
-  });
+  const [activeTab, setActiveTab] = useState<"builder" | "dashboard" | "admin">("builder");
 
-  // QTrak Log Tab state variables
-  const [activeTab, setActiveTab] = useState<"builder" | "qtrak" | "dashboard">("builder");
-  const [isQuoteAccepted, setIsQuoteAccepted] = useState(false);
-  const [googleToken, setGoogleToken] = useState<string | null>(null);
-  const [gUser, setGUser] = useState<any>(null);
-  const [quotes, setQuotes] = useState<SavedQuote[]>([]);
-  const [allQuotes, setAllQuotes] = useState<SavedQuote[]>([]);
-  const [isSyncing, setIsSyncing] = useState(false);
-  const [syncError, setSyncError] = useState<string | null>(null);
+  // --- Quote records -------------------------------------------------------
+  const [quotes, setQuotes] = useState<QuoteRecord[]>([]);
+  const [isLoadingQuotes, setIsLoadingQuotes] = useState(true);
+  const [quotesError, setQuotesError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const [loginUser, setLoginUser] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
-  const [loginError, setLoginError] = useState("");
+  // One id per quote being built, generated once and reused on every export, so
+  // re-printing a quote updates its record instead of logging a duplicate.
+  const [currentQuoteId, setCurrentQuoteId] = useState<string>(() => newQuoteId());
 
   // Details form state
-  const [details, setDetails] = useState<QuoteDetails>(() => {
-    const adviser = currentUser || "";
-    const contact = adviser ? ADVISER_CONTACTS[adviser] : undefined;
-    return {
-      studentName: "",
-      hubspotDealCode: "",
-      date: getDateString(),
-      validUntil: getDefaultExpiryDateString(), // Defaults to 07/09/26
-      adviserName: adviser,
-      adviserEmail: contact?.email || "",
-      adviserPhone: contact?.phone || "",
-    };
+  const [details, setDetails] = useState<QuoteDetails>({
+    studentName: "",
+    hubspotDealCode: "",
+    date: getDateString(),
+    validUntil: getDefaultExpiryDateString(),
+    adviserName: "",
+    adviserEmail: "",
+    adviserPhone: "",
   });
-
-  // Sync adviserName if user logs in
-  useEffect(() => {
-    if (currentUser) {
-      setDetails((prev) => {
-        const contact = ADVISER_CONTACTS[currentUser];
-        return {
-          ...prev,
-          adviserName: currentUser,
-          adviserEmail: contact?.email || "",
-          adviserPhone: contact?.phone || "",
-        };
-      });
-    }
-  }, [currentUser]);
-
-  // Load Google Auth session and sync on startup
-  useEffect(() => {
-    const unsubscribe = initGoogleAuth(
-      (user, token) => {
-        setGUser(user);
-        setGoogleToken(token);
-      },
-      () => {
-        setGUser(null);
-        setGoogleToken(null);
-      }
-    );
-    return () => unsubscribe();
-  }, []);
-
-  const loadQuotes = async (token = googleToken) => {
-    if (!currentUser) return;
-    setIsSyncing(true);
-    setSyncError(null);
-    try {
-      let localStr = localStorage.getItem("fit_local_quotes");
-      let localQuotes: SavedQuote[] = localStr ? JSON.parse(localStr) : [];
-      
-      // Seed if empty
-      if (localQuotes.length === 0) {
-        localQuotes = getSeedQuotes();
-        localStorage.setItem("fit_local_quotes", JSON.stringify(localQuotes));
-      }
-      
-      if (token) {
-        const synced = await fetchSyncedQuotes(token, currentUser);
-        const mergedMap = new Map<string, SavedQuote>();
-        
-        localQuotes.forEach(q => {
-          if (q.advisorName.toLowerCase() === currentUser.toLowerCase()) {
-            mergedMap.set(q.id, q);
-          }
-        });
-        synced.forEach(q => mergedMap.set(q.id, q));
-        
-        const finalQuotes = Array.from(mergedMap.values()).sort(
-          (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-        );
-        
-        const otherAdvisorsQuotes = localQuotes.filter(q => q.advisorName.toLowerCase() !== currentUser.toLowerCase());
-        const mergedAll = [...otherAdvisorsQuotes, ...finalQuotes];
-        localStorage.setItem("fit_local_quotes", JSON.stringify(mergedAll));
-        setQuotes(finalQuotes);
-        setAllQuotes(mergedAll);
-      } else {
-        const filtered = localQuotes
-          .filter(q => q.advisorName.toLowerCase() === currentUser.toLowerCase())
-          .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
-        setQuotes(filtered);
-        setAllQuotes(localQuotes);
-      }
-    } catch (err: any) {
-      console.error("Load quotes failed:", err);
-      setSyncError("Google Sync Pending: Could not fetch from Google Sheet. Loaded offline fallback logs.");
-      const localStr = localStorage.getItem("fit_local_quotes");
-      let localQuotes: SavedQuote[] = localStr ? JSON.parse(localStr) : [];
-      if (localQuotes.length === 0) {
-        localQuotes = getSeedQuotes();
-        localStorage.setItem("fit_local_quotes", JSON.stringify(localQuotes));
-      }
-      const filtered = localQuotes
-        .filter(q => q.advisorName.toLowerCase() === currentUser.toLowerCase())
-        .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
-      setQuotes(filtered);
-      setAllQuotes(localQuotes);
-    } finally {
-      setIsSyncing(false);
-    }
-  };
-
-  useEffect(() => {
-    if (currentUser) {
-      loadQuotes();
-    }
-  }, [currentUser, googleToken, activeTab]);
-
-  const handleSaveQuote = async (isAutoSave = false) => {
-    if (!details.studentName.trim()) {
-      if (isAutoSave) {
-        console.warn("Could not auto-sync quote to QTrak: Student name is empty.");
-      } else {
-        alert("Please enter the student's full name to save or sync this study quote.");
-      }
-      return;
-    }
-    
-    setIsSyncing(true);
-    try {
-      const courseSummaries = pathways.map((p, pIdx) => {
-        const selectedNames = p.courses
-          .filter(c => c.name && !c.isIncluded)
-          .map(c => cleanCourseName(c.name).split(" (")[0]);
-        return `Pathway ${pIdx + 1}: ${selectedNames.join(", ") || "No course selected"}`;
-      }).join("; ");
-      
-      let overallCost = 0;
-      pathways.forEach(p => {
-        p.courses.forEach(c => {
-          if (c.name) {
-            const price = c.rrp || 0;
-            const discount = c.discountValue || 0;
-            let finalPrice = price;
-            if (c.discountType === "%") {
-              finalPrice = price - (price * (discount / 100));
-            } else {
-              finalPrice = price - discount;
-            }
-            if (finalPrice < 0) finalPrice = 0;
-            overallCost += finalPrice;
-          }
-        });
-      });
-      
-      const isExpiredQuote = details.validUntil ? new Date() > new Date(details.validUntil) : false;
-      const finalStatus = isQuoteAccepted 
-        ? "accepted" 
-        : (isExpiredQuote ? "expired" : "amber pending");
-      
-      const quoteId = `quote_${Date.now()}`;
-      const newQuote: SavedQuote = {
-        id: quoteId,
-        advisorName: currentUser || "Unknown Advisor",
-        studentName: details.studentName,
-        hubspotDealCode: details.hubspotDealCode,
-        dateIssued: details.date,
-        validUntil: details.validUntil,
-        courseSummary: courseSummaries || "No course selected",
-        totalCost: overallCost,
-        status: finalStatus,
-        updatedAt: new Date().toISOString(),
-        isAccepted: isQuoteAccepted,
-        pathwaysData: JSON.stringify(pathways)
-      };
-      
-      const localStr = localStorage.getItem("fit_local_quotes");
-      const localQuotes: SavedQuote[] = localStr ? JSON.parse(localStr) : [];
-      const otherQuotes = localQuotes.filter(q => q.id !== quoteId);
-      const updatedLocal = [newQuote, ...otherQuotes];
-      localStorage.setItem("fit_local_quotes", JSON.stringify(updatedLocal));
-      
-      if (googleToken) {
-        await saveQuoteToSheet(googleToken, newQuote);
-      }
-      
-      await loadQuotes();
-      if (isAutoSave) {
-        console.log(`Quote auto-saved and synced to QTrak as "${finalStatus.toUpperCase()}".`);
-      } else {
-        alert(`Quote issued and saved successfully as "${finalStatus.toUpperCase()}"! Synchronized with QTrak.`);
-      }
-    } catch (err: any) {
-      console.error("Save quote failed:", err);
-      if (!isAutoSave) {
-        alert("Quote saved to local temporary records. Connect to Google Sheets to keep standard logs synced.");
-      }
-    } finally {
-      setIsSyncing(false);
-    }
-  };
-
-  const handleToggleQuoteAccept = async (quote: SavedQuote) => {
-    const actionText = quote.isAccepted ? "mark as Amber Pending" : "ACCEPT and signal team";
-    const confirmed = window.confirm(
-      `Are you sure you want to ${actionText} the proposal for student ${quote.studentName}? This updates your Google Sheet tracker.`
-    );
-    if (!confirmed) return;
-    
-    setIsSyncing(true);
-    try {
-      const nextStatus = quote.isAccepted ? "amber pending" : "accepted";
-      const updatedQuote: SavedQuote = {
-        ...quote,
-        isAccepted: !quote.isAccepted,
-        status: nextStatus,
-        updatedAt: new Date().toISOString()
-      };
-      
-      const localStr = localStorage.getItem("fit_local_quotes");
-      const localQuotes: SavedQuote[] = localStr ? JSON.parse(localStr) : [];
-      const updatedLocal = localQuotes.map(q => q.id === quote.id ? updatedQuote : q);
-      localStorage.setItem("fit_local_quotes", JSON.stringify(updatedLocal));
-      
-      if (googleToken) {
-        await saveQuoteToSheet(googleToken, updatedQuote);
-      }
-      
-      await loadQuotes();
-    } catch (err) {
-      console.error("Failed to toggle quote status:", err);
-    } finally {
-      setIsSyncing(false);
-    }
-  };
-
-  const handleDeleteQuoteLog = async (quoteId: string) => {
-    const confirmed = window.confirm("Are you sure you want to remove this quote from your local historical view? Note: Google Sheet logs remain intact.");
-    if (!confirmed) return;
-    
-    const localStr = localStorage.getItem("fit_local_quotes");
-    if (localStr) {
-      const localQuotes: SavedQuote[] = JSON.parse(localStr);
-      const filtered = localQuotes.filter(q => q.id !== quoteId);
-      localStorage.setItem("fit_local_quotes", JSON.stringify(filtered));
-      await loadQuotes();
-    }
-  };
-
-  const handleLoadQuoteBack = (quote: SavedQuote) => {
-    try {
-      if (quote.pathwaysData) {
-        const loadedPathways = JSON.parse(quote.pathwaysData);
-        setPathways(loadedPathways);
-      }
-      const activeAdvisor = currentUser || quote.advisorName;
-      setDetails({
-        studentName: quote.studentName,
-        hubspotDealCode: quote.hubspotDealCode || "",
-        date: quote.dateIssued,
-        validUntil: quote.validUntil,
-        adviserName: activeAdvisor,
-        adviserEmail: ADVISER_CONTACTS[activeAdvisor]?.email || "",
-        adviserPhone: ADVISER_CONTACTS[activeAdvisor]?.phone || ""
-      });
-      setIsQuoteAccepted(quote.isAccepted);
-      setActiveTab("builder");
-      alert(`Quote session for ${quote.studentName} successfully restored into the Quote Builder view!`);
-    } catch (err) {
-      console.error("Failed to load pathways configuration:", err);
-      alert("Failed to load full pathways payload. Student contact fields were restored.");
-    }
-  };
-
-  const handleGoogleConnectToggle = async () => {
-    if (googleToken) {
-      await disconnectGoogleAccount();
-      setGUser(null);
-      setGoogleToken(null);
-    } else {
-      try {
-        const res = await connectGoogleAccount();
-        if (res) {
-          setGUser(res.user);
-          setGoogleToken(res.accessToken);
-        }
-      } catch (err) {
-        alert("Google Authentication Connection Failed. Please ensure sheets & drive permissions are granted.");
-      }
-    }
-  };
-
-  const getAdvisorPassword = (name: string) => {
-    const initials = name
-      .split(/\s+/)
-      .map((part) => part[0] || "")
-      .join("")
-      .toLowerCase();
-    return `${initials}Fit26`;
-  };
-
-  const handleLoginSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const normalizedUser = loginUser.trim();
-    if (!normalizedUser) {
-      setLoginError("Please choose your Careers Advisor name.");
-      return;
-    }
-
-    if (!ADVISERS.includes(normalizedUser)) {
-      setLoginError(`"${normalizedUser}" is not recognized in the advisor database.`);
-      return;
-    }
-
-    const expectedPassword = getAdvisorPassword(normalizedUser);
-    if (loginPassword === expectedPassword) {
-      const currentTime = Date.now();
-      localStorage.setItem("fit_advisor", normalizedUser);
-      localStorage.setItem("fit_advisor_login_time", currentTime.toString());
-      setCurrentUser(normalizedUser);
-      setSessionTime(currentTime);
-      const contact = ADVISER_CONTACTS[normalizedUser];
-      setDetails((prev) => ({
-        ...prev,
-        adviserName: normalizedUser,
-        adviserEmail: contact?.email || "",
-        adviserPhone: contact?.phone || "",
-      }));
-      setLoginUser("");
-      setLoginPassword("");
-      setLoginError("");
-    } else {
-      setLoginError("Access Code Invalid. Please verify your secure password protocol with admissions desk.");
-    }
-  };
 
   // Pathways list state (initially containing exactly 1 pathway with a blank course selection)
   const [pathways, setPathways] = useState<Pathway[]>([
@@ -530,6 +102,158 @@ export default function App() {
       ],
     },
   ]);
+
+  useEffect(() => {
+    const unsubscribe = watchSession(
+      (nextUser) => {
+        setUser(nextUser);
+        setAuthReady(true);
+        if (nextUser) setSessionError(null);
+      },
+      (message) => setSessionError(message)
+    );
+    return unsubscribe;
+  }, []);
+
+  // Stamp the signed-in advisor onto the quote form.
+  useEffect(() => {
+    if (!user) return;
+    const contact = ADVISER_CONTACTS[user.name];
+    setDetails((prev) => ({
+      ...prev,
+      adviserName: user.name,
+      adviserEmail: contact?.email || user.email,
+      adviserPhone: contact?.phone || prev.adviserPhone || "",
+    }));
+  }, [user]);
+
+  // Live feed of this advisor's own quotes. Firestore keeps it current, so a
+  // quote marked closed on a phone shows up here without a refresh.
+  useEffect(() => {
+    if (!user) {
+      setQuotes([]);
+      return;
+    }
+    setIsLoadingQuotes(true);
+    setQuotesError(null);
+    const unsubscribe = subscribeToAdvisorQuotes(
+      user.uid,
+      (next) => {
+        setQuotes(next);
+        setIsLoadingQuotes(false);
+      },
+      (message) => {
+        setQuotesError(message);
+        setIsLoadingQuotes(false);
+      }
+    );
+    return unsubscribe;
+  }, [user]);
+
+  /** Total value of every course across every pathway, after discounts. */
+  const calculateQuoteValue = useCallback(() => {
+    let total = 0;
+    pathways.forEach((pathway) => {
+      pathway.courses.forEach((course) => {
+        if (!course.name) return;
+        const price = course.rrp || 0;
+        const discount = course.discountValue || 0;
+        const final =
+          course.discountType === "%" ? price - price * (discount / 100) : price - discount;
+        total += Math.max(0, final);
+      });
+    });
+    return total;
+  }, [pathways]);
+
+  /** One-line summary of the pathways, for the tracking list. */
+  const buildCourseSummary = useCallback(() => {
+    return pathways
+      .map((pathway, index) => {
+        const names = pathway.courses
+          .filter((course) => course.name && !course.isIncluded)
+          .map((course) => cleanCourseName(course.name).split(" (")[0]);
+        return `Pathway ${index + 1}: ${names.join(", ") || "No course selected"}`;
+      })
+      .join("; ");
+  }, [pathways]);
+
+  /**
+   * Records the quote. Called automatically when the advisor exports the PDF —
+   * that export is the moment a quote counts as sent.
+   */
+  const saveQuote = async (isAutoSave = false): Promise<boolean> => {
+    if (!user) return false;
+
+    if (!details.studentName.trim()) {
+      const message = "Enter the student's full name so the quote can be recorded.";
+      if (isAutoSave) console.warn(message);
+      else alert(message);
+      return false;
+    }
+
+    setIsSaving(true);
+    try {
+      await recordQuote(user, {
+        id: currentQuoteId,
+        studentName: details.studentName,
+        hubspotDealCode: details.hubspotDealCode,
+        courseSummary: buildCourseSummary() || "No course selected",
+        totalValue: calculateQuoteValue(),
+        dateIssued: details.date,
+        validUntil: details.validUntil,
+        pathwaysData: JSON.stringify(pathways),
+      });
+      if (!isAutoSave) alert(`Quote for ${details.studentName} recorded.`);
+      return true;
+    } catch (err: any) {
+      console.error("Could not record quote:", err);
+      alert(
+        "The PDF is ready, but the quote could not be recorded just now. " +
+          "It will sync automatically when the connection returns."
+      );
+      return false;
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSetOutcome = async (quote: QuoteRecord, outcome: QuoteOutcome) => {
+    try {
+      await setQuoteOutcome(quote.id, outcome);
+    } catch (err: any) {
+      console.error("Could not update quote outcome:", err);
+      alert("Could not update that quote. Check your connection and try again.");
+    }
+  };
+
+  const handleLoadQuoteBack = (quote: QuoteRecord) => {
+    try {
+      if (quote.pathwaysData) setPathways(JSON.parse(quote.pathwaysData));
+      const contact = ADVISER_CONTACTS[user?.name || ""];
+      setDetails({
+        studentName: quote.studentName,
+        hubspotDealCode: quote.hubspotDealCode || "",
+        date: quote.dateIssued,
+        validUntil: quote.validUntil,
+        adviserName: user?.name || quote.advisorName,
+        adviserEmail: contact?.email || user?.email || "",
+        adviserPhone: contact?.phone || "",
+      });
+      // Reuse the same id so re-exporting updates the existing record.
+      setCurrentQuoteId(quote.id);
+      setActiveTab("builder");
+    } catch (err) {
+      console.error("Could not restore pathways configuration:", err);
+      alert("Could not restore the full pathway setup. The student details were restored.");
+    }
+  };
+
+  const handleSignOut = async () => {
+    await signOutOfConsole();
+    setActiveTab("builder");
+    setQuotes([]);
+  };
 
   // PIN modal entry state
   const [showPinModal, setShowPinModal] = useState(false);
@@ -598,26 +322,28 @@ export default function App() {
       setShowPinModal(false);
       setPinInput("");
       
-      // Temporarily mark unlocked so they don't have to keep putting it,
-      // and print!
+      // Stay unlocked for the rest of the session so the PIN isn't re-entered
+      // for every export.
       setIsUnlocked(true);
-      
-      // Automatically issue & sync to QTrak log upon printable export
-      handleSaveQuote(true);
-
-      setTimeout(() => {
-        window.print();
-      }, 300);
+      exportAndRecord();
     } else {
       setPinError("Access Denied: Incorrect PIN code. Please try again.");
     }
   };
 
+  /**
+   * Records the quote first, then opens the print dialog. Recording first means
+   * a quote the student is handed is always a quote management can see; if the
+   * write fails the advisor is told, and the PDF still prints.
+   */
+  const exportAndRecord = async () => {
+    await saveQuote(true);
+    setTimeout(() => window.print(), 200);
+  };
+
   const handlePrintClick = () => {
-    // Automatically issue & sync to QTrak log upon printable export
-    handleSaveQuote(true);
     if (isUnlocked) {
-      window.print();
+      exportAndRecord();
     } else {
       setShowPinModal(true);
     }
@@ -640,99 +366,22 @@ export default function App() {
     return { savings, finalPrice };
   };
 
-  if (!currentUser) {
+  // Wait for Firebase to say whether there is a session before painting either
+  // the console or the login screen, so a signed-in advisor never sees a flash
+  // of the sign-in form on reload.
+  if (!authReady) {
     return (
-      <div className="min-h-screen bg-[#0F0F10] text-white font-sans flex items-center justify-center p-4 antialiased selection:bg-fit-red selection:text-white">
-        <div className="w-full max-w-md bg-[#18181B] rounded-xl border border-zinc-800 shadow-2xl p-8 flex flex-col relative overflow-hidden">
-          {/* Accent indicator line */}
-          <div className="absolute top-0 left-0 right-0 h-1.5 bg-fit-red"></div>
-
-          {/* Logo center */}
-          <div className="flex flex-col items-center justify-center pt-2 pb-6 border-b border-zinc-800/60 mb-6">
-            <Logo variant="dark" className="h-[75px] w-auto drop-shadow-[0_0_8px_rgba(214,40,40,0.25)]" />
-            <h1 className="font-bebas text-3xl tracking-widest text-white mt-4 font-black">FIT COLLEGE</h1>
-            <p className="text-[10px] text-fit-red font-bold tracking-widest uppercase mt-1">ADVISOR TERMINAL LOGIN</p>
-          </div>
-
-          <form onSubmit={handleLoginSubmit} className="space-y-5">
-            <div>
-              <label htmlFor="loginUser" className="block text-[10px] font-extrabold text-[#8B909A] uppercase tracking-wider mb-2 text-left">
-                Careers Advisor Username
-              </label>
-              <div className="relative">
-                <User className="absolute left-3 top-3.5 h-4 w-4 text-zinc-500" />
-                <select
-                  id="loginUser"
-                  value={loginUser}
-                  onChange={(e) => {
-                    setLoginUser(e.target.value);
-                    setLoginError("");
-                  }}
-                  className="w-full bg-[#202023] border border-zinc-800 rounded-lg pl-10 pr-3 py-3 text-sm text-white focus:outline-none focus:border-fit-red cursor-pointer appearance-none"
-                >
-                  <option value="" className="text-zinc-500">-- Choose Registered Name --</option>
-                  {ADVISERS.map((adviser) => (
-                    <option key={adviser} value={adviser} className="bg-[#18181B]">
-                      {adviser}
-                    </option>
-                  ))}
-                </select>
-                <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 flex items-center pr-1 text-zinc-500">
-                  <span className="text-xs">▼</span>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="loginPassword" className="block text-[10px] font-extrabold text-[#8B909A] uppercase tracking-wider mb-2 text-left">
-                Security Password Protocol
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-3.5 h-4 w-4 text-zinc-500" />
-                <input
-                  id="loginPassword"
-                  type="password"
-                  placeholder="Enter Password"
-                  value={loginPassword}
-                  onChange={(e) => {
-                    setLoginPassword(e.target.value);
-                    setLoginError("");
-                  }}
-                  className="w-full bg-[#202023] border border-zinc-800 rounded-lg pl-10 pr-3 py-3 text-sm text-white font-mono tracking-wider focus:outline-none focus:border-fit-red placeholder-zinc-650"
-                />
-              </div>
-            </div>
-
-            {loginError && (
-              <div className="flex items-start gap-2 p-3 bg-red-950/40 border border-red-900/80 rounded-lg text-xs text-red-400 font-medium text-left">
-                <ShieldAlert className="shrink-0 mt-0.5 w-4 h-4" />
-                <span>{loginError}</span>
-              </div>
-            )}
-
-            <button
-              type="submit"
-              className="w-full flex items-center justify-center gap-2 px-5 py-3 bg-fit-red hover:bg-[#a80d13] text-white text-xs font-bold uppercase tracking-widest rounded-lg transition-all duration-300 font-sans shadow-lg shadow-red-950/20 active:translate-y-px cursor-pointer"
-            >
-              <Lock size={14} />
-              Validate and Start Session
-            </button>
-          </form>
-
-          {/* Extra system details demonstrating alignment with requirements */}
-          <div className="mt-8 pt-5 border-t border-zinc-800/40 text-center flex flex-col items-center gap-1.5 text-[10px] text-zinc-500 font-medium">
-            <div className="flex items-center gap-1.5 uppercase tracking-wider text-[9px] text-zinc-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-yellow-500"></span>
-              <span>7-Day Security Session Protocol Enforced</span>
-            </div>
-            <p className="leading-relaxed">
-              Standard admissions representatives and careers advisors are authorised strictly to generate active fee estimators. Contact lead operations for database inquiries.
-            </p>
-          </div>
-        </div>
+      <div className="min-h-screen bg-[#0F0F10] flex items-center justify-center">
+        <Logo variant="dark" className="h-16 w-auto opacity-40 animate-pulse" />
       </div>
     );
   }
+
+  if (!user) {
+    return <LoginScreen sessionError={sessionError} />;
+  }
+
+  const isAdmin = user.role === "admin";
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F8FAFC] text-fit-darkgray font-sans print:bg-white antialiased">
@@ -762,18 +411,6 @@ export default function App() {
           </button>
           <button
             type="button"
-            onClick={() => setActiveTab("qtrak")}
-            className={`pb-1 font-bold transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
-              activeTab === "qtrak"
-                ? "text-white border-b-2 border-fit-red"
-                : "text-zinc-400 hover:text-white"
-            }`}
-          >
-            <span className={`w-2 h-2 rounded-full ${googleToken ? "bg-[#10B981]" : "bg-amber-400"} animate-pulse`}></span>
-            <span>QTrak Log</span>
-          </button>
-          <button
-            type="button"
             onClick={() => setActiveTab("dashboard")}
             className={`pb-1 font-bold transition-all duration-200 cursor-pointer ${
               activeTab === "dashboard"
@@ -781,37 +418,42 @@ export default function App() {
                 : "text-zinc-400 hover:text-white"
             }`}
           >
-            Dashboard
+            My Quotes
           </button>
+          {isAdmin && (
+            <button
+              type="button"
+              onClick={() => setActiveTab("admin")}
+              className={`pb-1 font-bold transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
+                activeTab === "admin"
+                  ? "text-white border-b-2 border-fit-red"
+                  : "text-zinc-400 hover:text-white"
+              }`}
+            >
+              <ShieldCheck size={14} />
+              <span>Management</span>
+            </button>
+          )}
         </nav>
 
         {/* Active Session Identity */}
         <div className="flex items-center gap-3">
           <div className="text-right hidden sm:block">
-            <div className="text-xs font-semibold">{currentUser || "Not Authenticated"}</div>
+            <div className="text-xs font-semibold">{user.name}</div>
             <div className="text-[10px] text-gray-400 flex items-center justify-end gap-1.5 leading-none mt-0.5">
-              <span>Careers Advisor</span>
-              {currentUser && (
-                <>
-                  <span className="text-zinc-700">•</span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      localStorage.removeItem("fit_advisor");
-                      localStorage.removeItem("fit_advisor_login_time");
-                      setCurrentUser(null);
-                      setSessionTime(null);
-                    }}
-                    className="text-fit-red font-semibold hover:underline cursor-pointer"
-                  >
-                    Logout
-                  </button>
-                </>
-              )}
+              <span>{isAdmin ? "Administrator" : "Careers Advisor"}</span>
+              <span className="text-zinc-700">•</span>
+              <button
+                type="button"
+                onClick={handleSignOut}
+                className="text-fit-red font-semibold hover:underline cursor-pointer"
+              >
+                Sign out
+              </button>
             </div>
           </div>
           <div className="w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center font-bold text-xs text-white uppercase select-none">
-            {currentUser ? currentUser[0] : "?"}
+            {user.name[0] || "?"}
           </div>
         </div>
       </header>
@@ -936,7 +578,7 @@ export default function App() {
                     <input
                       type="text"
                       className="w-full bg-[#E2E8F0] border border-[#CBD5E1] rounded pl-9 pr-3 py-2 text-xs text-slate-600 font-semibold focus:outline-none cursor-not-allowed selection:bg-slate-300"
-                      value={currentUser || "No Advisor Logged In"}
+                      value={user.name}
                       disabled
                       readOnly
                     />
@@ -993,19 +635,20 @@ export default function App() {
                 Add Secondary Pathway
               </button>
 
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={handlePrintClick}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-[#10B981] hover:bg-[#059669] text-white text-xs font-bold uppercase tracking-wider rounded transition-colors cursor-pointer shadow-md"
-                >
-                  <Printer size={14} />
-                  Export & Sync to QTrak
-                </button>
-                <span className="shrink-0 px-2.5 py-1.5 bg-amber-500 text-black text-[10px] font-black rounded uppercase tracking-wider animate-pulse shadow-sm border border-amber-600" title="Automatic QTrak background synchronization is active on document export in this Sandbox/Beta environment.">
-                  BETA
-                </span>
-              </div>
+              <button
+                type="button"
+                onClick={handlePrintClick}
+                disabled={isSaving}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[#10B981] hover:bg-[#059669] disabled:bg-zinc-300 disabled:cursor-not-allowed text-white text-xs font-bold uppercase tracking-wider rounded transition-colors cursor-pointer shadow-md"
+              >
+                <Printer size={14} />
+                {isSaving ? "Recording…" : "Export PDF & Record Quote"}
+              </button>
+              <p className="text-[10px] text-slate-400 font-medium leading-relaxed">
+                Exporting records this quote against your name and adds it to the
+                month&rsquo;s tracking. Re-exporting updates the same record rather than
+                creating a second one.
+              </p>
             </div>
           </div>
         </aside>
@@ -1122,308 +765,16 @@ export default function App() {
           </div>
         </section>
       </div>
-      ) : activeTab === "qtrak" ? (
-        /* --- QTRAK HISTORICAL RECRUITMENT LOGS BOARD --- */
-        <div className="flex-1 overflow-y-auto no-print bg-[#F8FAFC] p-6 md:p-8 font-sans text-left">
-          
-          {/* BETA WARNING BANNER */}
-          <div className="max-w-6xl mx-auto mb-6 bg-amber-500/10 border border-amber-500/30 p-4 rounded-xl flex items-start gap-3 text-left">
-            <div className="p-2 bg-amber-500 text-black rounded-lg shrink-0">
-              <AlertCircle size={18} />
-            </div>
-            <div>
-              <h4 className="font-bold text-amber-800 text-sm flex items-center gap-1.5">
-                <span>QTrak Logs Dashboard is in Beta</span>
-                <span className="px-1.5 py-0.5 bg-amber-500 text-black text-[9px] font-black rounded uppercase">BETA ACTIVE</span>
-              </h4>
-              <p className="text-xs text-amber-700/90 leading-relaxed font-semibold mt-1">
-                Persistent log actions, status updates, Google Sheets real-time cloud synchronisation, and record modifications are <strong>currently locked</strong> in this sandboxed Beta environment while IT completes domain authorisation. All actions are disabled.
-              </p>
-            </div>
-          </div>
-
-          {/* Header Action Row */}
-          <div className="max-w-6xl mx-auto mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 mb-1.5">
-                <Database className="text-fit-red w-5 h-5" />
-                <h1 className="text-2xl font-bold text-slate-900 tracking-tight">QTrak Workspace Logs</h1>
-                <span className="px-2 py-0.5 bg-amber-500 text-black text-[10px] font-black rounded uppercase tracking-wider">
-                  BETA
-                </span>
-              </div>
-              <p className="text-xs text-slate-500 font-medium">
-                Admissions, pipeline conversion, and historical study quote tracking.
-              </p>
-            </div>
-
-            {/* Google Sheets Status Controller */}
-            <div className="p-3 rounded-xl border flex flex-col sm:flex-row items-start sm:items-center gap-3 shadow-sm bg-zinc-50 border-zinc-200/80 cursor-not-allowed opacity-80" title="Locked in Beta">
-              <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-lg bg-zinc-100 text-zinc-400">
-                  <FileSpreadsheet size={16} />
-                </div>
-                <div className="text-left text-xs">
-                  <div className="font-bold text-zinc-500 flex items-center gap-1">
-                    <span>Google Sheets Status: Locked in Beta</span>
-                  </div>
-                  <div className="text-[10px] text-zinc-400 font-semibold leading-none mt-1">
-                    Admissions live sheet sync is restricted in sandbox beta mode.
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 self-stretch sm:self-auto border-t sm:border-t-0 sm:border-l border-zinc-200/60 pt-2 sm:pt-0 sm:pl-3">
-                <button
-                  type="button"
-                  disabled
-                  className="px-3 py-1.5 bg-zinc-100 border border-zinc-200 text-zinc-400 rounded text-[10px] sm:text-xs font-bold uppercase tracking-wider cursor-not-allowed flex items-center gap-1"
-                >
-                  <span>🔒 Sheets Locked</span>
-                </button>
-                
-                <button
-                  type="button"
-                  disabled
-                  className="p-1.5 text-zinc-300 cursor-not-allowed"
-                  title="Force Sync Locked in Beta"
-                >
-                  <RefreshCw size={14} />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Sync status error banner */}
-          {syncError && (
-            <div className="max-w-6xl mx-auto mb-6 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-2 text-xs text-amber-800 text-left font-medium">
-              <AlertCircle className="shrink-0 text-amber-500 w-4 h-4 mt-0.5" />
-              <span>{syncError}</span>
-            </div>
-          )}
-
-          {/* Metric Cards Bento Block */}
-          <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-white p-4 rounded-xl border border-zinc-200/60 shadow-sm text-left flex flex-col justify-between">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block mb-1">Total Generated</span>
-              <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-extrabold text-slate-800">{quotes.length}</span>
-                <span className="text-[10px] text-slate-400 font-semibold">proposals</span>
-              </div>
-            </div>
-
-            <div className="bg-white p-4 rounded-xl border border-zinc-200/60 shadow-sm text-left flex flex-col justify-between">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-500 block mb-1">Consultations Booked</span>
-              <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-extrabold text-emerald-600">{quotes.filter(q => q.isAccepted).length}</span>
-                <span className="text-[10px] text-slate-400 font-semibold">scheduled bookings</span>
-              </div>
-            </div>
-
-            <div className="bg-white p-4 rounded-xl border border-zinc-200/60 shadow-sm text-left flex flex-col justify-between">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-500 block mb-1">Pending Admissions</span>
-              <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-extrabold text-amber-600">{quotes.filter(q => !q.isAccepted && q.status !== "expired" && q.status !== "grey").length}</span>
-                <span className="text-[10px] text-slate-400 font-semibold">amber alerts</span>
-              </div>
-            </div>
-
-            <div className="bg-white p-4 rounded-xl border border-zinc-200/60 shadow-sm text-left flex flex-col justify-between">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-gray-400 block mb-1">Expired / Grey</span>
-              <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-extrabold text-slate-400">
-                  {quotes.filter(q => q.status === "expired" || q.status === "grey" || (!q.isAccepted && q.validUntil && new Date() > new Date(q.validUntil))).length}
-                </span>
-                <span className="text-[10px] text-slate-400 font-semibold">overdue references</span>
-              </div>
-            </div>
-          </div>
-
-          {/* List Content */}
-          <div className="max-w-6xl mx-auto">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-xs uppercase font-extrabold tracking-widest text-[#8B909A]">
-                Historical Logs for {currentUser}
-              </span>
-              <span className="text-xs text-slate-500 font-medium font-sans">
-                {isSyncing ? "Syncing..." : "Database synchronized"}
-              </span>
-            </div>
-
-            {quotes.length === 0 ? (
-              <div className="bg-white rounded-2xl border border-zinc-200/60 shadow-sm p-12 text-center max-w-lg mx-auto">
-                <Database size={40} className="mx-auto text-slate-300 mb-4 stroke-1" />
-                <h3 className="font-bold text-slate-700 mb-1">No Historical Quotes Detected</h3>
-                <p className="text-xs text-slate-500 leading-relaxed mb-6">
-                  You haven't logged any admissions estimators for your profile yet. Build your first estimate in the <strong>Quote Builder</strong> and save/sync it.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab("builder")}
-                  className="px-4 py-2 bg-fit-red hover:bg-[#a80d13] text-white text-xs font-bold uppercase tracking-widest rounded-lg transition-colors cursor-pointer"
-                >
-                  Generate First Quote Offer
-                </button>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {quotes.map((quote) => {
-                  const isExpired = quote.status === "expired" || quote.status === "grey" || (!quote.isAccepted && quote.validUntil && new Date() > new Date(quote.validUntil));
-                  
-                  // Stylings based on user requests:
-                  // 1. Quotes issued amber pending = amber/yellow text + border.
-                  // 2. Quotes passed valid design date or grey = grey.
-                  // 3. Accepted quotes = green.
-                  let cardBorderClass = "border-zinc-200";
-                  let badgeBgClass = "bg-[#64748B]/10 text-[#64748B] border-[#64748B]/20";
-                  let statusLabel = "Amber Pending";
-                  let stripeClass = "bg-amber-400";
-
-                  if (quote.isAccepted) {
-                    cardBorderClass = "border-emerald-200 shadow-emerald-50/[0.03]";
-                    badgeBgClass = "bg-emerald-50 text-emerald-700 border-emerald-200";
-                    statusLabel = "Consultation Scheduled";
-                    stripeClass = "bg-[#10B981]";
-                  } else if (isExpired) {
-                    cardBorderClass = "border-zinc-300 bg-zinc-50/50 opacity-80";
-                    badgeBgClass = "bg-gray-100 text-gray-500 border-gray-200";
-                    statusLabel = "Expired Offer";
-                    stripeClass = "bg-zinc-400";
-                  } else {
-                    cardBorderClass = "border-amber-200/80 shadow-amber-50/[0.02]";
-                    badgeBgClass = "bg-amber-50 text-amber-700 border-amber-200";
-                    statusLabel = "Amber Pending";
-                    stripeClass = "bg-amber-400";
-                  }
-
-                  const cleanDateStr = (dateStr: string) => {
-                    if (!dateStr) return "";
-                    const parts = dateStr.split("-");
-                    return parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : dateStr;
-                  };
-
-                  const formattedCost = new Intl.NumberFormat("en-AU", {
-                    style: "currency",
-                    currency: "AUD",
-                  }).format(quote.totalCost);
-
-                  return (
-                    <div
-                      key={quote.id}
-                      className={`bg-white rounded-xl border ${cardBorderClass} shadow-sm overflow-hidden flex flex-col md:flex-row text-left transition-all duration-300 hover:shadow-md ${
-                        quote.isAccepted ? "hover:border-emerald-300" : ""
-                      }`}
-                    >
-                      {/* Left color-coding indicator stripe */}
-                      <div className={`w-full md:w-1.5 h-1.5 md:h-auto shrink-0 ${stripeClass}`} />
-
-                      <div className="flex-1 p-5 md:p-6 grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
-                        
-                        {/* Prospect block (4 cols) */}
-                        <div className="md:col-span-4 space-y-2">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-[9px] font-extrabold tracking-widest uppercase text-slate-400 font-mono">
-                              Prospect Info
-                            </span>
-                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${badgeBgClass}`}>
-                              {statusLabel}
-                            </span>
-                          </div>
-                          
-                          <div className="font-bold text-slate-800 text-lg leading-tight font-sans">
-                            {quote.studentName}
-                          </div>
-
-                          <div className="text-xs text-slate-500 space-y-1 font-medium select-text">
-                            <div className="flex items-center gap-1.5 font-mono">
-                              <Hash size={11} className="text-slate-400 shrink-0" />
-                              <span>{quote.hubspotDealCode || "No HubSpot Deal Code"}</span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Proposal & courses summary block (4 cols) */}
-                        <div className="md:col-span-4 space-y-1 border-t md:border-t-0 md:border-l border-zinc-100 pt-4 md:pt-0 md:pl-5">
-                          <span className="text-[9px] font-extrabold tracking-widest uppercase text-slate-400 font-mono">
-                            Courses Configuration
-                          </span>
-                          <p className="text-xs text-slate-700 leading-relaxed font-semibold">
-                            {quote.courseSummary}
-                          </p>
-                          <div className="pt-2 flex items-center gap-4 text-[11px] text-slate-400 font-bold uppercase">
-                            <div>
-                              <span>ISSUED: </span>
-                              <span className="text-slate-600 font-sans">{cleanDateStr(quote.dateIssued)}</span>
-                            </div>
-                            <div>
-                              <span>EXPIRY: </span>
-                              <span className="text-slate-600 font-sans">{cleanDateStr(quote.validUntil)}</span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Financial investment value (2 cols) */}
-                        <div className="md:col-span-2 text-left md:text-right border-t md:border-t-0 md:border-l border-zinc-100 pt-4 md:pt-0 md:pl-5 font-sans">
-                          <span className="text-[10px] font-extrabold tracking-widest uppercase text-slate-400 block mb-0.5">
-                            Total Investment
-                          </span>
-                          <div className="text-xl font-black text-slate-800 leading-none">
-                            {formattedCost}
-                          </div>
-                          <span className="text-[9px] text-zinc-400 font-bold uppercase tracking-widest mt-1 block">
-                            AUD Inc GST
-                          </span>
-                        </div>
-
-                        {/* Action controllers (2 cols) - LOCKED IN BETA */}
-                        <div className="md:col-span-2 flex flex-col gap-2 w-full justify-center md:items-end border-t md:border-t-0 border-zinc-100 pt-4 md:pt-0">
-                          
-                          {/* Load back configuration button */}
-                          <button
-                            type="button"
-                            disabled
-                            className="w-full md:w-auto px-3.5 py-1.5 text-center bg-zinc-100 border border-zinc-200 text-[10px] text-zinc-400 font-bold uppercase tracking-wider rounded-md cursor-not-allowed opacity-75 inline-flex items-center justify-center gap-1"
-                            title="Locked in Beta"
-                          >
-                            <span>🔒 Restore Locked</span>
-                          </button>
-
-                          {/* Quick client status acceptance toggler */}
-                          <button
-                            type="button"
-                            disabled
-                            className="w-full md:w-auto px-3.5 py-1.5 text-center bg-zinc-100 border border-zinc-200 text-[10px] text-zinc-400 font-bold uppercase tracking-wider rounded-md cursor-not-allowed opacity-75 inline-flex items-center justify-center gap-1"
-                            title="Locked in Beta"
-                          >
-                            <span>🔒 Toggle Locked</span>
-                          </button>
-
-                          {/* Remove log reference */}
-                          <button
-                            type="button"
-                            disabled
-                            className="w-full md:w-auto px-3.5 py-1 text-center text-zinc-300 text-[9px] font-bold uppercase tracking-widest cursor-not-allowed opacity-75 inline-flex items-center justify-center gap-1"
-                            title="Locked in Beta"
-                          >
-                            <span>🔒 Remove Locked</span>
-                          </button>
-
-                        </div>
-
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        </div>
+      ) : activeTab === "admin" && isAdmin ? (
+        <AdminTab adminName={user.name} />
       ) : (
-        /* --- DASHBOARD TAB VIEW --- */
-        <DashboardTab 
-          quotes={allQuotes} 
-          onToggleQuoteAccept={handleToggleQuoteAccept} 
-          currentUser={currentUser}
+        <DashboardTab
+          quotes={quotes}
+          advisorName={user.name}
+          onSetOutcome={handleSetOutcome}
+          onLoadQuote={handleLoadQuoteBack}
+          isLoading={isLoadingQuotes}
+          errorMessage={quotesError}
         />
       )}
 

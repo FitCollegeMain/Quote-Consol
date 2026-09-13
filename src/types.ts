@@ -148,19 +148,90 @@ export const CAMPUSES_BY_STATE: Record<string, string[]> = {
   ]
 };
 
-export interface SavedQuote {
+export type UserRole = "advisor" | "admin";
+
+/** A signed-in person, as stored in the Firestore `users` collection. */
+export interface AppUser {
+  uid: string;
+  email: string;
+  name: string;
+  role: UserRole;
+  active: boolean;
+}
+
+/**
+ * The recorded outcome of a quote. Deliberately three states, not four:
+ * "expired" is derived from validUntil at read time rather than stored, so
+ * nothing has to run on a schedule to keep the data honest.
+ */
+export type QuoteOutcome = "pending" | "closed" | "lost";
+
+/** What a quote looks like on screen once expiry is taken into account. */
+export type QuoteDisplayStatus = "open" | "closed" | "lost" | "lapsed";
+
+/** One quote, as stored in the Firestore `quotes` collection. */
+export interface QuoteRecord {
   id: string;
+  /** Auth uid of the advisor who issued it. The ownership key for security rules. */
+  advisorUid: string;
+  /** Copied in at save time so reports never need a second lookup. */
   advisorName: string;
+  advisorEmail: string;
   studentName: string;
   hubspotDealCode: string;
-  dateIssued: string;
-  validUntil: string;
   courseSummary: string;
-  totalCost: number;
-  status: "amber pending" | "accepted" | "expired";
+  totalValue: number;
+  /** YYYY-MM-DD, local time. */
+  dateIssued: string;
+  /** YYYY-MM. Frozen at first save so a quote never moves between months. */
+  issueMonth: string;
+  /** YYYY-MM-DD, local time. */
+  validUntil: string;
+  outcome: QuoteOutcome;
+  /** ISO timestamp of when the outcome was last changed away from pending. */
+  outcomeAt: string | null;
+  outcomeNote?: string;
+  createdAt: string;
   updatedAt: string;
-  isAccepted: boolean;
-  pathwaysData?: string; // JSON configuration of pathways
+  /** JSON configuration of pathways, so a quote can be reloaded into the builder. */
+  pathwaysData?: string;
+}
+
+/** YYYY-MM for a Date, in local time. */
+export function monthKeyOf(date: Date): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+}
+
+/** YYYY-MM for a YYYY-MM-DD string, falling back to the current month. */
+export function monthKeyOfDateString(dateStr: string): string {
+  const match = /^(\d{4})-(\d{2})/.exec(dateStr || "");
+  return match ? `${match[1]}-${match[2]}` : monthKeyOf(new Date());
+}
+
+/** Shifts a YYYY-MM key by a number of months. */
+export function shiftMonthKey(monthKey: string, offset: number): string {
+  const [year, month] = monthKey.split("-").map(Number);
+  return monthKeyOf(new Date(year, month - 1 + offset, 1));
+}
+
+/** "September 2026" for a YYYY-MM key. */
+export function formatMonthKey(monthKey: string): string {
+  const [year, month] = monthKey.split("-").map(Number);
+  return new Date(year, month - 1, 1).toLocaleDateString("en-AU", {
+    month: "long",
+    year: "numeric",
+  });
+}
+
+/**
+ * A pending quote whose validity date has passed counts as lapsed: it is no
+ * longer realistically closeable, but nobody has explicitly written it off.
+ */
+export function displayStatusOf(quote: QuoteRecord, now = new Date()): QuoteDisplayStatus {
+  if (quote.outcome === "closed") return "closed";
+  if (quote.outcome === "lost") return "lost";
+  if (quote.validUntil && now > new Date(`${quote.validUntil}T23:59:59`)) return "lapsed";
+  return "open";
 }
 
 export interface CampusLinkInfo {
