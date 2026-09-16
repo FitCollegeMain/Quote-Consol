@@ -728,7 +728,7 @@ export default function PathwayCard({
                       <strong className="text-slate-850 font-extrabold">{formatMoney(paymentPlanAmount)}/{paymentPlanType === "fortnightly" ? "fortnight" : "week"}</strong> payment repayments.
                     </>
                   )}{" "}
-                  <strong className="text-slate-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available OR Payment Plans are interest free - $6.60 set up fee. Either $1.30 a week or $1.95 a fortnight billing fee.
+                  <strong className="text-slate-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available OR Payment Plans are interest free with a single $6.60 setup fee only (no admin fees, no continual fees).
                 </span>
               </td>
             </tr>
