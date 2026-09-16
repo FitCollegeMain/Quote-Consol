@@ -1052,7 +1052,7 @@ export default function App() {
                                 </span>
                               </div>
                               <p className="text-gray-400 text-[8.5px] print:text-[7.5px] leading-tight mt-1">
-                                Upfront discount applied. Rest of fees waived.
+                                Upfront discount applied. Zero setup fees.
                               </p>
                             </div>
                           )}
@@ -1079,7 +1079,7 @@ export default function App() {
                                 </div>
                               </div>
                               <p className="text-gray-400 text-[8.5px] print:text-[7.5px] leading-tight mt-1">
-                                Interest-free structure. Standard billing fees apply.
+                                Interest-free structure. Single $6.60 setup fee only (no admin or continual fees).
                               </p>
                             </div>
                           )}
@@ -1087,7 +1087,7 @@ export default function App() {
                       );
                     })()}
                     <p className="text-gray-500 text-[9px] print:text-[8px] leading-relaxed mt-2.5 print:mt-1.5 border-t border-gray-100 pt-2 print:pt-1 italic">
-                      <strong className="text-gray-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available OR Payment Plans are interest free - $6.60 set up fee. Either $1.30 a week or $1.95 a fortnight billing fee.
+                      <strong className="text-gray-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available OR Payment Plans are interest free with a single $6.60 setup fee only (no admin fees, no continual fees).
                     </p>
                   </div>
                 </div>
