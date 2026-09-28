@@ -41,9 +41,37 @@ const getDateString = (daysOffset = 0) => {
   return `${yyyy}-${mm}-${dd}`;
 };
 
-// Helper to get default expiry date string (07/09/26 -> 2026-09-07)
-const getDefaultExpiryDateString = () => {
-  return "2026-09-07";
+// Helper to calculate the end date (last day) of the month, with optional month offset for successive months
+export const getEndOfMonthDateString = (baseDateStr?: string, monthOffset: number = 0): string => {
+  let year: number;
+  let month: number;
+
+  if (baseDateStr && /^\d{4}-\d{2}-\d{2}$/.test(baseDateStr)) {
+    const [yStr, mStr] = baseDateStr.split("-");
+    year = parseInt(yStr, 10);
+    month = parseInt(mStr, 10) - 1;
+  } else {
+    const now = new Date();
+    year = now.getFullYear();
+    month = now.getMonth();
+  }
+
+  // new Date(year, month + 1 + monthOffset, 0) calculates the last calendar day of that target month
+  const targetDate = new Date(year, month + 1 + monthOffset, 0);
+  const targetYear = targetDate.getFullYear();
+  const targetMonth = String(targetDate.getMonth() + 1).padStart(2, "0");
+  const targetDay = String(targetDate.getDate()).padStart(2, "0");
+  return `${targetYear}-${targetMonth}-${targetDay}`;
+};
+
+// Function that advances or updates the pre-filled end date to the end of each successive month
+export const getNextSuccessiveMonthEndDate = (currentDateStr?: string): string => {
+  return getEndOfMonthDateString(currentDateStr, 1);
+};
+
+// Helper to get default expiry / end date string: automatically defaults to the end of the current/successive month
+export const getDefaultExpiryDateString = (baseDateStr?: string, monthOffset: number = 0): string => {
+  return getEndOfMonthDateString(baseDateStr, monthOffset);
 };
 
 const getSeedQuotes = (): SavedQuote[] => {
@@ -185,7 +213,7 @@ export default function App() {
       studentName: "",
       hubspotDealCode: "",
       date: getDateString(),
-      validUntil: getDefaultExpiryDateString(), // Defaults to 07/09/26
+      validUntil: getDefaultExpiryDateString(), // Automatically pre-fills to the end of the successive month
       adviserName: adviser,
       adviserEmail: contact?.email || "",
       adviserPhone: contact?.phone || "",
@@ -898,11 +926,11 @@ export default function App() {
                           setDetails(prev => ({
                             ...prev,
                             date: today,
-                            validUntil: getDefaultExpiryDateString()
+                            validUntil: getDefaultExpiryDateString(today)
                           }));
                         }}
                         className="text-[9px] font-extrabold text-fit-red hover:text-[#9e0c11] uppercase tracking-wider cursor-pointer"
-                        title="Auto fill create date as today's date"
+                        title="Auto fill issue date as today and end date as end of month"
                       >
                         Set to Today
                       </button>
@@ -911,13 +939,51 @@ export default function App() {
                       type="date"
                       className="w-full bg-[#F8FAFC] border border-[#D5D8DE] rounded px-3 py-2 text-xs text-fit-black focus:outline-none focus:ring-1 focus:ring-fit-red text-center"
                       value={details.date}
-                      onChange={(e) => setDetails({ ...details, date: e.target.value })}
+                      onChange={(e) => {
+                        const newDate = e.target.value;
+                        setDetails(prev => ({
+                          ...prev,
+                          date: newDate,
+                          validUntil: getDefaultExpiryDateString(newDate)
+                        }));
+                      }}
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-[#8B909A] uppercase mb-1">
-                      Expiry Date
-                    </label>
+                    <div className="flex justify-between items-center mb-1">
+                      <label className="block text-[10px] font-bold text-[#8B909A] uppercase">
+                        End Date / Expiry
+                      </label>
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setDetails(prev => ({
+                              ...prev,
+                              validUntil: getDefaultExpiryDateString(prev.date)
+                            }));
+                          }}
+                          className="text-[9px] font-extrabold text-fit-red hover:text-[#9e0c11] uppercase tracking-wider cursor-pointer"
+                          title="Auto fill end date to end of current month"
+                        >
+                          Month End
+                        </button>
+                        <span className="text-gray-300 text-[9px]">•</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setDetails(prev => ({
+                              ...prev,
+                              validUntil: getNextSuccessiveMonthEndDate(prev.validUntil || prev.date)
+                            }));
+                          }}
+                          className="text-[9px] font-extrabold text-slate-500 hover:text-fit-red uppercase tracking-wider cursor-pointer"
+                          title="Advance to end of each successive month"
+                        >
+                          +1 Mo End
+                        </button>
+                      </div>
+                    </div>
                     <input
                       type="date"
                       className="w-full bg-[#F8FAFC] border border-[#D5D8DE] rounded px-3 py-2 text-xs text-fit-black focus:outline-none focus:ring-1 focus:ring-fit-red text-center"
