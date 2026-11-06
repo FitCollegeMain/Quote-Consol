@@ -64,14 +64,63 @@ export const getEndOfMonthDateString = (baseDateStr?: string, monthOffset: numbe
   return `${targetYear}-${targetMonth}-${targetDay}`;
 };
 
+// Helper to get default expiry / end date string: automatically defaults to the end of the current/successive month
+export const getDefaultExpiryDateString = (baseDateStr?: string, monthOffset: number = 0): string => {
+  return getEndOfMonthDateString(baseDateStr, monthOffset);
+};
+
 // Function that advances or updates the pre-filled end date to the end of each successive month
 export const getNextSuccessiveMonthEndDate = (currentDateStr?: string): string => {
   return getEndOfMonthDateString(currentDateStr, 1);
 };
 
-// Helper to get default expiry / end date string: automatically defaults to the end of the current/successive month
-export const getDefaultExpiryDateString = (baseDateStr?: string, monthOffset: number = 0): string => {
-  return getEndOfMonthDateString(baseDateStr, monthOffset);
+// Timezone-safe local date parser preventing UTC midnight date-shift bugs
+export const parseLocalDate = (dateStr?: string): { year: number; month: number; day: number } | null => {
+  if (!dateStr) return null;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    const [y, m, d] = dateStr.split("-").map(Number);
+    return { year: y, month: m - 1, day: d };
+  }
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return null;
+  return { year: date.getFullYear(), month: date.getMonth(), day: date.getDate() };
+};
+
+// Check if a quote is expired (end-of-day inclusive in local time)
+export const isQuoteExpired = (validUntil?: string): boolean => {
+  if (!validUntil) return false;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(validUntil)) {
+    const [y, m, d] = validUntil.split("-").map(Number);
+    // Quote is valid until 23:59:59.999 of that day in local time
+    const expiry = new Date(y, m - 1, d, 23, 59, 59, 999);
+    return Date.now() > expiry.getTime();
+  }
+  const date = new Date(validUntil);
+  return !isNaN(date.getTime()) && Date.now() > date.getTime();
+};
+
+// Unified date formatter for clean display (DD/MM/YYYY)
+export const formatDateDisplay = (dateStr?: string): string => {
+  if (!dateStr) return "-";
+  if (dateStr.includes("-")) {
+    const p = dateStr.split("-");
+    if (p.length === 3) {
+      if (p[0].length === 4) return `${p[2]}/${p[1]}/${p[0]}`;
+      if (p[2].length === 4) return `${p[0]}/${p[1]}/${p[2]}`;
+    }
+  }
+  return dateStr;
+};
+
+// Defensive JSON parser preventing storage corruption crashes
+export const safeJsonParse = <T,>(str: string | null, fallback: T): T => {
+  if (!str) return fallback;
+  try {
+    return JSON.parse(str);
+  } catch (err) {
+    console.error("Safe JSON parse error:", err);
+    return fallback;
+  }
 };
 
 const getSeedQuotes = (): SavedQuote[] => {
@@ -256,7 +305,7 @@ export default function App() {
     setSyncError(null);
     try {
       let localStr = localStorage.getItem("fit_local_quotes");
-      let localQuotes: SavedQuote[] = localStr ? JSON.parse(localStr) : [];
+      let localQuotes: SavedQuote[] = safeJsonParse<SavedQuote[]>(localStr, []);
       
       // Seed if empty
       if (localQuotes.length === 0) {
@@ -295,7 +344,7 @@ export default function App() {
       console.error("Load quotes failed:", err);
       setSyncError("Google Sync Pending: Could not fetch from Google Sheet. Loaded offline fallback logs.");
       const localStr = localStorage.getItem("fit_local_quotes");
-      let localQuotes: SavedQuote[] = localStr ? JSON.parse(localStr) : [];
+      let localQuotes: SavedQuote[] = safeJsonParse<SavedQuote[]>(localStr, []);
       if (localQuotes.length === 0) {
         localQuotes = getSeedQuotes();
         localStorage.setItem("fit_local_quotes", JSON.stringify(localQuotes));
@@ -353,7 +402,7 @@ export default function App() {
         });
       });
       
-      const isExpiredQuote = details.validUntil ? new Date() > new Date(details.validUntil) : false;
+      const isExpiredQuote = isQuoteExpired(details.validUntil);
       const finalStatus = isQuoteAccepted 
         ? "accepted" 
         : (isExpiredQuote ? "expired" : "amber pending");
@@ -375,7 +424,7 @@ export default function App() {
       };
       
       const localStr = localStorage.getItem("fit_local_quotes");
-      const localQuotes: SavedQuote[] = localStr ? JSON.parse(localStr) : [];
+      const localQuotes: SavedQuote[] = safeJsonParse<SavedQuote[]>(localStr, []);
       const otherQuotes = localQuotes.filter(q => q.id !== quoteId);
       const updatedLocal = [newQuote, ...otherQuotes];
       localStorage.setItem("fit_local_quotes", JSON.stringify(updatedLocal));
@@ -418,7 +467,7 @@ export default function App() {
       };
       
       const localStr = localStorage.getItem("fit_local_quotes");
-      const localQuotes: SavedQuote[] = localStr ? JSON.parse(localStr) : [];
+      const localQuotes: SavedQuote[] = safeJsonParse<SavedQuote[]>(localStr, []);
       const updatedLocal = localQuotes.map(q => q.id === quote.id ? updatedQuote : q);
       localStorage.setItem("fit_local_quotes", JSON.stringify(updatedLocal));
       
@@ -440,7 +489,7 @@ export default function App() {
     
     const localStr = localStorage.getItem("fit_local_quotes");
     if (localStr) {
-      const localQuotes: SavedQuote[] = JSON.parse(localStr);
+      const localQuotes: SavedQuote[] = safeJsonParse<SavedQuote[]>(localStr, []);
       const filtered = localQuotes.filter(q => q.id !== quoteId);
       localStorage.setItem("fit_local_quotes", JSON.stringify(filtered));
       await loadQuotes();
@@ -450,8 +499,10 @@ export default function App() {
   const handleLoadQuoteBack = (quote: SavedQuote) => {
     try {
       if (quote.pathwaysData) {
-        const loadedPathways = JSON.parse(quote.pathwaysData);
-        setPathways(loadedPathways);
+        const loadedPathways = safeJsonParse<Pathway[] | null>(quote.pathwaysData, null);
+        if (loadedPathways && Array.isArray(loadedPathways) && loadedPathways.length > 0) {
+          setPathways(loadedPathways);
+        }
       }
       const activeAdvisor = currentUser || quote.advisorName;
       setDetails({
@@ -712,21 +763,28 @@ export default function App() {
             </div>
 
             <div>
-              <label htmlFor="loginPassword" className="block text-[10px] font-extrabold text-[#8B909A] uppercase tracking-wider mb-2 text-left">
-                Security Password Protocol
-              </label>
+              <div className="flex justify-between items-center mb-2">
+                <label htmlFor="loginPassword" className="block text-[10px] font-extrabold text-[#8B909A] uppercase tracking-wider text-left">
+                  Security Password Protocol
+                </label>
+                {loginUser && (
+                  <span className="text-[9px] text-zinc-400 font-mono">
+                    Hint: initials+Fit26
+                  </span>
+                )}
+              </div>
               <div className="relative">
                 <Lock className="absolute left-3 top-3.5 h-4 w-4 text-zinc-500" />
                 <input
                   id="loginPassword"
                   type="password"
-                  placeholder="Enter Password"
+                  placeholder={loginUser ? `e.g. ${getAdvisorPassword(loginUser)}` : "Enter Password (initials + Fit26)"}
                   value={loginPassword}
                   onChange={(e) => {
                     setLoginPassword(e.target.value);
                     setLoginError("");
                   }}
-                  className="w-full bg-[#202023] border border-zinc-800 rounded-lg pl-10 pr-3 py-3 text-sm text-white font-mono tracking-wider focus:outline-none focus:border-fit-red placeholder-zinc-650"
+                  className="w-full bg-[#202023] border border-zinc-800 rounded-lg pl-10 pr-3 py-3 text-sm text-white font-mono tracking-wider focus:outline-none focus:border-fit-red placeholder-zinc-500"
                 />
               </div>
             </div>
@@ -883,7 +941,10 @@ export default function App() {
                       className="w-full bg-[#F8FAFC] border border-[#D5D8DE] rounded pl-9 pr-3 py-2 text-xs text-fit-black focus:outline-none focus:ring-1 focus:ring-fit-red focus:bg-white"
                       placeholder="e.g. Michael Smith"
                       value={details.studentName}
-                      onChange={(e) => setDetails({ ...details, studentName: e.target.value })}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setDetails(prev => ({ ...prev, studentName: val }));
+                      }}
                     />
                   </div>
                 </div>
@@ -899,7 +960,10 @@ export default function App() {
                       className="w-full bg-[#F8FAFC] border border-[#D5D8DE] rounded pl-9 pr-3 py-2 text-xs text-fit-black focus:outline-none focus:ring-1 focus:ring-fit-red focus:bg-white font-mono"
                       placeholder="e.g. HS-12345"
                       value={details.hubspotDealCode}
-                      onChange={(e) => setDetails({ ...details, hubspotDealCode: e.target.value })}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setDetails(prev => ({ ...prev, hubspotDealCode: val }));
+                      }}
                     />
                   </div>
                 </div>
@@ -988,7 +1052,10 @@ export default function App() {
                       type="date"
                       className="w-full bg-[#F8FAFC] border border-[#D5D8DE] rounded px-3 py-2 text-xs text-fit-black focus:outline-none focus:ring-1 focus:ring-fit-red text-center"
                       value={details.validUntil}
-                      onChange={(e) => setDetails({ ...details, validUntil: e.target.value })}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setDetails(prev => ({ ...prev, validUntil: val }));
+                      }}
                     />
                   </div>
                 </div>
@@ -1125,11 +1192,11 @@ export default function App() {
                     <div className="grid grid-cols-2 gap-2">
                       <div>
                         <span className="text-[10px] font-bold text-[#8B909A] uppercase tracking-wider block mb-0.5">Issued date:</span>
-                        <span className="font-semibold text-gray-800">{details.date ? details.date.split("-").reverse().join("/") : "-"}</span>
+                        <span className="font-semibold text-gray-800">{formatDateDisplay(details.date)}</span>
                       </div>
                       <div>
                         <span className="text-[10px] font-bold text-[#8B909A] uppercase tracking-wider block mb-0.5">Valid until:</span>
-                        <span className="font-semibold text-gray-800">{details.validUntil ? details.validUntil.split("-").reverse().join("/") : "-"}</span>
+                        <span className="font-semibold text-gray-800">{formatDateDisplay(details.validUntil)}</span>
                       </div>
                     </div>
                      <div>
@@ -1294,11 +1361,11 @@ export default function App() {
               </div>
             </div>
 
-            <div className="bg-white p-4 rounded-xl border border-zinc-200/60 shadow-sm text-left flex flex-col justify-between">
+              <div className="bg-white p-4 rounded-xl border border-zinc-200/60 shadow-sm text-left flex flex-col justify-between">
               <span className="text-[10px] font-extrabold uppercase tracking-wider text-gray-400 block mb-1">Expired / Grey</span>
               <div className="flex items-baseline gap-2">
                 <span className="text-2xl font-extrabold text-slate-400">
-                  {quotes.filter(q => q.status === "expired" || q.status === "grey" || (!q.isAccepted && q.validUntil && new Date() > new Date(q.validUntil))).length}
+                  {quotes.filter(q => q.status === "expired" || q.status === "grey" || (!q.isAccepted && isQuoteExpired(q.validUntil))).length}
                 </span>
                 <span className="text-[10px] text-slate-400 font-semibold">overdue references</span>
               </div>
@@ -1334,7 +1401,7 @@ export default function App() {
             ) : (
               <div className="space-y-4">
                 {quotes.map((quote) => {
-                  const isExpired = quote.status === "expired" || quote.status === "grey" || (!quote.isAccepted && quote.validUntil && new Date() > new Date(quote.validUntil));
+                  const isExpired = quote.status === "expired" || quote.status === "grey" || (!quote.isAccepted && isQuoteExpired(quote.validUntil));
                   
                   // Stylings based on user requests:
                   // 1. Quotes issued amber pending = amber/yellow text + border.
@@ -1361,12 +1428,6 @@ export default function App() {
                     statusLabel = "Amber Pending";
                     stripeClass = "bg-amber-400";
                   }
-
-                  const cleanDateStr = (dateStr: string) => {
-                    if (!dateStr) return "";
-                    const parts = dateStr.split("-");
-                    return parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : dateStr;
-                  };
 
                   const formattedCost = new Intl.NumberFormat("en-AU", {
                     style: "currency",
@@ -1419,11 +1480,11 @@ export default function App() {
                           <div className="pt-2 flex items-center gap-4 text-[11px] text-slate-400 font-bold uppercase">
                             <div>
                               <span>ISSUED: </span>
-                              <span className="text-slate-600 font-sans">{cleanDateStr(quote.dateIssued)}</span>
+                              <span className="text-slate-600 font-sans">{formatDateDisplay(quote.dateIssued)}</span>
                             </div>
                             <div>
                               <span>EXPIRY: </span>
-                              <span className="text-slate-600 font-sans">{cleanDateStr(quote.validUntil)}</span>
+                              <span className="text-slate-600 font-sans">{formatDateDisplay(quote.validUntil)}</span>
                             </div>
                           </div>
                         </div>
@@ -1519,19 +1580,6 @@ export default function App() {
           let runningSavings = 0;
           let runningInvestment = 0;
 
-          // Date formatter for clean printing (YYYY-MM-DD or DD-MM-YYYY -> DD/MM/YYYY)
-          const cleanDate = (dStr: string) => {
-            if (!dStr) return "";
-            if (dStr.includes("-")) {
-              const p = dStr.split("-");
-              if (p.length === 3) {
-                if (p[0].length === 4) return `${p[2]}/${p[1]}/${p[0]}`;
-                if (p[2].length === 4) return `${p[0]}/${p[1]}/${p[2]}`;
-              }
-            }
-            return dStr;
-          };
-
           return (
             <div
               key={`print-page-${pathway.id}`}
@@ -1569,11 +1617,11 @@ export default function App() {
                     )}
                     <div className="flex">
                       <span className="w-24 print:w-20 font-bold text-gray-500 uppercase tracking-wider shrink-0">Quote Date:</span>
-                      <span className="text-gray-800 font-medium">{cleanDate(details.date)}</span>
+                      <span className="text-gray-800 font-medium">{formatDateDisplay(details.date)}</span>
                     </div>
                     <div className="flex">
                       <span className="w-24 print:w-20 font-bold text-gray-500 uppercase tracking-wider shrink-0">Valid Until:</span>
-                      <span className="text-gray-800 font-medium">{cleanDate(details.validUntil)}</span>
+                      <span className="text-gray-800 font-medium">{formatDateDisplay(details.validUntil)}</span>
                     </div>
                   </div>
  
@@ -1646,7 +1694,7 @@ export default function App() {
                       {pathway.startDate && (
                         <div>
                           <strong className="text-gray-500 uppercase block tracking-wider text-[9px] print:text-[8px] mb-0.5">Start Date:</strong>
-                          <span className="font-semibold text-fit-darkgray">{cleanDate(pathway.startDate)}</span>
+                          <span className="font-semibold text-fit-darkgray">{formatDateDisplay(pathway.startDate)}</span>
                         </div>
                       )}
                       {pathway.timetable && (
@@ -1789,12 +1837,12 @@ export default function App() {
                                 <div>
                                   <span className="text-gray-400 uppercase text-[8px] block">Recurring:</span>
                                   <span className="text-slate-800 font-black text-xs print:text-[11px] text-base block">
-                                    {new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" }).format(pathway.paymentPlanAmount === undefined ? 100 : pathway.paymentPlanAmount)}<span className="text-[10px] text-gray-500 font-normal">/{pathwayPaymentPlanType === "fortnightly" ? "fn" : "wk"}</span>
+                                    {new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" }).format(pathway.paymentPlanAmount === undefined ? 100 : pathway.paymentPlanAmount)}<span className="text-[10px] text-gray-500 font-normal">/{pathwayPaymentPlanType === "fortnightly" ? "fn" : pathwayPaymentPlanType === "monthly" ? "mo" : "wk"}</span>
                                   </span>
                                 </div>
                               </div>
                               <p className="text-gray-400 text-[8.5px] print:text-[7.5px] leading-tight mt-1">
-                                Interest-free structure. Single $6.60 setup fee only (no admin or continual fees).
+                                Interest-free via PaySmart. +$1.50 fee per debit. $6.60 setup fee on 1st debit.
                               </p>
                             </div>
                           )}
@@ -1802,7 +1850,7 @@ export default function App() {
                       );
                     })()}
                     <p className="text-gray-500 text-[9px] print:text-[8px] leading-relaxed mt-2.5 print:mt-1.5 border-t border-gray-100 pt-2 print:pt-1 italic">
-                      <strong className="text-gray-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available OR Payment Plans are interest free with a single $6.60 setup fee only (no admin fees, no continual fees).
+                      <strong className="text-gray-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available (zero fees). Payment plans are interest-free via PaySmart with a once-off $6.60 setup fee charged on the first debited amount, plus a $1.50 transaction fee for every debited amount (weekly, fortnightly, or monthly).
                     </p>
                   </div>
                 </div>

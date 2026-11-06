@@ -241,13 +241,20 @@ export default function PathwayCard({
   });
 
   const rawPlanType = pathway.paymentPlanType;
-  const paymentPlanType = (!rawPlanType || rawPlanType === "full") ? "weekly" : rawPlanType;
+  const paymentPlanType: "weekly" | "fortnightly" | "monthly" = 
+    (!rawPlanType || rawPlanType === "full") ? "weekly" : (rawPlanType as "weekly" | "fortnightly" | "monthly");
   const depositAmount = pathway.depositAmount === undefined ? 500 : pathway.depositAmount;
   const paymentPlanAmount = pathway.paymentPlanAmount === undefined ? 100 : pathway.paymentPlanAmount;
   const payInFullPrice = pathway.payInFullPrice ?? totalInvestment;
   const displayedPaymentMethods = pathway.displayedPaymentMethods ?? "both";
 
-  const setPaymentPlanType = (type: "full" | "weekly" | "fortnightly") => {
+  const getFrequencyLabel = (type: string, short = false) => {
+    if (type === "fortnightly") return short ? "fn" : "fortnight";
+    if (type === "monthly") return short ? "mo" : "month";
+    return short ? "wk" : "week";
+  };
+
+  const setPaymentPlanType = (type: "weekly" | "fortnightly" | "monthly") => {
     onUpdatePathway({
       ...pathway,
       paymentPlanType: type,
@@ -713,22 +720,22 @@ export default function PathwayCard({
                   Note:{" "}
                   {displayedPaymentMethods === "full" ? (
                     <>
-                      This price is paid in full upfront (<strong>{formatMoney(payInFullPrice)}</strong>).
+                      This price is paid in full upfront (<strong>{formatMoney(payInFullPrice)}</strong>) with zero setup or transaction fees.
                     </>
                   ) : displayedPaymentMethods === "plan" ? (
                     <>
                       This price can be paid on a <strong className="text-slate-850 font-extrabold uppercase">{paymentPlanType}</strong> payment plan, consisting of a{" "}
                       <strong className="text-slate-850 font-extrabold">{formatMoney(depositAmount)}</strong> minimum deposit and{" "}
-                      <strong className="text-slate-850 font-extrabold">{formatMoney(paymentPlanAmount)}/{paymentPlanType === "fortnightly" ? "fortnight" : "week"}</strong> payment repayments.
+                      <strong className="text-slate-850 font-extrabold">{formatMoney(paymentPlanAmount)}/{getFrequencyLabel(paymentPlanType)}</strong> debited repayments (+ $1.50 transaction fee per debit; $6.60 PaySmart setup fee on first debit).
                     </>
                   ) : (
                     <>
                       This price can be paid in full upfront (<strong>{formatMoney(payInFullPrice)}</strong>) OR on a <strong className="text-slate-850 font-extrabold uppercase">{paymentPlanType}</strong> payment plan, consisting of a{" "}
                       <strong className="text-slate-850 font-extrabold">{formatMoney(depositAmount)}</strong> minimum deposit and{" "}
-                      <strong className="text-slate-850 font-extrabold">{formatMoney(paymentPlanAmount)}/{paymentPlanType === "fortnightly" ? "fortnight" : "week"}</strong> payment repayments.
+                      <strong className="text-slate-850 font-extrabold">{formatMoney(paymentPlanAmount)}/{getFrequencyLabel(paymentPlanType)}</strong> debited repayments (+ $1.50 transaction fee per debit; $6.60 PaySmart setup fee on first debit).
                     </>
                   )}{" "}
-                  <strong className="text-slate-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available OR Payment Plans are interest free with a single $6.60 setup fee only (no admin fees, no continual fees).
+                  <strong className="text-slate-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available (zero fees). Payment plans are interest-free via PaySmart with a once-off $6.60 setup fee charged on the first debited amount, plus a $1.50 transaction fee for every debited amount (weekly, fortnightly, or monthly).
                 </span>
               </td>
             </tr>
@@ -815,12 +822,12 @@ export default function PathwayCard({
             <label className="block text-[11px] font-black uppercase tracking-wider text-slate-400 mb-2.5">
               Payment Plan Frequency:
             </label>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
               {/* Weekly Payment Plan Option */}
               <button
                 type="button"
                 onClick={() => setPaymentPlanType("weekly")}
-                className={`flex items-center gap-2.5 p-3.5 rounded-lg border text-xs font-bold transition-all cursor-pointer ${
+                className={`flex items-center gap-2 p-3 rounded-lg border text-xs font-bold transition-all cursor-pointer ${
                   paymentPlanType === "weekly"
                     ? "bg-white border-fit-red text-fit-red shadow-xs ring-1 ring-fit-red"
                     : "bg-white border-slate-200 hover:border-slate-300 text-slate-600"
@@ -830,16 +837,16 @@ export default function PathwayCard({
                   type="radio"
                   checked={paymentPlanType === "weekly"}
                   onChange={() => setPaymentPlanType("weekly")}
-                  className="h-4.5 w-4.5 text-fit-red focus:ring-fit-red border-slate-300 cursor-pointer pointer-events-none"
+                  className="h-4 w-4 text-fit-red focus:ring-fit-red border-slate-300 cursor-pointer pointer-events-none"
                 />
-                <span className="cursor-pointer">Weekly Payment Plan</span>
+                <span className="cursor-pointer">Weekly</span>
               </button>
 
               {/* Fortnightly Payment Plan Option */}
               <button
                 type="button"
                 onClick={() => setPaymentPlanType("fortnightly")}
-                className={`flex items-center gap-2.5 p-3.5 rounded-lg border text-xs font-bold transition-all cursor-pointer ${
+                className={`flex items-center gap-2 p-3 rounded-lg border text-xs font-bold transition-all cursor-pointer ${
                   paymentPlanType === "fortnightly"
                     ? "bg-white border-fit-red text-fit-red shadow-xs ring-1 ring-fit-red"
                     : "bg-white border-slate-200 hover:border-slate-300 text-slate-600"
@@ -849,10 +856,42 @@ export default function PathwayCard({
                   type="radio"
                   checked={paymentPlanType === "fortnightly"}
                   onChange={() => setPaymentPlanType("fortnightly")}
-                  className="h-4.5 w-4.5 text-fit-red focus:ring-fit-red border-slate-300 cursor-pointer pointer-events-none"
+                  className="h-4 w-4 text-fit-red focus:ring-fit-red border-slate-300 cursor-pointer pointer-events-none"
                 />
-                <span className="cursor-pointer">Fortnightly Payment Plan</span>
+                <span className="cursor-pointer">Fortnightly</span>
               </button>
+
+              {/* Monthly Payment Plan Option */}
+              <button
+                type="button"
+                onClick={() => setPaymentPlanType("monthly")}
+                className={`flex items-center gap-2 p-3 rounded-lg border text-xs font-bold transition-all cursor-pointer ${
+                  paymentPlanType === "monthly"
+                    ? "bg-white border-fit-red text-fit-red shadow-xs ring-1 ring-fit-red"
+                    : "bg-white border-slate-200 hover:border-slate-300 text-slate-600"
+                }`}
+              >
+                <input
+                  type="radio"
+                  checked={paymentPlanType === "monthly"}
+                  onChange={() => setPaymentPlanType("monthly")}
+                  className="h-4 w-4 text-fit-red focus:ring-fit-red border-slate-300 cursor-pointer pointer-events-none"
+                />
+                <span className="cursor-pointer">Monthly</span>
+              </button>
+            </div>
+
+            {/* PaySmart Fee Transparency Callout */}
+            <div className="mt-3 bg-amber-50/70 border border-amber-200/90 rounded-lg p-3 text-[11px] text-slate-700 space-y-1">
+              <div className="flex items-center gap-1.5 font-bold text-amber-900">
+                <Info size={13} className="text-amber-600 shrink-0" />
+                <span>PaySmart Fee Schedule:</span>
+              </div>
+              <p className="text-[10px] text-slate-600 leading-relaxed">
+                • <strong>$1.50 Transaction Fee:</strong> Charged on every debited transaction ({paymentPlanType}).<br />
+                • <strong>$6.60 PaySmart Setup Fee:</strong> Charged once on the first debited amount only.<br />
+                • <strong>Per-Debit Breakdown:</strong> {formatMoney(paymentPlanAmount)} tuition + $1.50 fee = <strong>{formatMoney(paymentPlanAmount + 1.5)}</strong> debited per {getFrequencyLabel(paymentPlanType)} (First debit: <strong>{formatMoney(paymentPlanAmount + 1.5 + 6.6)}</strong> including $6.60 setup fee).
+              </p>
             </div>
           </div>
         )}
@@ -926,7 +965,7 @@ export default function PathwayCard({
           {displayedPaymentMethods !== "full" && (
             <div>
               <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-1.5">
-                {paymentPlanType === "weekly" ? "Weekly Payment Amount ($)" : "Fortnightly Payment Amount ($)"}
+                {paymentPlanType === "weekly" ? "Weekly Payment Amount ($)" : paymentPlanType === "fortnightly" ? "Fortnightly Payment Amount ($)" : "Monthly Payment Amount ($)"}
               </label>
               <div className="relative">
                 <span className="absolute left-2.5 top-2.5 text-xs font-bold text-slate-400">$</span>
@@ -938,10 +977,13 @@ export default function PathwayCard({
                     setPaymentPlanAmount(isNaN(val) ? 0 : val);
                   }}
                   className="w-full bg-white border border-slate-200 rounded px-2.5 pl-6 py-1.5 text-xs text-slate-800 font-bold focus:outline-none focus:ring-1 focus:ring-fit-red"
-                  placeholder={paymentPlanType === "weekly" ? "e.g. 100" : "e.g. 200"}
+                  placeholder={paymentPlanType === "weekly" ? "e.g. 100" : paymentPlanType === "fortnightly" ? "e.g. 200" : "e.g. 400"}
                   min="1"
                 />
               </div>
+              <p className="text-[9.5px] text-slate-400 mt-1 font-medium">
+                + $1.50 PaySmart fee per debit ({paymentPlanType})
+              </p>
             </div>
           )}
         </div>

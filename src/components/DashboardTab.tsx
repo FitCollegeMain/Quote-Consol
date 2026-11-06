@@ -4,6 +4,7 @@ import {
   AlertCircle, Award, DollarSign, Check, Search, Calendar, ChevronRight
 } from "lucide-react";
 import { SavedQuote, ADVISERS, ADVISER_CONTACTS } from "../types";
+import { parseLocalDate, formatDateDisplay } from "../App";
 
 interface DashboardTabProps {
   quotes: SavedQuote[];
@@ -93,15 +94,15 @@ export default function DashboardTab({ quotes, onToggleQuoteAccept, currentUser 
     const currentYear = now.getFullYear();
     
     return quotes.filter(quote => {
-      const quoteDate = new Date(quote.dateIssued);
-      const isSameMonth = quoteDate.getMonth() === currentMonth && quoteDate.getFullYear() === currentYear;
+      const parsed = parseLocalDate(quote.dateIssued);
+      if (!parsed) return false;
+      const isSameMonth = parsed.month === currentMonth && parsed.year === currentYear;
       
       // Filter by time span
       if (timeFilter === "closeout") {
         if (!isSameMonth) return false;
         // Check if day falls in the last 7 days of this month
-        const day = quoteDate.getDate();
-        if (day < closeOutInfo.startDay) return false;
+        if (parsed.day < closeOutInfo.startDay) return false;
       } else if (timeFilter === "month") {
         if (!isSameMonth) return false;
       }
@@ -180,18 +181,27 @@ export default function DashboardTab({ quotes, onToggleQuoteAccept, currentUser 
 
     // Populate actuals
     filteredQuotes.forEach(q => {
-      const adv = q.advisorName;
-      // Safeguard if advisor is not listed in registered set, but capitalize
-      if (stats[adv]) {
-        stats[adv].totalCount++;
-        stats[adv].possibleValue += q.totalCost || 0;
-        
-        if (q.isAccepted) {
-          stats[adv].closedValue += q.totalCost || 0;
-          stats[adv].closedCount++;
-        } else if (q.status === "amber pending") {
-          stats[adv].pendingValue += q.totalCost || 0;
-        }
+      const rawAdv = (q.advisorName || "").trim();
+      if (!rawAdv) return;
+      const matchedAdv = ADVISERS.find(a => a.toLowerCase() === rawAdv.toLowerCase()) || rawAdv;
+      if (!stats[matchedAdv]) {
+        stats[matchedAdv] = {
+          totalCount: 0,
+          closedCount: 0,
+          closedValue: 0,
+          pendingValue: 0,
+          possibleValue: 0,
+          target: advisorTargets[matchedAdv] ?? 15000
+        };
+      }
+      stats[matchedAdv].totalCount++;
+      stats[matchedAdv].possibleValue += q.totalCost || 0;
+      
+      if (q.isAccepted) {
+        stats[matchedAdv].closedValue += q.totalCost || 0;
+        stats[matchedAdv].closedCount++;
+      } else if (q.status === "amber pending") {
+        stats[matchedAdv].pendingValue += q.totalCost || 0;
       }
     });
 
@@ -620,7 +630,7 @@ export default function DashboardTab({ quotes, onToggleQuoteAccept, currentUser 
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {filteredQuotes.filter(q => q.status === "amber pending").map((quote) => {
-              const dateIssuedFormatted = quote.dateIssued ? quote.dateIssued.split("-").reverse().join("/") : "-";
+              const dateIssuedFormatted = formatDateDisplay(quote.dateIssued);
               return (
                 <div 
                   key={quote.id} 
