@@ -1842,7 +1842,7 @@ export default function App() {
                                 </div>
                               </div>
                               <p className="text-gray-400 text-[8.5px] print:text-[7.5px] leading-tight mt-1">
-                                Interest-free via PaySmart. +$1.50 fee per debit. $6.60 setup fee on 1st debit.
+                                Interest-free via PaySmart. +$1.50 transaction fee per debit (weekly, fortnightly, or monthly). $6.60 setup fee on 1st debit only.
                               </p>
                             </div>
                           )}
@@ -1850,7 +1850,7 @@ export default function App() {
                       );
                     })()}
                     <p className="text-gray-500 text-[9px] print:text-[8px] leading-relaxed mt-2.5 print:mt-1.5 border-t border-gray-100 pt-2 print:pt-1 italic">
-                      <strong className="text-gray-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available (zero fees). Payment plans are interest-free via PaySmart with a once-off $6.60 setup fee charged on the first debited amount, plus a $1.50 transaction fee for every debited amount (weekly, fortnightly, or monthly).
+                      <strong className="text-gray-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available (zero fees). Payment plans are interest-free via PaySmart with a once-off $6.60 setup fee charged on the first debited amount only, plus a $1.50 transaction fee for every debited amount (whether weekly, fortnightly, or monthly).
                     </p>
                   </div>
                 </div>

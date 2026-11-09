@@ -726,16 +726,16 @@ export default function PathwayCard({
                     <>
                       This price can be paid on a <strong className="text-slate-850 font-extrabold uppercase">{paymentPlanType}</strong> payment plan, consisting of a{" "}
                       <strong className="text-slate-850 font-extrabold">{formatMoney(depositAmount)}</strong> minimum deposit and{" "}
-                      <strong className="text-slate-850 font-extrabold">{formatMoney(paymentPlanAmount)}/{getFrequencyLabel(paymentPlanType)}</strong> debited repayments (+ $1.50 transaction fee per debit; $6.60 PaySmart setup fee on first debit).
+                      <strong className="text-slate-850 font-extrabold">{formatMoney(paymentPlanAmount)}/{getFrequencyLabel(paymentPlanType)}</strong> debited repayments (+ $1.50 transaction fee on each debit; $6.60 PaySmart setup fee on first debit only).
                     </>
                   ) : (
                     <>
                       This price can be paid in full upfront (<strong>{formatMoney(payInFullPrice)}</strong>) OR on a <strong className="text-slate-850 font-extrabold uppercase">{paymentPlanType}</strong> payment plan, consisting of a{" "}
                       <strong className="text-slate-850 font-extrabold">{formatMoney(depositAmount)}</strong> minimum deposit and{" "}
-                      <strong className="text-slate-850 font-extrabold">{formatMoney(paymentPlanAmount)}/{getFrequencyLabel(paymentPlanType)}</strong> debited repayments (+ $1.50 transaction fee per debit; $6.60 PaySmart setup fee on first debit).
+                      <strong className="text-slate-850 font-extrabold">{formatMoney(paymentPlanAmount)}/{getFrequencyLabel(paymentPlanType)}</strong> debited repayments (+ $1.50 transaction fee on each debit; $6.60 PaySmart setup fee on first debit only).
                     </>
                   )}{" "}
-                  <strong className="text-slate-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available (zero fees). Payment plans are interest-free via PaySmart with a once-off $6.60 setup fee charged on the first debited amount, plus a $1.50 transaction fee for every debited amount (weekly, fortnightly, or monthly).
+                  <strong className="text-slate-700 font-extrabold uppercase">ALL ENROLMENTS:</strong> Upfront payment available (zero fees). Payment plans are interest-free via PaySmart with a once-off $6.60 setup fee charged on the first debited amount only, plus a $1.50 transaction fee for every debited amount (whether weekly, fortnightly, or monthly).
                 </span>
               </td>
             </tr>
@@ -888,9 +888,9 @@ export default function PathwayCard({
                 <span>PaySmart Fee Schedule:</span>
               </div>
               <p className="text-[10px] text-slate-600 leading-relaxed">
-                • <strong>$1.50 Transaction Fee:</strong> Charged on every debited transaction ({paymentPlanType}).<br />
+                • <strong>$1.50 Transaction Fee:</strong> Charged per transaction on every debited amount (applies whether repayments are weekly, fortnightly, or monthly).<br />
                 • <strong>$6.60 PaySmart Setup Fee:</strong> Charged once on the first debited amount only.<br />
-                • <strong>Per-Debit Breakdown:</strong> {formatMoney(paymentPlanAmount)} tuition + $1.50 fee = <strong>{formatMoney(paymentPlanAmount + 1.5)}</strong> debited per {getFrequencyLabel(paymentPlanType)} (First debit: <strong>{formatMoney(paymentPlanAmount + 1.5 + 6.6)}</strong> including $6.60 setup fee).
+                • <strong>Per-Debit Breakdown:</strong> {formatMoney(paymentPlanAmount)} tuition + $1.50 transaction fee = <strong>{formatMoney(paymentPlanAmount + 1.5)}</strong> debited per {getFrequencyLabel(paymentPlanType)} (First debit: <strong>{formatMoney(paymentPlanAmount + 1.5 + 6.6)}</strong> including $6.60 PaySmart setup fee).
               </p>
             </div>
           </div>
@@ -981,8 +981,8 @@ export default function PathwayCard({
                   min="1"
                 />
               </div>
-              <p className="text-[9.5px] text-slate-400 mt-1 font-medium">
-                + $1.50 PaySmart fee per debit ({paymentPlanType})
+              <p className="text-[9.5px] text-slate-500 mt-1 font-medium">
+                + $1.50 transaction fee per debit (applies whether weekly, fortnightly, or monthly)
               </p>
             </div>
           )}
